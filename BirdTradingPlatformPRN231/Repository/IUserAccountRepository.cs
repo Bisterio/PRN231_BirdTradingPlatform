@@ -11,5 +11,6 @@ namespace Repository
     public interface IUserAccountRepository
     {
         APIResult<String> Authenticate(LoginDTO request);
+        APIResult<bool> Register(RegisterDTO request);
     }
 }

@@ -58,5 +58,86 @@ namespace Repository
 
             return new APISuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
+
+        public APIResult<bool> Register(RegisterDTO request)
+        {
+            // Get Account by email
+            UserAccount? user = UserAccountDAO.FindUserByEmail(request.Email);
+
+            // Validate user exist
+            if (user != null) return new APIErrorResult<bool>("This Email has already been used.");
+
+            // Validate Confirm Password
+            if(!request.Password.Equals(request.ConfirmPassword)) return new APIErrorResult<bool>("Confirm Password doesn't match.");
+
+            // Validate Role
+            if (!(request.Role.Equals("CUSTOMER") || request.Role.Equals("STORE_STAFF"))) return new APIErrorResult<bool>("Invalid Role");
+
+            // If user is customer / staff with existing store
+            if(request.CreateNewStore == 0)
+            {
+                UserAccount newUser = new()
+                {
+                    UserId = 0,
+                    Email = request.Email,
+                    Name = request.Name,
+                    Password = BC.HashPassword(request.Password),
+                    Phone = request.Phone,
+                    Role = request.Role,
+                    Status = 1,
+                    StoreId = request.StoreId == 0 ? null : request.StoreId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                UserAccountDAO.CreateUser(newUser);
+                if(newUser.UserId  != 0)
+                {
+                    return new APISuccessResult<bool>();
+                }
+                return new APIErrorResult<bool>("Can't add new user to database.");
+            }
+
+            // If user is staff with new store
+            // Add new Store
+            // Validate store name and address
+            if (String.IsNullOrEmpty(request.NewStoreName)) return new APIErrorResult<bool>("Store name required!");
+            if (String.IsNullOrEmpty(request.NewStoreAddress)) return new APIErrorResult<bool>("Store address required!");
+            Store newStore = new()
+            {
+                StoreId = 0,
+                Name = request.NewStoreName,
+                Address = request.NewStoreAddress,
+                Status = 1,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            StoreDAO.CreateStore(newStore);
+            if(newStore.StoreId != 0)
+            {
+                UserAccount newUser = new()
+                {
+                    UserId = 0,
+                    Email = request.Email,
+                    Name = request.Name,
+                    Password = BC.HashPassword(request.Password),
+                    Phone = request.Phone,
+                    Role = request.Role,
+                    Status = 1,
+                    StoreId = newStore.StoreId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                UserAccountDAO.CreateUser(newUser);
+                if (newUser.UserId != 0)
+                {
+                    return new APISuccessResult<bool>();
+                }
+                return new APIErrorResult<bool>("Can't add new user to database.");
+            }
+
+            return new APIErrorResult<bool>("Can't add new store to database.");
+        }
     }
 }

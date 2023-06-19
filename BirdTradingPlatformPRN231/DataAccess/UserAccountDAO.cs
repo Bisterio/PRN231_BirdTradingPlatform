@@ -28,5 +28,21 @@ namespace DataAccess
             }
             return user;
         }
+
+        public static void CreateUser(UserAccount u)
+        {
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    context.UserAccounts.Add(u);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

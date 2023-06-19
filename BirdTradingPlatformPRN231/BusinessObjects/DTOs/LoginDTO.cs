@@ -12,14 +12,10 @@ namespace BusinessObject.DTOs
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
-        [Display(Name = "Password")]
         [Required]
         [MinLength(8)]
-        public string Password { get; set; }
-
-        public string? RefreshToken { get; set; }
+        public string Password { get; set; } = null!;
     }
 }
