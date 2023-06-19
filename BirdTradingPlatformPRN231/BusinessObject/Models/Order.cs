@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.Models
+namespace BusinessObject.Models
 {
     public partial class Order
     {

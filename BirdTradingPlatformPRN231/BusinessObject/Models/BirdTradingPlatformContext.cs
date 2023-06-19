@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
-namespace BusinessObjects.Models
+namespace BusinessObject.Models
 {
     public partial class BirdTradingPlatformContext : DbContext
     {
@@ -22,7 +22,6 @@ namespace BusinessObjects.Models
         public virtual DbSet<Order> Orders { get; set; } = null!;
         public virtual DbSet<OrderItem> OrderItems { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
-        public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<TransactionRecord> TransactionRecords { get; set; } = null!;
         public virtual DbSet<UserAccount> UserAccounts { get; set; } = null!;
@@ -34,8 +33,7 @@ namespace BusinessObjects.Models
                 optionsBuilder.UseSqlServer(GetConnectionString());
             }
         }
-
-        public string GetConnectionString()
+        private string GetConnectionString()
         {
             IConfiguration config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -50,7 +48,7 @@ namespace BusinessObjects.Models
             modelBuilder.Entity<CartItem>(entity =>
             {
                 entity.HasKey(e => new { e.ProductId, e.UserId })
-                    .HasName("PK__cart_ite__AC999E852ACD25B4");
+                    .HasName("PK__cart_ite__AC999E85F2DED0BF");
 
                 entity.ToTable("cart_item");
 
@@ -137,7 +135,7 @@ namespace BusinessObjects.Models
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId })
-                    .HasName("PK__order_it__022945F68F54DA69");
+                    .HasName("PK__order_it__022945F6DEF2C64C");
 
                 entity.ToTable("order_item");
 
@@ -213,35 +211,6 @@ namespace BusinessObjects.Models
                     .HasConstraintName("FKjlfidudl1gwqem0flrlomvlcl");
             });
 
-            modelBuilder.Entity<RefreshToken>(entity =>
-            {
-                entity.HasKey(e => e.TokenId)
-                    .HasName("PK__refresh___CB3C9E17005848BF");
-
-                entity.ToTable("refresh_token");
-
-                entity.Property(e => e.TokenId).HasColumnName("token_id");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasPrecision(6)
-                    .HasColumnName("created_at");
-
-                entity.Property(e => e.ExpiredAt)
-                    .HasPrecision(6)
-                    .HasColumnName("expired_at");
-
-                entity.Property(e => e.Token)
-                    .HasMaxLength(255)
-                    .HasColumnName("token");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.RefreshTokens)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FKonvmn7x6wegib73ehd0gol5nk");
-            });
-
             modelBuilder.Entity<Store>(entity =>
             {
                 entity.ToTable("store");
@@ -270,7 +239,7 @@ namespace BusinessObjects.Models
             modelBuilder.Entity<TransactionRecord>(entity =>
             {
                 entity.HasKey(e => e.TransactionId)
-                    .HasName("PK__transact__85C600AF3740C4DE");
+                    .HasName("PK__transact__85C600AF2CA93EF5");
 
                 entity.ToTable("transaction_record");
 
@@ -334,11 +303,11 @@ namespace BusinessObjects.Models
             modelBuilder.Entity<UserAccount>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__user_acc__B9BE370F9062CC73");
+                    .HasName("PK__user_acc__B9BE370F62C69AA4");
 
                 entity.ToTable("user_account");
 
-                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164BBB0F345")
+                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164C3099BCD")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");

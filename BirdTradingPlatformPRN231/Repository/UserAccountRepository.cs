@@ -1,6 +1,6 @@
 ﻿using BusinessObject.Common;
 using BusinessObject.DTOs;
-using BusinessObjects.Models;
+using BusinessObject.Models;
 using DataAccess;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
