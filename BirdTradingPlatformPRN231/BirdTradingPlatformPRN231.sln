@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirdTradingPlatformAPI", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{D0871C54-AE62-4922-AB7B-B50A3A879CF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BirdTradingPlatformClient", "BirdTradingPlatformClient\BirdTradingPlatformClient.csproj", "{00A191A8-9F5C-404B-B297-21FC3688DBBE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D0871C54-AE62-4922-AB7B-B50A3A879CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0871C54-AE62-4922-AB7B-B50A3A879CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0871C54-AE62-4922-AB7B-B50A3A879CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00A191A8-9F5C-404B-B297-21FC3688DBBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00A191A8-9F5C-404B-B297-21FC3688DBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00A191A8-9F5C-404B-B297-21FC3688DBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00A191A8-9F5C-404B-B297-21FC3688DBBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
