@@ -23,7 +23,7 @@ namespace Repository
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
 
-        public APIResult<String> Authenticate(LoginDTO request)
+        public APIResult<String> AuthenticateCustomer(LoginDTO request)
         {
             // Get Account by email
             UserAccount? user = UserAccountDAO.FindUserByEmail(request.Email);
@@ -31,8 +31,11 @@ namespace Repository
             // Validate user exist
             if (user == null) return new APIErrorResult<string>("Account doesn't exist.");
 
+            // Validate Role
+            if (!user.Role.Equals("CUSTOMER")) return new APIErrorResult<string>("Please use Store Login Page to access Store account");
+
             // Validate user by status
-            if(user.Status == 0) return new APIErrorResult<string>("This account has been blocked. Contact administrator to unblock.");
+            if (user.Status == 0) return new APIErrorResult<string>("This account has been blocked. Contact administrator to unblock.");
 
             // Check for password encrypt match
             if (!BC.Verify(request.Password, user.Password)) return new APIErrorResult<string>("Wrong password.");
@@ -84,6 +87,7 @@ namespace Repository
                     Password = BC.HashPassword(request.Password),
                     Phone = request.Phone,
                     Role = request.Role,
+                    EmailVerified = 1,
                     Status = 1,
                     StoreId = request.StoreId == 0 ? null : request.StoreId,
                     CreatedAt = DateTime.Now,

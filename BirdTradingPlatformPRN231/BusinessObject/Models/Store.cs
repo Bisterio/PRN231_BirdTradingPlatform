@@ -7,8 +7,8 @@ namespace BusinessObject.Models
     {
         public Store()
         {
+            Orders = new HashSet<Order>();
             Products = new HashSet<Product>();
-            TransactionRecords = new HashSet<TransactionRecord>();
             UserAccounts = new HashSet<UserAccount>();
         }
 
@@ -19,8 +19,8 @@ namespace BusinessObject.Models
         public byte Status { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Product> Products { get; set; }
-        public virtual ICollection<TransactionRecord> TransactionRecords { get; set; }
         public virtual ICollection<UserAccount> UserAccounts { get; set; }
     }
 }

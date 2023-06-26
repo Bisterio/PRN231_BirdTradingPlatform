@@ -38,8 +38,12 @@ namespace BirdTradingPlatformClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl)
         {
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                TempData["ReturnUrl"] = returnUrl;
+            }
             return View();
         }
 
@@ -75,7 +79,7 @@ namespace BirdTradingPlatformClient.Controllers
             // Post LoginDTO request
             var jsonRequest = JsonConvert.SerializeObject(request);
 
-            HttpResponseMessage response = await client.PostAsync(UserApilUrl + "/Authenticate",
+            HttpResponseMessage response = await client.PostAsync(UserApilUrl + "/AuthenticateCustomer",
                 new StringContent(jsonRequest, Encoding.UTF8, "application/json"));
             
             // Get response
@@ -102,13 +106,18 @@ namespace BirdTradingPlatformClient.Controllers
                         userPrincipal,
                         authProperties);
 
-            // Check for role authorization and redirection
-            if (userPrincipal.IsInRole("CUSTOMER"))
+            // Redirect
+            object? returnUrl = string.Empty;
+            TempData.TryGetValue("ReturnUrl", out returnUrl);
+            string? returnUrlStr = returnUrl as string;
+            if (!string.IsNullOrEmpty(returnUrlStr))
             {
-                return RedirectToAction("Customer", "Home");
+                return Redirect(returnUrlStr);
             }
-
-            return RedirectToAction("Staff", "Home");
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private ClaimsPrincipal ValidateToken(string jwtToken)
@@ -129,11 +138,12 @@ namespace BirdTradingPlatformClient.Controllers
             return principal;
         }
 
-        [Authorize(Roles = "CUSTOMER, STORE_STAFF")]
+        [Authorize]
         public IActionResult Logout(string returnUrl)
         {
             // Remove Identity
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("Token");
 
             // Back to home
             if (string.IsNullOrEmpty(returnUrl))

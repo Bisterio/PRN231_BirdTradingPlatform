@@ -7,14 +7,13 @@ namespace BusinessObject.Models
     {
         public UserAccount()
         {
-            CartItems = new HashSet<CartItem>();
             Orders = new HashSet<Order>();
-            TransactionRecords = new HashSet<TransactionRecord>();
         }
 
         public long UserId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string Email { get; set; } = null!;
+        public byte EmailVerified { get; set; }
         public string Name { get; set; } = null!;
         public string? Password { get; set; }
         public string? Phone { get; set; }
@@ -24,8 +23,6 @@ namespace BusinessObject.Models
         public long? StoreId { get; set; }
 
         public virtual Store? Store { get; set; }
-        public virtual ICollection<CartItem> CartItems { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<TransactionRecord> TransactionRecords { get; set; }
     }
 }

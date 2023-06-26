@@ -12,14 +12,19 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IUserAccountRepository _userRepository = new UserAccountRepository();
 
-        [HttpPost("Authenticate")]
+        [HttpPost("AuthenticateCustomer")]
         [AllowAnonymous]
         public IActionResult Authenticate([FromBody] LoginDTO request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var errors = ModelState.Select(x => x.Value?.Errors)
+                    .Where(y => y?.Count > 0)
+                    .ToList();
+                return BadRequest(errors[0]);
+            }
 
-            var result = _userRepository.Authenticate(request);
+            var result = _userRepository.AuthenticateCustomer(request);
 
             if (!result.IsSuccess)
             {
@@ -33,7 +38,12 @@ namespace BirdTradingPlatformAPI.Controllers
         public IActionResult Register([FromBody] RegisterDTO request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var errors = ModelState.Select(x => x.Value?.Errors)
+                    .Where(y => y?.Count > 0)
+                    .ToList();
+                return BadRequest(errors[0]);
+            }
 
             var result = _userRepository.Register(request);
 

@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public interface IUserAccountRepository
+    public interface IOrderRepository
     {
-        APIResult<String> AuthenticateCustomer(LoginDTO request);
-        APIResult<bool> Register(RegisterDTO request);
+        APIResult<String> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
     }
 }
