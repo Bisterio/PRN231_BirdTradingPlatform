@@ -36,15 +36,27 @@ namespace BirdTradingPlatformAPI.Controllers
 
         [HttpGet("Customer")]
         [Authorize]
-        public IActionResult GetCurrentUserOrders([FromQuery] string? name, [FromQuery] byte status)
+        public IActionResult GetCurrentUserOrders([FromQuery] byte status)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrEmpty(idString)) return Unauthorized();
             long currentUserId = long.Parse(idString);
 
+            var result = _orderRepository.GetCurrentUserOrders(status, currentUserId);
 
-            var result = "";
+            return Ok(result);
+        }
 
+        [HttpGet("Customer/{id}")]
+        [Authorize]
+        public IActionResult GetOrderDetailCustomer(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.GetOrderDetailCustomer(id, currentUserId);
+            if(result == null) return NotFound("Can't get this order detail!");
             return Ok(result);
         }
     }

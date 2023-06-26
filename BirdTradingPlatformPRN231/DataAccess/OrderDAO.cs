@@ -10,15 +10,20 @@ namespace DataAccess
 {
     public class OrderDAO
     {
-        public static List<Order>? GetOrders()
+        // Get orders by status and current logined user
+        public static List<Order?> GetOrdersByCurrentUser(byte status, long currentUserId)
         {
-            List<Order>? orders = new List<Order>(); 
+            List<Order> orders = new List<Order>(); 
             try
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
                     orders = context.Orders
-                        .Include(x => x.User)
+                        .Where(o => o.UserId == currentUserId
+                        && (status == 0 || o.Status == status))
+                        .Include(o => o.Store)
+                        .Include(o => o.User)
+                        .OrderByDescending(o => o.CreatedAt)
                         .ToList();
                 }
             } 
@@ -29,7 +34,8 @@ namespace DataAccess
             return orders;
         }
 
-        public static Order? GetOrderById(int id)
+        // Get Order by orderid and current logined user
+        public static Order? GetOrderByIdAndUserId(long orderId, long userId)
         {
             Order? orders = new Order();
             try
@@ -37,8 +43,9 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     orders = context.Orders
-                        .Include(x => x.User)
-                        .SingleOrDefault(x => x.OrderId == id);
+                        .Include(x => x.Store)
+                        .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
+                        .SingleOrDefault(o => o.OrderId == orderId && o.UserId == userId);
                 }
             }
             catch (Exception ex)

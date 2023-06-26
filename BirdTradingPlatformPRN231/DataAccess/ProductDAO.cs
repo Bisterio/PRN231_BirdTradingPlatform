@@ -94,10 +94,9 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     product = context.Products
-                        .Where(p => p.Status == 1)
                         .Include(p => p.Store)
                         .Include(p => p.Category)
-                        .SingleOrDefault(p => p.ProductId == productId);
+                        .SingleOrDefault(p => p.ProductId == productId && p.Status == 1);
                 }
             }
             catch (Exception ex)

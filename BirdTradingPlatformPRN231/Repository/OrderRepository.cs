@@ -12,6 +12,8 @@ namespace Repository
 {
     public class OrderRepository : IOrderRepository
     {
+
+        // Function to create new orders
         public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId)
         {
             // Check for valid product (product status == 1, quantity does not exceed stock)
@@ -19,9 +21,9 @@ namespace Repository
             {
                 // Get each product and check for status and stock
                 Product? p = ProductDAO.GetProductDetailById(cartItem.ProductId);
-                if(p == null || p.Status == 0)
+                if (p == null || p.Status == 0)
                     return new APIErrorResult<string>("Your cart contain one or more item that is unavailable. Please update your cart!");
-                if(cartItem.Quantity <= 0)
+                if (cartItem.Quantity <= 0)
                     return new APIErrorResult<string>($"Quantity for product '{p.Name}' cannot be lower than 0. Please update the quantity of this product!");
                 if (cartItem.Quantity > p.Stock)
                     return new APIErrorResult<string>($"Quantity for product '{p.Name}' has exceeded the current units in stock for this product. Please update the quantity of this product!");
@@ -72,7 +74,7 @@ namespace Repository
                 OrderDAO.CreateOrder(newOrder);
 
                 // Add order items
-                foreach(var cartItem in storeOrder.CartItems)
+                foreach (var cartItem in storeOrder.CartItems)
                 {
                     OrderItemDAO.CreateOrderItem(new OrderItem()
                     {
@@ -92,6 +94,76 @@ namespace Repository
             }
 
             return new APISuccessResult<string>("Add new order successfully!");
+        }
+
+        // Get orders of a logined customer
+        public List<OrderViewDTO?> GetCurrentUserOrders(byte status, long currentUserId)
+        {
+            List<OrderViewDTO?> orderByUser = OrderDAO
+                .GetOrdersByCurrentUser(status, currentUserId)
+                .Select(x => ToOrderViewDTO(x))
+                .ToList();
+
+            return orderByUser;
+        }
+
+        // Get order detail and order items of a logined customer
+        public OrderViewDTO? GetOrderDetailCustomer(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if(orderEntity == null) return null;
+
+            OrderViewDTO? orderDTO = ToOrderViewDTO(orderEntity);
+            List<OrderItemViewDTO?> orderItemDTO = orderEntity.OrderItems
+                .Select(x => ToOrderItemViewDTO(x))
+                .ToList();
+
+            orderDTO.OrderItems = orderItemDTO;
+
+            return orderDTO;
+        }
+
+        // Map Order Entity to OrderViewDTO
+        public static OrderViewDTO? ToOrderViewDTO(Order? entity)
+        {
+            if (entity == null) return null;
+
+            return new OrderViewDTO()
+            {
+                OrderId = entity.OrderId,
+                Address = entity.Address,
+                CreatedAt = entity.CreatedAt,
+                Email = entity.Email,
+                Name = entity.Name,
+                PaymentMethod = entity.PaymentMethod,
+                Phone = entity.Phone,
+                Status = entity.Status,
+                TotalAmount = entity.TotalAmount,
+                TotalAmountPreShipping = entity.TotalAmountPreShipping,
+                TotalItem = entity.TotalItem,
+                TotalShippingCost = entity.TotalShippingCost,
+                UpdatedAt = entity.UpdatedAt,
+                StoreName = entity.Store?.Name,
+                StoreAddress = entity.Store?.Address
+            };
+        }
+
+        // Map Order Item Entity to OrderItemViewDTO
+        public static OrderItemViewDTO? ToOrderItemViewDTO(OrderItem? entity)
+        {
+            if (entity == null) return null;
+
+            return new OrderItemViewDTO()
+            {
+                ProductId = entity.ProductId,
+                Description = entity.Product.Description,
+                Image = entity.Product.Image,
+                Name = entity.Product.Name,
+                UnitPrice = entity.Price,
+                CategoryName = entity.Product.Category?.Name,
+                Quantity = entity.Quantity,
+                Total = entity.Total
+            };
         }
     }
 }
