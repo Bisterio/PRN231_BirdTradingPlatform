@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTOs;
+﻿using BusinessObject.Common;
+using BusinessObject.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +19,11 @@ namespace BirdTradingPlatformAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Select(x => x.Value?.Errors)
-                    .Where(y => y?.Count > 0)
-                    .ToList();
-                return BadRequest(errors[0]);
+                return BadRequest(ModelState);
             }
 
             var result = _userRepository.AuthenticateCustomer(request);
 
-            if (!result.IsSuccess)
-            {
-                return NotFound(result);
-            }
             return Ok(result);
         }
 
@@ -39,18 +33,11 @@ namespace BirdTradingPlatformAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Select(x => x.Value?.Errors)
-                    .Where(y => y?.Count > 0)
-                    .ToList();
-                return BadRequest(errors[0]);
+                return BadRequest(ModelState);
             }
 
             var result = _userRepository.Register(request);
 
-            if (!result.IsSuccess)
-            {
-                return NotFound(result);
-            }
             return Ok(result);
         }
     }

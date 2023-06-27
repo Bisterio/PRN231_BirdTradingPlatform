@@ -10,8 +10,9 @@ namespace Repository
 {
     public interface IOrderRepository
     {
-        APIResult<String> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
+        public APIResult<String> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
         public List<OrderViewDTO> GetCurrentUserOrders(byte status, long currentUserId);
         public OrderViewDTO GetOrderDetailCustomer(long orderId, long currentUserId);
+        public APIResult<String> CancelOrderDetailCustomer(long orderId, long currentUserId);
     }
 }

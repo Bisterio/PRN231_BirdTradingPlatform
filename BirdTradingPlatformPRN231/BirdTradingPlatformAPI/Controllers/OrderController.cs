@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTOs;
+﻿using BusinessObject.Common;
+using BusinessObject.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +24,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Select(x => x.Value?.Errors)
-                    .Where(y => y?.Count > 0)
-                    .ToList();
-                return BadRequest(errors[0]);
+                return BadRequest(ModelState);
             }
 
             var result = _orderRepository.CreateNewOrders(newOrders, currentUserId);
@@ -57,6 +55,19 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.GetOrderDetailCustomer(id, currentUserId);
             if(result == null) return NotFound("Can't get this order detail!");
+            return Ok(result);
+        }
+
+        [HttpGet("Customer/Cancel/{id}")]
+        [Authorize]
+        public IActionResult CancelOrderDetailCustomer(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId);
+            if (result == null) return NotFound("Can't cancel this order!");
             return Ok(result);
         }
     }

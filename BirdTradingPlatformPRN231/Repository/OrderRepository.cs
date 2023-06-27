@@ -123,6 +123,29 @@ namespace Repository
             return orderDTO;
         }
 
+        // Customer cancel an order by orderId and userId
+        public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 0: Cancelled
+            orderEntity.Status = 0;
+            OrderDAO.UpdateOrder(orderEntity);
+
+            // Increase stock of product for each order item cancelled
+            foreach(OrderItem od in orderEntity.OrderItems)
+            {
+                Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
+                if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
+                updateStockProduct.Stock += od.Quantity;
+                updateStockProduct.UpdatedAt = DateTime.Now;
+                ProductDAO.UpdateProduct(updateStockProduct);
+            }
+
+            return new APISuccessResult<string>("Cancel order successfully!");
+        }
+
         // Map Order Entity to OrderViewDTO
         public static OrderViewDTO? ToOrderViewDTO(Order? entity)
         {
