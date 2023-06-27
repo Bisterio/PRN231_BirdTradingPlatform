@@ -38,5 +38,8 @@ namespace BusinessObject.DTOs
 
         public string? NewStoreName { get; set; }
         public string? NewStoreAddress { get; set; }
+        public string? NewStoreDescription { get; set; }
+        public string? NewStoreLogoImage { get; set; }
+        public string? NewStoreCoverImage { get; set; }
     }
 }

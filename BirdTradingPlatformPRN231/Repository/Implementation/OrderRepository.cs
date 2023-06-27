@@ -2,13 +2,14 @@
 using BusinessObject.DTOs;
 using BusinessObject.Models;
 using DataAccess;
+using Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository
+namespace Repository.Implementation
 {
     public class OrderRepository : IOrderRepository
     {
@@ -28,6 +29,27 @@ namespace Repository
                 if (cartItem.Quantity > p.Stock)
                     return new APIErrorResult<string>($"Quantity for product '{p.Name}' has exceeded the current units in stock for this product. Please update the quantity of this product!");
             }
+
+            // Create a new invoice (big order containing sub-orders)
+            Invoice newInvoice = new Invoice()
+            {
+                Address = newOrders.Address,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Email = newOrders.Email,
+                IsPaid = 1,
+                Name = newOrders.Name,
+                Note = newOrders.Note,
+                PaymentMethod = newOrders.PaymentMethod,
+                Phone = newOrders.PaymentMethod,
+                TotalItem = newOrders.CartItems.Sum(x => x.Quantity),
+                TotalAmountPreShipping = newOrders.CartItems.Sum(x => x.Quantity * x.UnitPrice),
+                TotalShippingCost = newOrders.TotalShippingCost,
+                TotalAmount = newOrders.TotalShippingCost + newOrders.CartItems.Sum(x => x.Quantity * x.UnitPrice),
+                UserId = currentUserId
+            };
+            // Save invoice to database
+            InvoiceDAO.CreateInvoice(newInvoice);
 
             // Separate cart items by storeid
             var cartItemsGroupedByStore =
@@ -54,20 +76,15 @@ namespace Repository
                 // Create order for each store
                 Order newOrder = new Order()
                 {
-                    Address = newOrders.Address,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
-                    Email = newOrders.Email,
-                    Name = newOrders.Name,
-                    PaymentMethod = newOrders.PaymentMethod,
-                    Phone = newOrders.Phone,
                     Status = 1,
                     TotalItem = totalItem,
                     TotalAmountPreShipping = totalAmountPreShipping,
                     TotalShippingCost = totalShippingCost,
                     TotalAmount = totalAmount,
                     StoreId = storeOrder.StoreId,
-                    UserId = currentUserId
+                    InvoiceId = newInvoice.InvoiceId
                 };
 
                 // Save order
@@ -101,7 +118,7 @@ namespace Repository
         {
             List<OrderViewDTO?> orderByUser = OrderDAO
                 .GetOrdersByCurrentUser(status, currentUserId)
-                .Select(x => ToOrderViewDTO(x))
+                .Select(x => Mapper.ToOrderViewDTO(x))
                 .ToList();
 
             return orderByUser;
@@ -111,11 +128,11 @@ namespace Repository
         public OrderViewDTO? GetOrderDetailCustomer(long orderId, long currentUserId)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
-            if(orderEntity == null) return null;
+            if (orderEntity == null) return null;
 
-            OrderViewDTO? orderDTO = ToOrderViewDTO(orderEntity);
+            OrderViewDTO? orderDTO = Mapper.ToOrderViewDTO(orderEntity);
             List<OrderItemViewDTO?> orderItemDTO = orderEntity.OrderItems
-                .Select(x => ToOrderItemViewDTO(x))
+                .Select(x => Mapper.ToOrderItemViewDTO(x))
                 .ToList();
 
             orderDTO.OrderItems = orderItemDTO;
@@ -134,7 +151,7 @@ namespace Repository
             OrderDAO.UpdateOrder(orderEntity);
 
             // Increase stock of product for each order item cancelled
-            foreach(OrderItem od in orderEntity.OrderItems)
+            foreach (OrderItem od in orderEntity.OrderItems)
             {
                 Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
                 if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
@@ -144,49 +161,6 @@ namespace Repository
             }
 
             return new APISuccessResult<string>("Cancel order successfully!");
-        }
-
-        // Map Order Entity to OrderViewDTO
-        public static OrderViewDTO? ToOrderViewDTO(Order? entity)
-        {
-            if (entity == null) return null;
-
-            return new OrderViewDTO()
-            {
-                OrderId = entity.OrderId,
-                Address = entity.Address,
-                CreatedAt = entity.CreatedAt,
-                Email = entity.Email,
-                Name = entity.Name,
-                PaymentMethod = entity.PaymentMethod,
-                Phone = entity.Phone,
-                Status = entity.Status,
-                TotalAmount = entity.TotalAmount,
-                TotalAmountPreShipping = entity.TotalAmountPreShipping,
-                TotalItem = entity.TotalItem,
-                TotalShippingCost = entity.TotalShippingCost,
-                UpdatedAt = entity.UpdatedAt,
-                StoreName = entity.Store?.Name,
-                StoreAddress = entity.Store?.Address
-            };
-        }
-
-        // Map Order Item Entity to OrderItemViewDTO
-        public static OrderItemViewDTO? ToOrderItemViewDTO(OrderItem? entity)
-        {
-            if (entity == null) return null;
-
-            return new OrderItemViewDTO()
-            {
-                ProductId = entity.ProductId,
-                Description = entity.Product.Description,
-                Image = entity.Product.Image,
-                Name = entity.Product.Name,
-                UnitPrice = entity.Price,
-                CategoryName = entity.Product.Category?.Name,
-                Quantity = entity.Quantity,
-                Total = entity.Total
-            };
         }
     }
 }

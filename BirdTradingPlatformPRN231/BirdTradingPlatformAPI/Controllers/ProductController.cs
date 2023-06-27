@@ -1,8 +1,6 @@
-﻿using BusinessObject.DTOs;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Repository;
+﻿using Microsoft.AspNetCore.Mvc;
+using Repository.Implementation;
+using Repository.Interface;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
@@ -12,6 +10,7 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IProductRepository _productRepository = new ProductRepository();
 
+        // Get publicly available product list with search, filter, sort and pagination
         [HttpGet("Public")]
         public IActionResult GetPublicProductList([FromQuery] int page, [FromQuery] string? name, [FromQuery] long category,
             [FromQuery] long pmin, [FromQuery] long pmax, [FromQuery] int order)
@@ -21,6 +20,7 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // Get publicly available product detail with search, filter, sort and pagination
         [HttpGet("Public/{id}")]
         public IActionResult GetPublicProductDetailById(long id)
         {
@@ -28,8 +28,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // Get publicly available product list by store id
         [HttpGet("Store/{id}")]
-        public IActionResult GetPublicProductDetailByStore(long id)
+        public IActionResult GetProductsPublicByStoreId(long id)
         {
             var result = _productRepository.GetProductsPublicByStoreId(id);
             return Ok(result);

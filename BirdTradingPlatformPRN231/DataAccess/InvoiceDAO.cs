@@ -1,4 +1,5 @@
 ﻿using BusinessObject.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace DataAccess
 {
-    public class StoreDAO
+    public class InvoiceDAO
     {
-        public static void CreateStore(Store s)
+        public static void CreateInvoice(Invoice i)
         {
             try
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
-                    context.Stores.Add(s);
+                    context.Invoices.Add(i);
                     context.SaveChanges();
                 }
             }
@@ -25,41 +26,37 @@ namespace DataAccess
             }
         }
 
-        public static Store? GetStoreById(long storeId)
+        public static void UpdateInvoice(Invoice i)
         {
-            var store = new Store();
             try
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
-                    store = context.Stores
-                        .SingleOrDefault(s => s.StoreId == storeId && s.Status == 1);
+                    context.Entry<Invoice>(i).State 
+                        = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    context.SaveChanges();
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(e.Message);
             }
-            return store;
         }
 
-        public static List<Store> GetStoresAvailable()
+        public static void DeleteInvoice(Invoice i)
         {
-            var listStores = new List<Store>();
             try
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
-                    listStores = context.Stores
-                        .Where(s => s.Status == 1)
-                        .ToList();
+                    context.Invoices.Remove(i);
+                    context.SaveChanges();
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(e.Message);
             }
-            return listStores;
         }
     }
 }

@@ -4,6 +4,7 @@ using BusinessObject.Models;
 using DataAccess;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BC = BCrypt.Net.BCrypt;
 
-namespace Repository
+namespace Repository.Implementation
 {
     public class UserAccountRepository : IUserAccountRepository
     {
@@ -23,7 +24,7 @@ namespace Repository
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
 
-        public APIResult<String> AuthenticateCustomer(LoginDTO request)
+        public APIResult<string> AuthenticateCustomer(LoginDTO request)
         {
             // Get Account by email
             UserAccount? user = UserAccountDAO.FindUserByEmail(request.Email);
@@ -71,13 +72,13 @@ namespace Repository
             if (user != null) return new APIErrorResult<bool>("This Email has already been used.");
 
             // Validate Confirm Password
-            if(!request.Password.Equals(request.ConfirmPassword)) return new APIErrorResult<bool>("Confirm Password doesn't match.");
+            if (!request.Password.Equals(request.ConfirmPassword)) return new APIErrorResult<bool>("Confirm Password doesn't match.");
 
             // Validate Role
             if (!(request.Role.Equals("CUSTOMER") || request.Role.Equals("STORE_STAFF"))) return new APIErrorResult<bool>("Invalid Role");
 
             // If user is customer / staff with existing store
-            if(request.CreateNewStore == 0)
+            if (request.CreateNewStore == 0)
             {
                 UserAccount newUser = new()
                 {
@@ -95,7 +96,7 @@ namespace Repository
                 };
 
                 UserAccountDAO.CreateUser(newUser);
-                if(newUser.UserId  != 0)
+                if (newUser.UserId != 0)
                 {
                     return new APISuccessResult<bool>();
                 }
@@ -105,8 +106,8 @@ namespace Repository
             // If user is staff with new store
             // Add new Store
             // Validate store name and address
-            if (String.IsNullOrEmpty(request.NewStoreName)) return new APIErrorResult<bool>("Store name required!");
-            if (String.IsNullOrEmpty(request.NewStoreAddress)) return new APIErrorResult<bool>("Store address required!");
+            if (string.IsNullOrEmpty(request.NewStoreName)) return new APIErrorResult<bool>("Store name required!");
+            if (string.IsNullOrEmpty(request.NewStoreAddress)) return new APIErrorResult<bool>("Store address required!");
             Store newStore = new()
             {
                 StoreId = 0,
@@ -117,7 +118,7 @@ namespace Repository
                 UpdatedAt = DateTime.Now
             };
             StoreDAO.CreateStore(newStore);
-            if(newStore.StoreId != 0)
+            if (newStore.StoreId != 0)
             {
                 UserAccount newUser = new()
                 {

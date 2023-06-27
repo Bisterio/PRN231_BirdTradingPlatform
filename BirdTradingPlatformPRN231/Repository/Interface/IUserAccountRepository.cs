@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository
+namespace Repository.Interface
 {
     public interface IUserAccountRepository
     {
-        APIResult<String> AuthenticateCustomer(LoginDTO request);
+        APIResult<string> AuthenticateCustomer(LoginDTO request);
         APIResult<bool> Register(RegisterDTO request);
     }
 }

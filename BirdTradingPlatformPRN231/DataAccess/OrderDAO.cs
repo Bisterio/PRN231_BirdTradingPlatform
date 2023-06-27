@@ -19,10 +19,10 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     orders = context.Orders
-                        .Where(o => o.UserId == currentUserId
+                        .Where(o => o.Invoice.UserId == currentUserId
                         && (status == 0 || o.Status == status))
                         .Include(o => o.Store)
-                        .Include(o => o.User)
+                        .Include(o => o.Invoice).ThenInclude(o => o.User)
                         .OrderByDescending(o => o.CreatedAt)
                         .ToList();
                 }
@@ -44,8 +44,9 @@ namespace DataAccess
                 {
                     orders = context.Orders
                         .Include(x => x.Store)
+                        .Include(x => x.Invoice)
                         .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
-                        .SingleOrDefault(o => o.OrderId == orderId && o.UserId == userId);
+                        .SingleOrDefault(o => o.OrderId == orderId && o.Invoice.UserId == userId);
                 }
             }
             catch (Exception ex)

@@ -116,7 +116,8 @@ namespace DataAccess
                 {
                     listProducts = context.Products
                         .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
-                        && p.StoreId == storeId) // Filter by store id
+                        && p.StoreId == storeId // Filter by store id
+                        && p.Store.Status == 1) // Store has to be available
                         .Include(c => c.Category)
                         .Include(s => s.Store)
                         .ToList();

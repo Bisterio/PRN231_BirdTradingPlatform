@@ -7,7 +7,7 @@ namespace BusinessObject.Models
     {
         public UserAccount()
         {
-            Orders = new HashSet<Order>();
+            Invoices = new HashSet<Invoice>();
         }
 
         public long UserId { get; set; }
@@ -23,6 +23,6 @@ namespace BusinessObject.Models
         public long? StoreId { get; set; }
 
         public virtual Store? Store { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Invoice> Invoices { get; set; }
     }
 }

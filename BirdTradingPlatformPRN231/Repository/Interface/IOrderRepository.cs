@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository
+namespace Repository.Interface
 {
     public interface IOrderRepository
     {
-        public APIResult<String> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
+        public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
         public List<OrderViewDTO> GetCurrentUserOrders(byte status, long currentUserId);
         public OrderViewDTO GetOrderDetailCustomer(long orderId, long currentUserId);
-        public APIResult<String> CancelOrderDetailCustomer(long orderId, long currentUserId);
+        public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId);
     }
 }

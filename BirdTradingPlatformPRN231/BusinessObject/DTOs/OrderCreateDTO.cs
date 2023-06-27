@@ -21,6 +21,8 @@ namespace BusinessObject.DTOs
         [Required]
         [RegularExpression(@"^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
         public string? Phone { get; set; }
+        public decimal TotalShippingCost { get; set; }
+        public string? Note { get; set; }
         public List<CartItemDTO> CartItems { get; set; } = new List<CartItemDTO>();
     }
 }

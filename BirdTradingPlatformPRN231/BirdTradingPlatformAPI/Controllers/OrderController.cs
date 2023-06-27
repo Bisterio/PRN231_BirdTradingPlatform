@@ -1,9 +1,8 @@
-﻿using BusinessObject.Common;
-using BusinessObject.DTOs;
+﻿using BusinessObject.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
+using Repository.Implementation;
+using Repository.Interface;
 using System.Security.Claims;
 
 namespace BirdTradingPlatformAPI.Controllers
@@ -14,6 +13,7 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IOrderRepository _orderRepository = new OrderRepository();
 
+        // Create a new invoice, sub orders and order items
         [HttpPost]
         [Authorize]
         public IActionResult CreateNewOrders([FromBody] OrderCreateDTO newOrders)
@@ -32,6 +32,7 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // Get all orders filter by status of currently logined user
         [HttpGet("Customer")]
         [Authorize]
         public IActionResult GetCurrentUserOrders([FromQuery] byte status)
@@ -45,6 +46,7 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // Get an order detail of a currently logined user
         [HttpGet("Customer/{id}")]
         [Authorize]
         public IActionResult GetOrderDetailCustomer(long id)
@@ -58,6 +60,7 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // Cancel an order detail of a currently logined user
         [HttpGet("Customer/Cancel/{id}")]
         [Authorize]
         public IActionResult CancelOrderDetailCustomer(long id)

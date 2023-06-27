@@ -18,6 +18,7 @@ namespace BusinessObject.Models
         }
 
         public virtual DbSet<Category> Categories { get; set; } = null!;
+        public virtual DbSet<Invoice> Invoices { get; set; } = null!;
         public virtual DbSet<Order> Orders { get; set; } = null!;
         public virtual DbSet<OrderItem> OrderItems { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
@@ -59,11 +60,11 @@ namespace BusinessObject.Models
                     .HasColumnName("name");
             });
 
-            modelBuilder.Entity<Order>(entity =>
+            modelBuilder.Entity<Invoice>(entity =>
             {
-                entity.ToTable("order");
+                entity.ToTable("invoice");
 
-                entity.Property(e => e.OrderId).HasColumnName("order_id");
+                entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(255)
@@ -77,9 +78,15 @@ namespace BusinessObject.Models
                     .HasMaxLength(255)
                     .HasColumnName("email");
 
+                entity.Property(e => e.IsPaid).HasColumnName("is_paid");
+
                 entity.Property(e => e.Name)
                     .HasMaxLength(100)
                     .HasColumnName("name");
+
+                entity.Property(e => e.Note)
+                    .HasMaxLength(255)
+                    .HasColumnName("note");
 
                 entity.Property(e => e.PaymentMethod)
                     .HasMaxLength(255)
@@ -88,6 +95,44 @@ namespace BusinessObject.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(25)
                     .HasColumnName("phone");
+
+                entity.Property(e => e.TotalAmount)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("total_amount");
+
+                entity.Property(e => e.TotalAmountPreShipping)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("total_amount_pre_shipping");
+
+                entity.Property(e => e.TotalItem).HasColumnName("total_item");
+
+                entity.Property(e => e.TotalShippingCost)
+                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnName("total_shipping_cost");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasPrecision(6)
+                    .HasColumnName("updated_at");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Invoices)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FKfcufjjl5u3n2x82s1ftw01k9f");
+            });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.ToTable("order");
+
+                entity.Property(e => e.OrderId).HasColumnName("order_id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasPrecision(6)
+                    .HasColumnName("created_at");
+
+                entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
@@ -111,23 +156,21 @@ namespace BusinessObject.Models
                     .HasPrecision(6)
                     .HasColumnName("updated_at");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.HasOne(d => d.Invoice)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.InvoiceId)
+                    .HasConstraintName("FK51wrye1n93a8f1j7rxq7cu370");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.StoreId)
                     .HasConstraintName("FK90lxxrxlt4chf273vcm9pi8ak");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FKn46c37756vcjh8mq42bv4dbfp");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId })
-                    .HasName("PK__order_it__022945F608312800");
+                    .HasName("PK__order_it__022945F687307666");
 
                 entity.ToTable("order_item");
 
@@ -217,9 +260,21 @@ namespace BusinessObject.Models
                     .HasMaxLength(255)
                     .HasColumnName("address");
 
+                entity.Property(e => e.CoverImage)
+                    .HasMaxLength(1024)
+                    .HasColumnName("cover_image");
+
                 entity.Property(e => e.CreatedAt)
                     .HasPrecision(6)
                     .HasColumnName("created_at");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(2500)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.LogoImage)
+                    .HasMaxLength(1024)
+                    .HasColumnName("logo_image");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(255)
@@ -235,11 +290,11 @@ namespace BusinessObject.Models
             modelBuilder.Entity<UserAccount>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__user_acc__B9BE370FBFFA4ADA");
+                    .HasName("PK__user_acc__B9BE370F89D10A1D");
 
                 entity.ToTable("user_account");
 
-                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E61648FE6B68A")
+                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164A2C4D486")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");

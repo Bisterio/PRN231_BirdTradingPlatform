@@ -1,6 +1,7 @@
 ﻿using BusinessObject.DTOs;
 using BusinessObject.Models;
 using DataAccess;
+using Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository
+namespace Repository.Implementation
 {
     public class ProductRepository : IProductRepository
     {
@@ -22,7 +23,7 @@ namespace Repository
             // Get paginated list
             List<ProductViewDTO?> paginatedProduct = ProductDAO
                 .GetProductsPublic(page, size, nameSearch, categoryId, priceMin, priceMax, orderBy)
-                .Select(x => ToProductViewDTO(x))
+                .Select(x => Mapper.ToProductViewDTO(x))
                 .ToList();
 
             // Get count of products by search/filter
@@ -47,7 +48,8 @@ namespace Repository
                 pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
             }
 
-            return new ClientProductViewListDTO() {
+            return new ClientProductViewListDTO()
+            {
                 ProductsPaginated = paginatedProduct,
                 Page = page,
                 Size = size,
@@ -61,7 +63,7 @@ namespace Repository
         public ProductViewDTO? GetProductDetailPublicById(long productId)
         {
             Product? entity = ProductDAO.GetProductDetailPublicById(productId);
-            return ToProductViewDTO(entity);
+            return Mapper.ToProductViewDTO(entity);
         }
 
         // Get Product List By Store Id 
@@ -70,31 +72,9 @@ namespace Repository
             // Get product list by store
             List<ProductViewDTO?> productsByStore = ProductDAO
                 .GetProductsPublicByStoreId(storeId)
-                .Select(x => ToProductViewDTO(x))
+                .Select(x => Mapper.ToProductViewDTO(x))
                 .ToList();
             return productsByStore;
-        }
-
-        // Map ProductEntity to ProductViewDTO
-        public static ProductViewDTO? ToProductViewDTO(Product? entity)
-        {
-            if (entity == null) return null;
-
-            return new ProductViewDTO()
-            {
-                ProductId = entity.ProductId,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt,
-                Description = entity.Description,
-                Image = entity.Image,
-                Name = entity.Name,
-                Status = entity.Status,
-                Stock = entity.Stock,
-                UnitPrice = entity.UnitPrice,
-                CategoryName = entity.Category?.Name,
-                StoreName = entity.Store?.Name,
-                StoreAddress = entity.Store?.Address
-            };
         }
     }
 }

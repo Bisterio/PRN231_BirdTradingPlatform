@@ -1,9 +1,8 @@
-﻿using BusinessObject.Common;
-using BusinessObject.DTOs;
+﻿using BusinessObject.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
+using Repository.Implementation;
+using Repository.Interface;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
