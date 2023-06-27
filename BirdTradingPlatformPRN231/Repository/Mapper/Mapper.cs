@@ -71,6 +71,7 @@ namespace Repository
                 TotalItem = entity.TotalItem,
                 TotalShippingCost = entity.TotalShippingCost,
                 UpdatedAt = entity.UpdatedAt,
+                StoreId = entity.StoreId,
                 StoreName = entity.Store?.Name,
                 StoreAddress = entity.Store?.Address
             };
@@ -91,6 +92,30 @@ namespace Repository
                 CategoryName = entity.Product.Category?.Name,
                 Quantity = entity.Quantity,
                 Total = entity.Total
+            };
+        }
+
+        // Map Invoice Entity to InvoiceViewDTO
+        public static InvoiceViewDTO? ToInvoiceViewDTO(Invoice? entity)
+        {
+            if (entity == null) return null;
+
+            return new InvoiceViewDTO()
+            {
+                IsPaid = 1,
+                InvoiceId = entity.InvoiceId,
+                Email = entity.Email,
+                CreatedAt = entity.CreatedAt,
+                Address = entity.Address,
+                Name = entity.Name,
+                Note = entity.Note,
+                PaymentMethod = entity.PaymentMethod,
+                Phone = entity.Phone,
+                TotalAmount = entity.TotalAmount,
+                TotalAmountPreShipping = entity.TotalAmountPreShipping,
+                TotalItem = entity.TotalItem,
+                TotalShippingCost = entity.TotalShippingCost,
+                UpdatedAt = entity.UpdatedAt
             };
         }
     }

@@ -37,12 +37,12 @@ namespace DataAccess
         // Get Order by orderid and current logined user
         public static Order? GetOrderByIdAndUserId(long orderId, long userId)
         {
-            Order? orders = new Order();
+            Order? order = new Order();
             try
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
-                    orders = context.Orders
+                    order = context.Orders
                         .Include(x => x.Store)
                         .Include(x => x.Invoice)
                         .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
@@ -53,7 +53,7 @@ namespace DataAccess
             {
                 throw new Exception(ex.Message);
             }
-            return orders;
+            return order;
         }
 
         public static void CreateOrder(Order o)

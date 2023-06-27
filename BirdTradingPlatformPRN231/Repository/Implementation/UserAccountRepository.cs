@@ -114,6 +114,9 @@ namespace Repository.Implementation
                 Name = request.NewStoreName,
                 Address = request.NewStoreAddress,
                 Status = 1,
+                Description = request.NewStoreDescription,
+                LogoImage = request.NewStoreLogoImage,
+                CoverImage = request.NewStoreCoverImage,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };

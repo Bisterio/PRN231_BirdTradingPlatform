@@ -41,7 +41,7 @@ namespace Repository.Implementation
                 Name = newOrders.Name,
                 Note = newOrders.Note,
                 PaymentMethod = newOrders.PaymentMethod,
-                Phone = newOrders.PaymentMethod,
+                Phone = newOrders.Phone,
                 TotalItem = newOrders.CartItems.Sum(x => x.Quantity),
                 TotalAmountPreShipping = newOrders.CartItems.Sum(x => x.Quantity * x.UnitPrice),
                 TotalShippingCost = newOrders.TotalShippingCost,
@@ -110,7 +110,7 @@ namespace Repository.Implementation
                 }
             }
 
-            return new APISuccessResult<string>("Add new order successfully!");
+            return new APISuccessResult<string>(newInvoice.InvoiceId.ToString());
         }
 
         // Get orders of a logined customer

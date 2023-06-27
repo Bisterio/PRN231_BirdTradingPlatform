@@ -10,6 +10,52 @@ namespace DataAccess
 {
     public class InvoiceDAO
     {
+        // Get invoices by current logined user
+        public static List<Invoice?> GetInvoicesByCurrentUser(long currentUserId)
+        {
+            List<Invoice> invoices = new List<Invoice>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    invoices = context.Invoices
+                        .Where(i => i.UserId == currentUserId)
+                        .OrderByDescending(o => o.CreatedAt)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return invoices;
+        }
+
+        // Get invoice by orderid and current logined user
+        public static Invoice? GetInvoiceByIdAndUserId(long invoiceId, long userId)
+        {
+            Invoice? invoice = new Invoice();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    invoice = context.Invoices
+                        .Include(x => x.Orders)
+                        .ThenInclude(x => x.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.Category)
+                        .Include(x => x.Orders)
+                        .ThenInclude(x => x.Store)
+                        .SingleOrDefault(i => i.InvoiceId == invoiceId && i.UserId == userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return invoice;
+        }
+
         public static void CreateInvoice(Invoice i)
         {
             try
