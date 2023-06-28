@@ -151,7 +151,7 @@ namespace Repository.Implementation
         }
 
         // Add new product to the store
-        public APIResult<bool> AddProduct(ProductCreateDTO product, long currentUserId)
+        public APIResult<long> AddProduct(ProductCreateDTO product, long currentUserId)
         {
             // Get current store
             Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
@@ -177,16 +177,16 @@ namespace Repository.Implementation
 
                 if (newProduct.ProductId != 0)
                 {
-                    return new APISuccessResult<bool>();
+                    return new APISuccessResult<long>(newProduct.ProductId);
                 }
-                return new APIErrorResult<bool>("Can't add new product to database.");
+                return new APIErrorResult<long>("Can't add new product to database.");
             }            
 
-            return new APIErrorResult<bool>("Can't add new product to database.");
+            return new APIErrorResult<long>("Can't add new product to database.");
         }
 
         // Edit an existed product in the store
-        public APIResult<bool> EditProduct(long productId, ProductCreateDTO product, long currentUserId)
+        public APIResult<long> EditProduct(long productId, ProductCreateDTO product, long currentUserId)
         {
             // Get current store
             Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
@@ -197,7 +197,7 @@ namespace Repository.Implementation
             {
                 if (currentProduct.StoreId != currentStore.StoreId)
                 {
-                    return new APIErrorResult<bool>("Can't edit this product because it's in another store.");
+                    return new APIErrorResult<long>("Can't edit this product because it's in another store.");
                 }
                 else
                 {
@@ -218,11 +218,11 @@ namespace Repository.Implementation
 
                     ProductDAO.UpdateProduct(editProduct);
 
-                    return new APISuccessResult<bool>();
+                    return new APISuccessResult<long>(productId);
                 }
             }
 
-            return new APIErrorResult<bool>("Can't edit this product.");
+            return new APIErrorResult<long>("Can't edit this product.");
         }
 
         // Delete an existed product in the store by change it status
