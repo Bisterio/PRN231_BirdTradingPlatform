@@ -14,7 +14,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
         [HttpPost("AuthenticateCustomer")]
         [AllowAnonymous]
-        public IActionResult Authenticate([FromBody] LoginDTO request)
+        public IActionResult AuthenticateCustomer([FromBody] LoginDTO request)
         {
             if (!ModelState.IsValid)
             {
@@ -22,6 +22,20 @@ namespace BirdTradingPlatformAPI.Controllers
             }
 
             var result = _userRepository.AuthenticateCustomer(request);
+
+            return Ok(result);
+        }
+
+        [HttpPost("AuthenticateStore")]
+        [AllowAnonymous]
+        public IActionResult AuthenticateStore([FromBody] LoginDTO request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _userRepository.AuthenticateStore(request);
 
             return Ok(result);
         }

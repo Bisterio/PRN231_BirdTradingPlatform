@@ -11,6 +11,7 @@ namespace Repository.Interface
     public interface IUserAccountRepository
     {
         APIResult<string> AuthenticateCustomer(LoginDTO request);
+        APIResult<string> AuthenticateStore(LoginDTO request);
         APIResult<bool> Register(RegisterDTO request);
     }
 }
