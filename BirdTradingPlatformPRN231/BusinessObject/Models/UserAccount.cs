@@ -22,6 +22,7 @@ namespace BusinessObject.Models
         public DateTime? UpdatedAt { get; set; }
         public long? StoreId { get; set; }
 
+        public virtual Store? StoreNavigation { get; set; }
         public virtual Store? Store { get; set; }
         public virtual ICollection<Invoice> Invoices { get; set; }
     }

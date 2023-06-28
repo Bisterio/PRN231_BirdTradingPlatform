@@ -20,7 +20,9 @@ namespace BusinessObject.Models
         public string Name { get; set; } = null!;
         public byte Status { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public long? UserId { get; set; }
 
+        public virtual UserAccount? User { get; set; }
         public virtual UserAccount? UserAccount { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Product> Products { get; set; }

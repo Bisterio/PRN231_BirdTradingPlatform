@@ -13,6 +13,6 @@ namespace Repository.Interface
         public ProductViewDTO? GetProductDetailPublicById(long productId);
         public List<ProductViewDTO> GetProductsPublicByStoreId(long storeId);
         public ClientProductViewListDTO GetProductsStore(int page, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy, long currentUserId);
-        public ClientProductViewListDTO GetProductDetailStore(long id, long currentUserId);
+        public ProductViewDTO GetProductDetailStore(long id, long currentUserId);
     }
 }

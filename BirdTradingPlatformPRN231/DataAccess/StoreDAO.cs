@@ -80,5 +80,21 @@ namespace DataAccess
             }
             return store;
         }
+
+        public static void UpdateStore(Store store)
+        {
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    context.Entry<Store>(store).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

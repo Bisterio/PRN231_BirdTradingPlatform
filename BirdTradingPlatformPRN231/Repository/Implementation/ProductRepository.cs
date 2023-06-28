@@ -130,12 +130,12 @@ namespace Repository.Implementation
             if (currentStore != null)
             {
                 entity = ProductDAO.GetProductDetailByCurrentStore(productId, currentStore.StoreId);
-                if (entity != null) 
+                if (entity != null)
                     return Mapper.ToProductViewDTO(entity);
             }
 
             return null;
-        }        
+        }
 
         // Get Product List By Store Id 
         public List<ProductViewDTO?> GetProductsPublicByStoreId(long storeId)
@@ -147,7 +147,5 @@ namespace Repository.Implementation
                 .ToList();
             return productsByStore;
         }
-
-        
     }
 }

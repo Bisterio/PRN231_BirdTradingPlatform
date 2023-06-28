@@ -151,8 +151,8 @@ namespace DataAccess
             return product;
         }
 
-        // Get orders by status and currently logined user
-        public static List<Product?> GetProductsByCurrentStore(int page, int size, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy, long currentStoreId)
+        // Get orders by status and currently logined store
+        public static List<Product?> GetProductsByCurrentStore(int page, int size, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy, long currentStoreUserId)
         {
             var listProducts = new List<Product>();
             try
@@ -160,8 +160,8 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     var products = context.Products
-                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
-                        && (p.StoreId == currentStoreId) // Get by currently logined storeId
+                        .Where(p => p.Status == 1 // Get available product 
+                        && (p.Store.UserId == currentStoreUserId) // Get by currently logined storeId
                         && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
                         && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
                         && p.UnitPrice >= priceMin // Filter by minimum price
@@ -201,8 +201,8 @@ namespace DataAccess
             return listProducts;
         }
 
-        // Function to get count of products of currently logined storeId
-        public static int CountAllProductCurrentStore(string? nameSearch, long categoryId, long priceMin, long priceMax, long currentStoreId)
+        // Function to get count of products of currently logined store
+        public static int CountAllProductCurrentStore(string? nameSearch, long categoryId, long priceMin, long priceMax, long currentStoreUserId)
         {
             int count = 0;
             try
@@ -210,8 +210,8 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     count = context.Products
-                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
-                        && (p.StoreId == currentStoreId) // Get by current logined storeId
+                        .Where(p => p.Status == 1 // Get available product
+                        && (p.Store.UserId == currentStoreUserId) // Get by current logined storeId
                         && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
                         && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
                         && p.UnitPrice >= priceMin // Filter by minimum price
@@ -228,7 +228,7 @@ namespace DataAccess
         }
 
         // Function to get product detail of currently logined store that has status = 1
-        public static Product? GetProductDetailByCurrentStore(long productId, long currentStoreId)
+        public static Product? GetProductDetailByCurrentStore(long productId, long currentStoreUserId)
         {
             var product = new Product();
             try
@@ -236,7 +236,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     product = context.Products
-                        .Where(p => p.StoreId == currentStoreId)
+                        .Where(p => p.Store.UserId == currentStoreUserId)
                         .Include(p => p.Store)
                         .Include(p => p.Category)
                         .SingleOrDefault(p => p.ProductId == productId && p.Status == 1);

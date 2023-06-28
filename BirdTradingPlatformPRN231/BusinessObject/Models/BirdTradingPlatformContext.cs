@@ -24,6 +24,7 @@ namespace BusinessObject.Models
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<UserAccount> UserAccounts { get; set; } = null!;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -253,6 +254,10 @@ namespace BusinessObject.Models
             {
                 entity.ToTable("store");
 
+                entity.HasIndex(e => e.UserId, "UK_bjqth9sjo3phwbmybuysm65be")
+                    .IsUnique()
+                    .HasFilter("([user_id] IS NOT NULL)");
+
                 entity.Property(e => e.StoreId).HasColumnName("store_id");
 
                 entity.Property(e => e.Address)
@@ -284,6 +289,13 @@ namespace BusinessObject.Models
                 entity.Property(e => e.UpdatedAt)
                     .HasPrecision(6)
                     .HasColumnName("updated_at");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.Store)
+                    .HasForeignKey<Store>(d => d.UserId)
+                    .HasConstraintName("FKs6piet5tft2wg1tgg2rn3nux2");
             });
 
             modelBuilder.Entity<UserAccount>(entity =>
@@ -336,7 +348,7 @@ namespace BusinessObject.Models
                     .HasPrecision(6)
                     .HasColumnName("updated_at");
 
-                entity.HasOne(d => d.Store)
+                entity.HasOne(d => d.StoreNavigation)
                     .WithOne(p => p.UserAccount)
                     .HasForeignKey<UserAccount>(d => d.StoreId)
                     .HasConstraintName("FK7vqhqxt45ua0j213qal23oqd5");

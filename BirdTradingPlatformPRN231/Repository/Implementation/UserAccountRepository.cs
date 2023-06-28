@@ -177,11 +177,14 @@ namespace Repository.Implementation
                 };
 
                 UserAccountDAO.CreateUser(newUser);
+                
                 if (newUser.UserId != 0)
                 {
-                    return new APISuccessResult<bool>();
+                    return new APIErrorResult<bool>("Can't add new user to database.");
                 }
-                return new APIErrorResult<bool>("Can't add new user to database.");
+                newStore.UserId = newUser.UserId;
+                StoreDAO.UpdateStore(newStore);
+                return new APISuccessResult<bool>();
             }
 
             return new APIErrorResult<bool>("Can't add new store to database.");
