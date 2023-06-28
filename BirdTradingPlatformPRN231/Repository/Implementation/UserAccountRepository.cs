@@ -178,7 +178,7 @@ namespace Repository.Implementation
 
                 UserAccountDAO.CreateUser(newUser);
                 
-                if (newUser.UserId != 0)
+                if (newUser.UserId == 0)
                 {
                     return new APIErrorResult<bool>("Can't add new user to database.");
                 }
