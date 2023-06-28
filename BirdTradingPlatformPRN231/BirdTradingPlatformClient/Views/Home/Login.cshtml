@@ -4,34 +4,44 @@
     ViewData["Title"] = "Login";
 }
 
-<h1>Login Page</h1>
-<hr />
-@if (ViewBag.ErrorMessage != null)
-{
-    <h5 style="color:red">@ViewBag.ErrorMessage</h5>
-}
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-controller="Home" asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="@Model.Email" class="control-label"></label>
-                <input asp-for="@Model.Email" class="form-control" />
-                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+<!-- Our SigIn -->
+<section class="our-log-reg bgc-f5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-xl-5 col-xxl-4 m-auto">
+                <div class="log_reg_form mt70-992">
+                    <h2 class="title">Sign-In</h2>
+                    <div class="login_form">
+                        <form action="#">
+                            <div class="mb-2 mr-sm-2">
+                                <label class="form-label">Username or email address</label>
+                                <input type="text" class="form-control" placeholder="Ali Tufan">
+                            </div>
+                            <div class="form-group mb5">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" placeholder="Password">
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="exampleCheck3">
+                                <label class="custom-control-label" for="exampleCheck3">Remember me</label>
+                                <a class="btn-fpswd float-end" href="#">Lost your password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-log btn-thm mt20">Login</button>
+                            <p class="text-center mb25 mt10">Don't have an account? <a href="page-register.html">Create account</a></p>
+                            <div class="hr_content">
+                                <hr>
+                                <span class="hr_top_text">or</span>
+                            </div>
+                            <ul class="login_with_social text-center mt30 mb0">
+                                <li class="list-inline-item"><a href="#"><i class="fab fa-facebook"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab fa-google"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fab fa-apple"></i></a></li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="@Model.Password" class="control-label"></label>
-                <input asp-for="@Model.Password" type="password" class="form-control" />
-                <span asp-validation-for="@Model.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-<!--
-<div>
-    @Html.ActionLink("Register a new account", "Register")
-</div>
--->
+</section>

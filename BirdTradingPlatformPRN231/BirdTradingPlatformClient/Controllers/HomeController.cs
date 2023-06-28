@@ -48,15 +48,7 @@ namespace BirdTradingPlatformClient.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "CUSTOMER")]
-        public IActionResult Customer()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "STORE_STAFF")]
-        public IActionResult Staff()
+        public IActionResult Register()
         {
             return View();
         }
