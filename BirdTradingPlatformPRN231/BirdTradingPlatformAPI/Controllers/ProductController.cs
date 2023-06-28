@@ -1,4 +1,5 @@
-﻿using BusinessObject.Models;
+﻿using BusinessObject.DTOs;
+using BusinessObject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Implementation;
@@ -63,6 +64,60 @@ namespace BirdTradingPlatformAPI.Controllers
             long currentUserId = long.Parse(idString);
 
             var result = _productRepository.GetProductDetailStore(id, currentUserId);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult AddProduct([FromBody] ProductCreateDTO product)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _productRepository.AddProduct(product, currentUserId);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public IActionResult EditProduct(long id, [FromBody] ProductCreateDTO product)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _productRepository.EditProduct(id, product, currentUserId);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public IActionResult DeleteProduct(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _productRepository.DeleteProduct(id, currentUserId);
+
             return Ok(result);
         }
     }

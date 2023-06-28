@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTOs;
+﻿using BusinessObject.Common;
+using BusinessObject.DTOs;
 using BusinessObject.Models;
 using DataAccess;
 using Repository.Interface;
@@ -147,6 +148,120 @@ namespace Repository.Implementation
                 .Select(x => Mapper.ToProductViewDTO(x))
                 .ToList();
             return productsByStore;
+        }
+
+        // Add new product to the store
+        public APIResult<bool> AddProduct(ProductCreateDTO product, long currentUserId)
+        {
+            // Get current store
+            Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
+
+            if(product != null && currentStore.StoreId != null)
+            {
+                Product newProduct = new()
+                {
+                    ProductId = 0,
+                    CreatedAt = DateTime.Now,
+                    Description = product.Description,
+                    Image = product.Image,
+                    Name = product.Name,
+                    Status = 1,
+                    Stock = product.Stock,
+                    UnitPrice = product.UnitPrice,
+                    UpdatedAt = DateTime.Now,
+                    CategoryId = product.CategoryId,
+                    StoreId = currentStore.StoreId
+                };
+
+                ProductDAO.SaveProduct(newProduct);
+
+                if (newProduct.ProductId != 0)
+                {
+                    return new APISuccessResult<bool>();
+                }
+                return new APIErrorResult<bool>("Can't add new product to database.");
+            }            
+
+            return new APIErrorResult<bool>("Can't add new product to database.");
+        }
+
+        // Edit an existed product in the store
+        public APIResult<bool> EditProduct(long productId, ProductCreateDTO product, long currentUserId)
+        {
+            // Get current store
+            Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
+
+            Product currentProduct = ProductDAO.GetProductDetailById(productId);
+
+            if (currentProduct != null && product != null)
+            {
+                if (currentProduct.StoreId != currentStore.StoreId)
+                {
+                    return new APIErrorResult<bool>("Can't edit this product because it's in another store.");
+                }
+                else
+                {
+                    Product editProduct = new()
+                    {
+                        ProductId = productId,
+                        CreatedAt = currentProduct.CreatedAt,
+                        Description = product.Description,
+                        Image = product.Image,
+                        Name = product.Name,
+                        Stock = product.Stock,
+                        Status = 1,
+                        UnitPrice = product.UnitPrice,
+                        UpdatedAt = DateTime.Now,
+                        CategoryId = product.CategoryId,
+                        StoreId = currentProduct.StoreId
+                    };
+
+                    ProductDAO.UpdateProduct(editProduct);
+
+                    return new APISuccessResult<bool>();
+                }
+            }
+
+            return new APIErrorResult<bool>("Can't edit this product.");
+        }
+
+        // Delete an existed product in the store by change it status
+        public APIResult<bool> DeleteProduct(long productId, long currentUserId)
+        {
+            // Get current store
+            Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
+
+            Product currentProduct = ProductDAO.GetProductDetailById(productId);
+            if (currentProduct != null)
+            {
+                if (currentProduct.StoreId != currentStore.StoreId)
+                {
+                    return new APIErrorResult<bool>("Can't delete this product because it's in another store.");
+                }
+                else
+                {
+                    Product deleteProduct = new()
+                    {
+                        ProductId = productId,
+                        CreatedAt = currentProduct.CreatedAt,
+                        Description = currentProduct.Description,
+                        Image = currentProduct.Image,
+                        Name = currentProduct.Name,
+                        Stock = currentProduct.Stock,
+                        Status = 0,
+                        UnitPrice = currentProduct.UnitPrice,
+                        UpdatedAt = DateTime.Now,
+                        CategoryId = currentProduct.CategoryId,
+                        StoreId = currentProduct.StoreId
+                    };
+
+                    ProductDAO.UpdateProduct(deleteProduct);
+
+                    return new APISuccessResult<bool>();
+                }
+            }
+
+            return new APIErrorResult<bool>("Can't delete this product.");
         }
     }
 }
