@@ -120,6 +120,7 @@ namespace Repository.Implementation
             return null;
         }
 
+        // Get product detail of currently logined store
         public ProductViewDTO GetProductDetailStore(long productId, long currentUserId)
         {
             // Get current store
