@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessObject.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Repository.Implementation;
 using Repository.Interface;
+using System.Security.Claims;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
@@ -33,6 +36,33 @@ namespace BirdTradingPlatformAPI.Controllers
         public IActionResult GetProductsPublicByStoreId(long id)
         {
             var result = _productRepository.GetProductsPublicByStoreId(id);
+            return Ok(result);
+        }
+
+        // Get product list of a currently logined store
+        [HttpGet("CurrentStore")]
+        [Authorize]
+        public IActionResult GetProductsStore([FromQuery] int page, [FromQuery] string? name, 
+            [FromQuery] long category, [FromQuery] long pmin, [FromQuery] long pmax, [FromQuery] int order)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _productRepository.GetProductsStore(page, name, category, pmin, pmax, order, currentUserId);
+            return Ok(result);
+        }
+
+        // Get product detail of a currently logined store
+        [HttpGet("CurrentStore/{id}")]
+        [Authorize]
+        public IActionResult GetProductDetailStore(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _productRepository.GetProductDetailStore(id, currentUserId);
             return Ok(result);
         }
     }

@@ -61,5 +61,24 @@ namespace DataAccess
             }
             return listStores;
         }
+
+        public static Store? GetStoreByUserId(long userId)
+        {
+            var store = new Store();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    var user = context.UserAccounts.SingleOrDefault(s => s.UserId == userId);
+                    long storeId = (long)user.StoreId;
+                    store = GetStoreById(storeId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return store;
+        }
     }
 }
