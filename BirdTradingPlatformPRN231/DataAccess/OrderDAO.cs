@@ -11,7 +11,7 @@ namespace DataAccess
     public class OrderDAO
     {
         // Get orders by status and current logined user
-        public static List<Order?> GetOrdersByCurrentUser(byte status, long currentUserId)
+        public static List<Order?> GetOrdersByCurrentUser(int page, int size, byte status, long currentUserId)
         {
             List<Order> orders = new List<Order>(); 
             try
@@ -24,6 +24,8 @@ namespace DataAccess
                         .Include(o => o.Store)
                         .Include(o => o.Invoice).ThenInclude(o => o.User)
                         .OrderByDescending(o => o.CreatedAt)
+                        .Skip((page - 1) * size)
+                        .Take(size)
                         .ToList();
                 }
             } 
@@ -32,6 +34,28 @@ namespace DataAccess
                 throw new Exception(ex.Message);
             }
             return orders;
+        }
+
+        // Function to get count of orders of a logined user by status
+        public static int CountOrdersByCurrentUser(byte status, long currentUserId)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Orders
+                        .Where(o => o.Invoice.UserId == currentUserId
+                        && (status == 0 || o.Status == status))
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return count;
         }
 
         // Get Order by orderid and current logined user

@@ -16,13 +16,13 @@ namespace BirdTradingPlatformAPI.Controllers
         // Get all invoices of currently logined user
         [HttpGet("Customer")]
         [Authorize]
-        public IActionResult GetCurrentUserInvoices()
+        public IActionResult GetCurrentUserInvoices([FromQuery] int page)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrEmpty(idString)) return Unauthorized();
             long currentUserId = long.Parse(idString);
 
-            var result = _invoiceRepository.GetCurrentUserInvoices(currentUserId);
+            var result = _invoiceRepository.GetCurrentUserInvoices(page, currentUserId);
 
             return Ok(result);
         }

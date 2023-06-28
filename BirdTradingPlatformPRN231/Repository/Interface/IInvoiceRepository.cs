@@ -9,7 +9,7 @@ namespace Repository.Interface
 {
     public interface IInvoiceRepository
     {
-        public List<InvoiceViewDTO?> GetCurrentUserInvoices(long currentUserId);
+        public ClientInvoiceViewListDTO GetCurrentUserInvoices(int page, long currentUserId);
         public InvoiceViewDTO? GetInvoiceDetailCustomer(long invoiceId, long currentUserId);
     }
 }

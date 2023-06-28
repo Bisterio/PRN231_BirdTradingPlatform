@@ -35,13 +35,13 @@ namespace BirdTradingPlatformAPI.Controllers
         // Get all orders filter by status of currently logined user
         [HttpGet("Customer")]
         [Authorize]
-        public IActionResult GetCurrentUserOrders([FromQuery] byte status)
+        public IActionResult GetCurrentUserOrders([FromQuery] int page, [FromQuery] byte status)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrEmpty(idString)) return Unauthorized();
             long currentUserId = long.Parse(idString);
 
-            var result = _orderRepository.GetCurrentUserOrders(status, currentUserId);
+            var result = _orderRepository.GetCurrentUserOrders(page, status, currentUserId);
 
             return Ok(result);
         }

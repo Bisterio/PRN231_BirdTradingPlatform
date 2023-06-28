@@ -11,7 +11,7 @@ namespace DataAccess
     public class InvoiceDAO
     {
         // Get invoices by current logined user
-        public static List<Invoice?> GetInvoicesByCurrentUser(long currentUserId)
+        public static List<Invoice?> GetInvoicesByCurrentUser(int page, int size, long currentUserId)
         {
             List<Invoice> invoices = new List<Invoice>();
             try
@@ -21,6 +21,8 @@ namespace DataAccess
                     invoices = context.Invoices
                         .Where(i => i.UserId == currentUserId)
                         .OrderByDescending(o => o.CreatedAt)
+                        .Skip((page - 1) * size)
+                        .Take(size)
                         .ToList();
                 }
             }
@@ -29,6 +31,27 @@ namespace DataAccess
                 throw new Exception(ex.Message);
             }
             return invoices;
+        }
+
+        // Function to get count of invoices of a logined user
+        public static int CountInvoicesByCurrentUser(long currentUserId)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Invoices
+                        .Where(i => i.UserId == currentUserId)
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return count;
         }
 
         // Get invoice by orderid and current logined user

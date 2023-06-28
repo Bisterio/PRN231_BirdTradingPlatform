@@ -11,7 +11,7 @@ namespace Repository.Interface
     public interface IOrderRepository
     {
         public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId);
-        public List<OrderViewDTO?> GetCurrentUserOrders(byte status, long currentUserId);
+        public ClientOrderViewListDTO GetCurrentUserOrders(int page, byte status, long currentUserId);
         public OrderViewDTO? GetOrderDetailCustomer(long orderId, long currentUserId);
         public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId);
     }
