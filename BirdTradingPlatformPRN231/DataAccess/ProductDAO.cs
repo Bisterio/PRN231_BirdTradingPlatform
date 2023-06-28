@@ -1,4 +1,5 @@
-﻿using BusinessObject.Models;
+﻿using BusinessObject.DTOs;
+using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -141,6 +142,104 @@ namespace DataAccess
                 {
                     product = context.Products
                         .SingleOrDefault(p => p.ProductId == productId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return product;
+        }
+
+        // Get orders by status and currently logined user
+        public static List<Product?> GetProductsByCurrentStore(int page, int size, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy, long currentStoreId)
+        {
+            var listProducts = new List<Product>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    var products = context.Products
+                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
+                        && (p.StoreId == currentStoreId) // Get by currently logined storeId
+                        && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
+                        && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
+                        && p.UnitPrice >= priceMin // Filter by minimum price
+                        && (priceMax == 0 || p.UnitPrice <= priceMax) // Filter by maximum price if maximum price != 0
+                        );
+
+                    // Sort with order by: default (0): created at desc, 1: created at asc, 2: unit price desc, 3: unit price asc
+                    switch (orderBy)
+                    {
+                        case 1:
+                            products = products.OrderBy(p => p.CreatedAt);
+                            break;
+                        case 2:
+                            products = products.OrderByDescending(p => p.UnitPrice);
+                            break;
+                        case 3:
+                            products = products.OrderBy(p => p.UnitPrice);
+                            break;
+                        default:
+                            products = products.OrderByDescending(p => p.CreatedAt);
+                            break;
+                    }
+
+                    // Pagination and include category and store associated with product
+                    listProducts = products
+                        .Skip((page - 1) * size)
+                        .Take(size)
+                        .Include(c => c.Category)
+                        .Include(s => s.Store)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return listProducts;
+        }
+
+        // Function to get count of products of currently logined storeId
+        public static int CountAllProductCurrentStore(string? nameSearch, long categoryId, long priceMin, long priceMax, long currentStoreId)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Products
+                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
+                        && (p.StoreId == currentStoreId) // Get by current logined storeId
+                        && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
+                        && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
+                        && p.UnitPrice >= priceMin // Filter by minimum price
+                        && (priceMax == 0 || p.UnitPrice <= priceMax)) // Filter by maximum price if maximum price != 0
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return count;
+        }
+
+        // Function to get product detail of currently logined store that has status = 1
+        public static Product? GetProductDetailByCurrentStore(long productId, long currentStoreId)
+        {
+            var product = new Product();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    product = context.Products
+                        .Where(p => p.StoreId == currentStoreId)
+                        .Include(p => p.Store)
+                        .Include(p => p.Category)
+                        .SingleOrDefault(p => p.ProductId == productId && p.Status == 1);
                 }
             }
             catch (Exception ex)
