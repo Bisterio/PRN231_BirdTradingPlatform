@@ -129,7 +129,7 @@ namespace Repository.Implementation
                     Role = request.Role,
                     EmailVerified = 1,
                     Status = 1,
-                    StoreId = request.StoreId == 0 ? null : request.StoreId,
+                    StoreId = null,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 };

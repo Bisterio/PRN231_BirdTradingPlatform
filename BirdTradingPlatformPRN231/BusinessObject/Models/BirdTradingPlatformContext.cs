@@ -24,7 +24,6 @@ namespace BusinessObject.Models
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
         public virtual DbSet<UserAccount> UserAccounts { get; set; } = null!;
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -170,7 +169,7 @@ namespace BusinessObject.Models
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId })
-                    .HasName("PK__order_it__022945F687307666");
+                    .HasName("PK__order_it__022945F6BFE88155");
 
                 entity.ToTable("order_item");
 
@@ -218,7 +217,7 @@ namespace BusinessObject.Models
                     .HasColumnName("description");
 
                 entity.Property(e => e.Image)
-                    .HasMaxLength(255)
+                    .HasMaxLength(1024)
                     .HasColumnName("image");
 
                 entity.Property(e => e.Name)
@@ -290,11 +289,15 @@ namespace BusinessObject.Models
             modelBuilder.Entity<UserAccount>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__user_acc__B9BE370F89D10A1D");
+                    .HasName("PK__user_acc__B9BE370F34907619");
 
                 entity.ToTable("user_account");
 
-                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164A2C4D486")
+                entity.HasIndex(e => e.StoreId, "UK_dxl2svtvk03jxhu01ufoq82kl")
+                    .IsUnique()
+                    .HasFilter("([store_id] IS NOT NULL)");
+
+                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164878FDADA")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
@@ -334,8 +337,8 @@ namespace BusinessObject.Models
                     .HasColumnName("updated_at");
 
                 entity.HasOne(d => d.Store)
-                    .WithMany(p => p.UserAccounts)
-                    .HasForeignKey(d => d.StoreId)
+                    .WithOne(p => p.UserAccount)
+                    .HasForeignKey<UserAccount>(d => d.StoreId)
                     .HasConstraintName("FK7vqhqxt45ua0j213qal23oqd5");
             });
 

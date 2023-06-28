@@ -32,8 +32,6 @@ namespace BusinessObject.DTOs
         [RegularExpression(@"^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
         public string Phone { get; set; } = null!;
 
-        public long? StoreId { get; set; }
-
         public byte CreateNewStore { get; set; } = 0; 
 
         public string? NewStoreName { get; set; }

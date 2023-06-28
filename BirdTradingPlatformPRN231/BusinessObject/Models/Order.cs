@@ -18,8 +18,8 @@ namespace BusinessObject.Models
         public int TotalItem { get; set; }
         public decimal TotalShippingCost { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public long? StoreId { get; set; }
         public long? InvoiceId { get; set; }
+        public long? StoreId { get; set; }
 
         public virtual Invoice? Invoice { get; set; }
         public virtual Store? Store { get; set; }
