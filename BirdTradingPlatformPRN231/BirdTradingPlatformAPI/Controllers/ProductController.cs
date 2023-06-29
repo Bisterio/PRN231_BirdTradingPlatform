@@ -14,8 +14,9 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IProductRepository _productRepository = new ProductRepository();
 
-        // Get publicly available product list with search, filter, sort and pagination
+        // PUBLIC: Get publicly available product list with search, filter, sort and pagination
         [HttpGet("Public")]
+        [AllowAnonymous]
         public IActionResult GetPublicProductList([FromQuery] int page, [FromQuery] string? name, [FromQuery] long category,
             [FromQuery] long pmin, [FromQuery] long pmax, [FromQuery] int order)
         {
@@ -24,25 +25,27 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Get publicly available product detail with search, filter, sort and pagination
+        // PUBLIC: Get publicly available product detail with search, filter, sort and pagination
         [HttpGet("Public/{id}")]
+        [AllowAnonymous]
         public IActionResult GetPublicProductDetailById(long id)
         {
             var result = _productRepository.GetProductDetailPublicById(id);
             return Ok(result);
         }
 
-        // Get publicly available product list by store id
+        // PUBLIC: Get publicly available product list by store id
         [HttpGet("Store/{id}")]
+        [AllowAnonymous]
         public IActionResult GetProductsPublicByStoreId(long id)
         {
             var result = _productRepository.GetProductsPublicByStoreId(id);
             return Ok(result);
         }
 
-        // Get product list of a currently logined store
+        // STORE: Get product list of a currently logined store
         [HttpGet("CurrentStore")]
-        [Authorize]
+        [Authorize(Roles = "STORE")]
         public IActionResult GetProductsStore([FromQuery] int page, [FromQuery] string? name, 
             [FromQuery] long category, [FromQuery] long pmin, [FromQuery] long pmax, [FromQuery] int order)
         {
@@ -54,9 +57,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Get product detail of a currently logined store
+        // STORE: Get product detail of a currently logined store
         [HttpGet("CurrentStore/{id}")]
-        [Authorize]
+        [Authorize(Roles = "STORE")]
         public IActionResult GetProductDetailStore(long id)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -67,8 +70,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // STORE: Add a new product
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "STORE")]
         public IActionResult AddProduct([FromBody] ProductCreateDTO product)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -85,8 +89,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // STORE: Edit a product of store by id
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "STORE")]
         public IActionResult EditProduct(long id, [FromBody] ProductCreateDTO product)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -103,8 +108,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        // STORE: Delete a product by id
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "STORE")]
         public IActionResult DeleteProduct(long id)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);

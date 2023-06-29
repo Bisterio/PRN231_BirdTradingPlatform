@@ -21,6 +21,7 @@ namespace BusinessObject.DTOs
         public int TotalItem { get; set; }
         public decimal TotalShippingCost { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? CancelReason { get; set; }
 
         public long? StoreId { get; set; }
         public string? StoreName { get; set; }

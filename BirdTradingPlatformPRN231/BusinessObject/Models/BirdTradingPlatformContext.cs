@@ -128,6 +128,10 @@ namespace BusinessObject.Models
 
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 
+                entity.Property(e => e.CancelReason)
+                    .HasMaxLength(2500)
+                    .HasColumnName("cancel_reason");
+
                 entity.Property(e => e.CreatedAt)
                     .HasPrecision(6)
                     .HasColumnName("created_at");

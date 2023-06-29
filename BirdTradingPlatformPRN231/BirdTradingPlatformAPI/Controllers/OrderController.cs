@@ -13,9 +13,9 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IOrderRepository _orderRepository = new OrderRepository();
 
-        // Create a new invoice, sub orders and order items
+        // CUSTOMER: Create a new invoice, sub orders and order items
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         public IActionResult CreateNewOrders([FromBody] OrderCreateDTO newOrders)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -32,9 +32,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Get all orders filter by status of currently logined user
+        // CUSTOMER: Get all orders filter by status of currently logined customer
         [HttpGet("Customer")]
-        [Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         public IActionResult GetCurrentUserOrders([FromQuery] int page, [FromQuery] byte status)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -46,9 +46,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Get an order detail of a currently logined user
+        // CUSTOMER: Get an order detail of a currently logined user
         [HttpGet("Customer/{id}")]
-        [Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         public IActionResult GetOrderDetailCustomer(long id)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -60,18 +60,18 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Cancel an order detail of a currently logined user
-        [HttpGet("Customer/Cancel/{id}")]
-        [Authorize]
-        public IActionResult CancelOrderDetailCustomer(long id)
-        {
-            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrEmpty(idString)) return Unauthorized();
-            long currentUserId = long.Parse(idString);
+        // CUSTOMER: Cancel an order detail of a currently logined user *** doi thanh post kem voi cancel reason ***
+        //[HttpGet("Customer/Cancel/{id}")]
+        //[Authorize(Roles = "CUSTOMER")]
+        //public IActionResult CancelOrderDetailCustomer(long id)
+        //{
+        //    var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    if (String.IsNullOrEmpty(idString)) return Unauthorized();
+        //    long currentUserId = long.Parse(idString);
 
-            var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId);
-            if (result == null) return NotFound("Can't cancel this order!");
-            return Ok(result);
-        }
+        //    var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId);
+        //    if (result == null) return NotFound("Can't cancel this order!");
+        //    return Ok(result);
+        //}
     }
 }

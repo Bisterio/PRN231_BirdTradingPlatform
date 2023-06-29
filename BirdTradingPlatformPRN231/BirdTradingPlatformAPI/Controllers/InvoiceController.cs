@@ -13,9 +13,9 @@ namespace BirdTradingPlatformAPI.Controllers
     {
         private IInvoiceRepository _invoiceRepository = new InvoiceRepository();
 
-        // Get all invoices of currently logined user
+        // CUSTOMER: Get all invoices of currently logined user
         [HttpGet("Customer")]
-        [Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         public IActionResult GetCurrentUserInvoices([FromQuery] int page)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -27,9 +27,9 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        // Get an invoice detail of a currently logined user
+        // CUSTOMER: Get an invoice detail of a currently logined user
         [HttpGet("Customer/{id}")]
-        [Authorize]
+        [Authorize(Roles = "CUSTOMER")]
         public IActionResult GetInvoiceDetailCustomer(long id)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);

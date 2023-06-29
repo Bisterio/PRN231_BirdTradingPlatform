@@ -20,6 +20,7 @@ namespace BusinessObject.Models
         public DateTime? UpdatedAt { get; set; }
         public long? InvoiceId { get; set; }
         public long? StoreId { get; set; }
+        public string? CancelReason { get; set; }
 
         public virtual Invoice? Invoice { get; set; }
         public virtual Store? Store { get; set; }

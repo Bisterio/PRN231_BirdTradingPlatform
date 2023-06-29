@@ -73,7 +73,8 @@ namespace Repository
                 UpdatedAt = entity.UpdatedAt,
                 StoreId = entity.StoreId,
                 StoreName = entity.Store?.Name,
-                StoreAddress = entity.Store?.Address
+                StoreAddress = entity.Store?.Address,
+                CancelReason = entity.CancelReason,
             };
         }
 
