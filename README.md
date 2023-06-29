@@ -20,3 +20,15 @@ Constants:
 	+ 1: Check for NewStoreName and NewStoreAddress and then add a new store entity upon STORE_STAFF account registration
 	+ 0: For register new CUSTOMER account or STAFF_STORE account with exist Store (from dropdown list).
 
+*Order Status
+ORDER STATUS
+0: Ko query đc
+1: Waiting for approval
+2: Completed
+3: Packing
+4: Delivering
+5: Waiting for cancel approval
+6: Cancelled by store
+7: Cancelled by customer
+8: Returned / Refunded
+
