@@ -158,10 +158,70 @@ namespace Repository.Implementation
             };
         }
 
+        // Get orders of a logined store
+        public ClientOrderViewListDTO GetCurrentStoreOrders(int page, byte status, long currentUserId, string orderIdSearch)
+        {
+            // Handle query data
+            int size = 12;
+            page = page == 0 ? 1 : page;
+
+            List<OrderViewDTO?> orderByStore = OrderDAO
+                .GetOrdersByCurrentStore(page, size, status, currentUserId, orderIdSearch)
+                .Select(x => Mapper.ToOrderViewDTO(x))
+                .ToList();
+
+            // Get count of orders by search/filter
+            int orderCount = OrderDAO.CountOrdersByCurrentStore(status, currentUserId);
+            int totalPages = (int)Math.Ceiling((double)orderCount / size);
+            List<int> pageNumbers = new List<int>();
+            if (totalPages > 0)
+            {
+                int start = Math.Max(1, page - 2);
+                int end = Math.Min(page + 2, totalPages);
+
+                if (totalPages > 5)
+                {
+                    if (end == totalPages) start = end - 4;
+                    else if (start == 1) end = start + 4;
+                }
+                else
+                {
+                    start = 1;
+                    end = totalPages;
+                }
+                pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
+            }
+
+            return new ClientOrderViewListDTO()
+            {
+                OrdersPaginated = orderByStore,
+                Page = page,
+                Size = size,
+                PageNumbers = pageNumbers,
+                TotalCount = orderCount,
+                TotalPage = totalPages
+            };
+        }
         // Get order detail and order items of a logined customer
         public OrderViewDTO? GetOrderDetailCustomer(long orderId, long currentUserId)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return null;
+
+            OrderViewDTO? orderDTO = Mapper.ToOrderViewDTO(orderEntity);
+            List<OrderItemViewDTO?> orderItemDTO = orderEntity.OrderItems
+                .Select(x => Mapper.ToOrderItemViewDTO(x))
+                .ToList();
+
+            orderDTO.OrderItems = orderItemDTO;
+
+            return orderDTO;
+        }
+
+        // Get order detail and order items of a logined customer
+        public OrderViewDTO? GetOrderDetailStore(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
             if (orderEntity == null) return null;
 
             OrderViewDTO? orderDTO = Mapper.ToOrderViewDTO(orderEntity);

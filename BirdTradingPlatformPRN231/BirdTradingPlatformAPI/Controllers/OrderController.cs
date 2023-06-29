@@ -56,7 +56,35 @@ namespace BirdTradingPlatformAPI.Controllers
             long currentUserId = long.Parse(idString);
 
             var result = _orderRepository.GetOrderDetailCustomer(id, currentUserId);
-            if(result == null) return NotFound("Can't get this order detail!");
+            if (result == null) return NotFound("Can't get this order detail!");
+            return Ok(result);
+        }
+
+        // STORE: Get all orders filter by status of currently logined store
+        [HttpGet("Store")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult GetCurrentStoreOrders([FromQuery] int page, [FromQuery] byte status, [FromQuery] string orderIdSearch)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentStoreId = long.Parse(idString);
+
+            var result = _orderRepository.GetCurrentStoreOrders(page, status, currentStoreId, orderIdSearch);
+
+            return Ok(result);
+        }
+
+        // Get an order detail of a currently logined store
+        [HttpGet("Store/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult GetOrderDetailStore(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentStoreId = long.Parse(idString);
+
+            var result = _orderRepository.GetOrderDetailStore(id, currentStoreId);
+            if (result == null) return NotFound("Can't get this order detail!");
             return Ok(result);
         }
 
