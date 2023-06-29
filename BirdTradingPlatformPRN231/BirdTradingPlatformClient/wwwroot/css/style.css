@@ -2500,7 +2500,7 @@ p, ul, ol, dl, dt, dd, blockquote, address {
 
 .bg-img-png-home2 {
     background-attachment: fixed;
-    background-image: url(~/images/background/home2-bg2.png);
+    background-image: url(../images/background/home2-bg2.png);
     background-repeat: no-repeat;
     -webkit-background-size: cover;
     background-size: cover
@@ -2508,7 +2508,7 @@ p, ul, ol, dl, dt, dd, blockquote, address {
 
 .bg-img-png-home6 {
     background-attachment: fixed;
-    background-image: url(~/images/background/home6-bg1.png);
+    background-image: url(../images/background/home6-bg1.png);
     background-repeat: no-repeat;
     -webkit-background-size: cover;
     background-size: cover
@@ -5745,7 +5745,7 @@ form.listing_page_v9 {
 }
 
 .footer_one.home2 {
-    background-image: url(~/images/background/footer-bg-img-home2.png);
+    background-image: url(../images/background/footer-bg-img-home2.png);
     background-size: cover
 }
 
@@ -5954,13 +5954,13 @@ form.listing_page_v9 {
     }
 
     .inner_page_breadcrumb.style3 {
-        background-image: url(~/images/background/inner-pagebg3.jpg);
+        background-image: url(../images/background/inner-pagebg3.jpg);
         background-repeat: no-repeat;
         height: 400px
     }
 
     .inner_page_breadcrumb.style4 {
-        background-image: url(~/images/background/inner-pagebg4.jpg);
+        background-image: url(../images/background/inner-pagebg4.jpg);
         background-repeat: no-repeat;
         height: 500px
     }
@@ -6565,13 +6565,13 @@ form.listing_page_v9 {
 }
 
 .become_avendor_page_banner {
-    background-image: url(~/images/background/logistic-service-concept.png);
+    background-image: url(../images/background/logistic-service-concept.png);
     background-size: cover;
     background-position: center
 }
 
 .vendor_single_page_banner {
-    background-image: url(~/images/background/vendor-single-banner.jpg);
+    background-image: url(../images/background/vendor-single-banner.jpg);
     background-size: cover;
     background-position: center;
     height: 400px;
@@ -11169,7 +11169,7 @@ section {
 
 .preloader {
     background-color: #eaeaea;
-    background-image: url(~/images/preloader.gif);
+    background-image: url(../images/preloader.gif);
     background-position: center center;
     background-repeat: no-repeat;
     height: 100%;
@@ -13909,7 +13909,7 @@ header.header-nav.menu_style_home_one.home5_styles .ace-responsive-menu li ul.su
 }
 
 .banner_one_large {
-    background-image: url(~/images/background/banner1.jpg);
+    background-image: url(../images/background/banner1.jpg);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -14053,7 +14053,7 @@ header.header-nav.menu_style_home_one.home5_styles .ace-responsive-menu li ul.su
 
 .banner_one.home1_style.home3_large_banner {
     height: 350px;
-    background-image: url(~/images/banner/banner1-home3.png);
+    background-image: url(../images/banner/banner1-home3.png);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover
@@ -14064,7 +14064,7 @@ header.header-nav.menu_style_home_one.home5_styles .ace-responsive-menu li ul.su
     }
 
     .banner_one.home1_style.home3_large_banner.athome7 {
-        background-image: url(~/images/banner/large_banner_home7.png);
+        background-image: url(../images/banner/large_banner_home7.png);
         background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -15285,7 +15285,7 @@ header.header-nav.menu_style_home_one.home5_styles .ace-responsive-menu li ul.su
 
     .online_delivery.home6_style {
         background-color: rgba(0,83,246,0.02);
-        background-image: url(~/images/background/tiny-divider-bg-home6.png);
+        background-image: url(../images/background/tiny-divider-bg-home6.png);
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center
