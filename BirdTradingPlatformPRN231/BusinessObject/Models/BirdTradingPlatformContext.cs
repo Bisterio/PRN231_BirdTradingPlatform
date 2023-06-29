@@ -138,6 +138,22 @@ namespace BusinessObject.Models
 
                 entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
 
+                entity.Property(e => e.IsReported)
+                    .HasColumnName("is_reported")
+                    .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.RefundDuration)
+                    .HasPrecision(6)
+                    .HasColumnName("refund_duration");
+
+                entity.Property(e => e.RefundReason)
+                    .HasMaxLength(2500)
+                    .HasColumnName("refund_reason");
+
+                entity.Property(e => e.ReportedReason)
+                    .HasMaxLength(2500)
+                    .HasColumnName("reported_reason");
+
                 entity.Property(e => e.Status).HasColumnName("status");
 
                 entity.Property(e => e.StoreId).HasColumnName("store_id");

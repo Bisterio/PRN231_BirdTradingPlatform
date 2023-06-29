@@ -21,6 +21,10 @@ namespace BusinessObject.Models
         public long? InvoiceId { get; set; }
         public long? StoreId { get; set; }
         public string? CancelReason { get; set; }
+        public byte? IsReported { get; set; }
+        public DateTime? RefundDuration { get; set; }
+        public string? RefundReason { get; set; }
+        public string? ReportedReason { get; set; }
 
         public virtual Invoice? Invoice { get; set; }
         public virtual Store? Store { get; set; }

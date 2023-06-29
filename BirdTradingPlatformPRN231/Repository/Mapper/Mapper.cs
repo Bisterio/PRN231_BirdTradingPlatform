@@ -75,6 +75,10 @@ namespace Repository
                 StoreName = entity.Store?.Name,
                 StoreAddress = entity.Store?.Address,
                 CancelReason = entity.CancelReason,
+                IsReported = entity.IsReported,
+                RefundDuration = entity.RefundDuration,
+                RefundReason = entity.RefundReason,
+                ReportedReason = entity.ReportedReason
             };
         }
 

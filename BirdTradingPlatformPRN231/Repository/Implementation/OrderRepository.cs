@@ -79,6 +79,7 @@ namespace Repository.Implementation
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                     Status = 1,
+                    IsReported = 1,
                     TotalItem = totalItem,
                     TotalAmountPreShipping = totalAmountPreShipping,
                     TotalShippingCost = totalShippingCost,
