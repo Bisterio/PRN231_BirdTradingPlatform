@@ -13,7 +13,7 @@ namespace DataAccess
         // Get orders by status and current logined user
         public static List<Order?> GetOrdersByCurrentUser(int page, int size, byte status, long currentUserId)
         {
-            List<Order> orders = new List<Order>(); 
+            List<Order> orders = new List<Order>();
             try
             {
                 using (var context = new BirdTradingPlatformContext())
@@ -28,7 +28,34 @@ namespace DataAccess
                         .Take(size)
                         .ToList();
                 }
-            } 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return orders;
+        }
+
+        // Get orders by id, status and current logined store user
+        public static List<Order?> GetOrdersByCurrentStore(int page, int size, byte status, long currentUserId, long orderId)
+        {
+            List<Order> orders = new List<Order>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    orders = context.Orders
+                        .Where(o => o.Store.UserId == currentUserId
+                        && (orderId == 0 || o.OrderId == orderId)
+                        && (status == 0 || o.Status == status))
+                        .Include(o => o.Store)
+                        .Include(o => o.Invoice).ThenInclude(o => o.User)
+                        .OrderByDescending(o => o.CreatedAt)
+                        .Skip((page - 1) * size)
+                        .Take(size)
+                        .ToList();
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -46,6 +73,28 @@ namespace DataAccess
                 {
                     count = context.Orders
                         .Where(o => o.Invoice.UserId == currentUserId
+                        && (status == 0 || o.Status == status))
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return count;
+        }
+
+        // Function to get count of orders of a logined store user by status
+        public static int CountOrdersByCurrentStore(byte status, long currentUserId)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Orders
+                        .Where(o => o.Store.UserId == currentUserId
                         && (status == 0 || o.Status == status))
                         .Count();
                 }
@@ -79,6 +128,27 @@ namespace DataAccess
             }
             return order;
         }
+        // Get Order by orderid and current logined store user
+        public static Order? GetOrderByIdAndStoreId(long orderId, long userId)
+        {
+            Order? order = new Order();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    order = context.Orders
+                        .Include(x => x.Store)
+                        .Include(x => x.Invoice)
+                        .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
+                        .SingleOrDefault(o => o.OrderId == orderId && o.Store.UserId == userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return order;
+        }
 
         public static void CreateOrder(Order o)
         {
@@ -102,7 +172,7 @@ namespace DataAccess
             {
                 using (var context = new BirdTradingPlatformContext())
                 {
-                    context.Entry<Order>(o).State 
+                    context.Entry<Order>(o).State
                         = Microsoft.EntityFrameworkCore.EntityState.Modified;
                     context.SaveChanges();
                 }
