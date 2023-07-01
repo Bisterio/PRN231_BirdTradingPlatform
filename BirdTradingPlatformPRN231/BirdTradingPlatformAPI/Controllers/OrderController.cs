@@ -63,7 +63,7 @@ namespace BirdTradingPlatformAPI.Controllers
         // STORE: Get all orders filter by status of currently logined store
         [HttpGet("Store")]
         [Authorize(Roles = "STORE")]
-        public IActionResult GetCurrentStoreOrders([FromQuery] int page, [FromQuery] byte status, [FromQuery] string orderIdSearch)
+        public IActionResult GetCurrentStoreOrders([FromQuery] int page, [FromQuery] byte status, [FromQuery] string? orderIdSearch)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrEmpty(idString)) return Unauthorized();
@@ -101,5 +101,75 @@ namespace BirdTradingPlatformAPI.Controllers
         //    if (result == null) return NotFound("Can't cancel this order!");
         //    return Ok(result);
         //}
+
+        [HttpPut("Deliver/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult DeliverOrder(int id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.DeliverOrder(id, currentUserId);
+            if (result == null) return NotFound("Can't deliver this order.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("Complete/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult ConfirmOrderDelivered(int id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.ConfirmOrderDelivered(id, currentUserId);
+            if (result == null) return NotFound("Can't confirm this order's delivery.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("RefundRequest/{id}")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult RefundRequest(int id, [FromBody] string refundReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.RefundRequest(id, currentUserId, refundReason);
+            if (result == null) return NotFound("Can't request this order's refund.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("RefundDecline/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult RefundDecline(int id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.RefundDecline(id, currentUserId);
+            if (result == null) return NotFound("Can't decline this order's refund request.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("RefundAccept/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult RefundAccept(int id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.RefundAccept(id, currentUserId);
+            if (result == null) return NotFound("Can't accept this order's refund request.");
+
+            return Ok(result);
+        }
     }
 }

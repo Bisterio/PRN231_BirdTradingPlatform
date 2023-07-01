@@ -257,5 +257,119 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>("Cancel order successfully!");
         }
+
+        // Store deliver the order by orderId
+        public APIResult<string> DeliverOrder(long orderId, long currentStoreStaffId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 4: Delivering
+            if (orderEntity.Status == 3)
+            {
+                orderEntity.Status = 4;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Order is delivering.");
+            } else
+            {
+                return new APIErrorResult<string>("Cannot deliver this order.");
+            }
+
+        }
+
+        // Store confirm the order deliverd to user by orderId
+        public APIResult<string> ConfirmOrderDelivered(long orderId, long currentStoreStaffId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 2: Delivered
+            if (orderEntity.Status == 4)
+            {
+                orderEntity.Status = 2;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.RefundDuration = DateTime.Now.AddDays(3);
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Order is successfully delivered.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is not delivering.");
+            }
+        }
+
+        // Customer request an order refund by orderId
+        public APIResult<string> RefundRequest(long orderId, long currentUserId, string refundReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 8: Waiting for refund approval
+            if (orderEntity.Status == 2)
+            {
+                if (orderEntity.RefundDuration < DateTime.Now)
+                {
+                    return new APIErrorResult<string>("This order's refund duration is expired.");
+                }
+            
+                orderEntity.Status = 8;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.RefundReason = refundReason;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Request refund successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+        }
+
+        // Store decline the refund request by orderId
+        public APIResult<string> RefundDecline(long orderId, long currentStoreStaffId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 2: Delivered
+            if (orderEntity.Status == 8)
+            {
+                orderEntity.Status = 2;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.RefundDuration = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Refund request is successfully declined.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order's refund is not requested.");
+            }
+        }
+
+        // Store decline the refund request by orderId
+        public APIResult<string> RefundAccept(long orderId, long currentStoreStaffId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 9: Refunded
+            if (orderEntity.Status == 8)
+            {
+                orderEntity.Status = 9;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.RefundDuration = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Refund request is successfully accepted.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order's refund is not requested.");
+            }
+        }
     }
 }
