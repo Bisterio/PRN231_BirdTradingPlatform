@@ -27,6 +27,8 @@
     <link href="~/images/apple-touch-icon-72x72.png" sizes="72x72" rel="apple-touch-icon">
     <link href="~/images/apple-touch-icon-114x114.png" sizes="114x114" rel="apple-touch-icon">
     <link href="~/images/apple-touch-icon-180x180.png" sizes="180x180" rel="apple-touch-icon">
+    <script src="~/js/jquery-3.6.0.js"></script>
+    <script src="~/js/jquery-migrate-3.0.0.min.js"></script>
 </head>
 <body>
     <div class="wrapper ovh">
@@ -147,7 +149,7 @@
                     <ul id="respMenu" class="ace-responsive-menu menu_list_custom_code wa pl200"
                         data-menu-style="horizontal">
                         <li class="list-inline-item list_c"><a href="#">Home</a></li>
-                        <li class="list-inline-item list_c"><a href="#">Products</a></li>
+                        <li class="list-inline-item list_c"><a asp-action="Index" asp-controller="Product">Products</a></li>
                         <li class="list-inline-item list_c"><a href="#">Stores</a></li>
                         <li class="list-inline-item list_c"><a href="#">New Arrivals</a></li>
                     </ul>
@@ -441,8 +443,6 @@
         </div>
     </div>
     <!-- Wrapper End -->
-    <script src="~/js/jquery-3.6.0.js"></script>
-    <script src="~/js/jquery-migrate-3.0.0.min.js"></script>
     <script src="~/js/popper.min.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/bootstrap-select.min.js"></script>

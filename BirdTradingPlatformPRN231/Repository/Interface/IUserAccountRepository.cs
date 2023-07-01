@@ -12,6 +12,7 @@ namespace Repository.Interface
     {
         APIResult<string> AuthenticateCustomer(LoginDTO request);
         APIResult<string> AuthenticateStore(LoginDTO request);
-        APIResult<bool> Register(RegisterDTO request);
+        APIResult<bool> RegisterCustomer(RegisterCustomerDTO request);
+        APIResult<bool> RegisterStore(RegisterStoreDTO request);
     }
 }

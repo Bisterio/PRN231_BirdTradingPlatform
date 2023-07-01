@@ -1,48 +1,67 @@
-﻿@{
+﻿@model BusinessObject.DTOs.RegisterCustomerDTO
+
+@{
     ViewData["Title"] = "Register";
 }
 
-  	<!-- Our SigIn -->
-  	<section class="our-log-reg bgc-f5">
-  		<div class="container">
-  			<div class="row">
-          <div class="col-lg-6 col-xl-5 col-xxl-4 m-auto">
-            <div class="log_reg_form mt70-992">
-              <h2 class="title">Create your account</h2>
-              <div class="sign_up_form">
-                <form action="#">
-                  <div class="form-group">
-                    <label class="form-label">Your Name</label>
-                    <input type="text" class="form-control" placeholder="Ali Tufan">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" placeholder="alitfn">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Your Email</label>
-                    <input type="email" class="form-control" placeholder="creativelayers088@gmail.com">
-                  </div>
-                  <div class="form-group mb20">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" placeholder="******************">
-                  </div>
-                  <button type="submit" class="btn btn-signup btn-thm">Create Account</button>
-                  <p class="text-center mb25 mt10">Already have an account? <a href="page-login.html">Sign in</a></p>
-                  <div class="hr_content">
-                    <hr>
-                    <span class="hr_top_text">or</span>
-                  </div>
-                  <ul class="login_with_social text-center mt30 mb0">
-                    <li class="list-inline-item"><a href="#"><i class="fab fa-facebook"></i></a></li>
-                    <li class="list-inline-item"><a href="#"><i class="fab fa-google"></i></a></li>
-                    <li class="list-inline-item"><a href="#"><i class="fab fa-twitter"></i></a></li>
-                    <li class="list-inline-item"><a href="#"><i class="fab fa-apple"></i></a></li>
-                  </ul>
-                </form>
-              </div>
+<!-- Our SigIn -->
+<section class="our-log-reg bgc-f5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-xl-5 col-xxl-4 m-auto">
+                <div class="log_reg_form mt70-992">
+                    <h2 class="title">Create your account</h2>
+                    <div class="sign_up_form">
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            <div class="ui_kit_message_box">
+                                <div class="alert alart_style_three alert-dismissible fade show" role="alert">
+                                    @ViewBag.ErrorMessage
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                </div>
+                            </div>
+                        }
+                        @if (@ViewBag.SuccessMessage != null)
+                        {
+                            <div class="ui_kit_message_box">
+                                <div class="alert alart_style_four alert-dismissible fade show" role="alert">
+                                    @ViewBag.SuccessMessage
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                </div>
+                            </div>
+                        }
+                        <form asp-action="Register" asp-controller="Home" method="post">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="@Model.Email" asp-for="Email" placeholder="Please enter your Email" required>
+                                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" value="@Model.Name" asp-for="Name" placeholder="Please enter your Name" required>
+                                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" value="@Model.Phone" asp-for="Phone" placeholder="Please enter your Phone" required>
+                                <span asp-validation-for="@Model.Phone" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" value="@Model.Password" asp-for="Password" placeholder="Please enter your Password" required>
+                                <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" value="@Model.ConfirmPassword" asp-for="ConfirmPassword" placeholder="Please confirm your Password" required>
+                                <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-signup btn-thm">Create Account</button>
+                            <p class="text-center mb25 mt10">Already have an account? <a asp-action="Login" asp-controller="Home">Sign in</a></p>
+                        </form>
+                    </div>
+                </div>
             </div>
-          </div>
-  			</div>
-  		</div>
-  	</section>
+        </div>
+    </div>
+</section>

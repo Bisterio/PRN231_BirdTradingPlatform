@@ -107,6 +107,31 @@ namespace DataAccess
             return product;
         }
 
+
+        // Function to get related products of a productId
+        public static List<Product> GetRelatedProductsByCategoryId(long? cateId, long productId)
+        {
+            var listProducts = new List<Product>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    listProducts = context.Products
+                            .Where(p => p.Status == 1 && p.Stock > 0 && p.CategoryId == cateId && p.ProductId != productId)
+                            .OrderBy(p => p.CreatedAt)
+                            .Include(p => p.Category)
+                            .Include(p => p.Store)
+                            .Take(8)
+                            .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return listProducts;
+        }
+
         // Function to get all products by a store id (status =1,stock>0)
         public static List<Product> GetProductsPublicByStoreId(long storeId)
         {

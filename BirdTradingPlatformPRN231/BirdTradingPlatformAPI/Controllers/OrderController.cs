@@ -63,7 +63,7 @@ namespace BirdTradingPlatformAPI.Controllers
         // STORE: Get all orders filter by status of currently logined store
         [HttpGet("Store")]
         [Authorize(Roles = "STORE")]
-        public IActionResult GetCurrentStoreOrders([FromQuery] int page, [FromQuery] byte status, [FromQuery] string orderIdSearch)
+        public IActionResult GetCurrentStoreOrders([FromQuery] int page, [FromQuery] byte status, [FromQuery] string? orderIdSearch)
         {
             var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (String.IsNullOrEmpty(idString)) return Unauthorized();

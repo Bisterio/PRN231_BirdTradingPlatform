@@ -1,4 +1,6 @@
-﻿@{
+﻿@model BusinessObject.DTOs.ClientProductViewListDTO
+
+@{
     ViewData["Title"] = "Products";
 }
 
@@ -9,17 +11,21 @@
             <div class="col-lg-12">
                 <div class="custom_shop_category_nav_list_menu">
                     <ul class="mb0 d-flex">
-                        <li><a class="active" href="#">All Electronics</a></li>
-                        <li><a href="#">Smart TV</a></li>
-                        <li><a href="#">Laptops</a></li>
-                        <li><a href="#">Cell Phones</a></li>
-                        <li><a href="#">Camera & Photo</a></li>
-                        <li><a href="#">Portable Audio</a></li>
-                        <li><a href="#">Computers</a></li>
-                        <li><a href="#">iPad & Tablets</a></li>
-                        <li><a href="#">Pc Gaming</a></li>
-                        <li><a href="#">Smart Home</a></li>
-                        <li><a href="#">Headphones</a></li>
+                        <li>
+                            <a class="@(Model.Category == 0 ? "active" : "")"
+                               asp-action="Index" asp-controller="Product" asp-route-category="0">
+                                All Categories
+                            </a>
+                        </li>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <li>
+                                <a asp-action="Index" asp-controller="Product" asp-route-category="@cat.CategoryId"
+                               class="@(Model.Category == cat.CategoryId ? "active" : "")">
+                                    @cat.Name
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -41,20 +47,25 @@
                                         <button class="btn btn-link text-start" type="button" data-bs-toggle="collapse"
                                                 data-bs-target="#collapseZero" aria-expanded="true"
                                                 aria-controls="collapseZero">
-                                            Price
+                                            Price (VND)
                                         </button>
                                     </h4>
                                 </div>
                                 <div id="collapseZero" class="collapse show" aria-labelledby="headingZero"
                                      data-parent="#accordionExample">
                                     <div class="card-body">
-                                        <div class="sidebar_widget_checkbox">
-                                            <div class="zmart_custom_range_slider mb-4 mt10">
-                                                <input type="text" class="amount mt-0" placeholder="$20">
-                                                <input type="text" class="amount2 mt-0" placeholder="$70987">
-                                                <div class="slider-range mt-3 ms-2"></div>
+                                        <form id="form-search-price" asp-controller="Product" asp-action="Index" method="GET">
+                                            <div class="sidebar_widget_checkbox login-form">
+                                                <div class="zmart_custom_range_slider mb-4 mt10">
+                                                    <input type="hidden" asp-for="Category" value="@Model.Category" />
+                                                    <input type="hidden" asp-for="Name" value="@Model.Name" />
+                                                    <input type="text" class="amount mt-0 thousand-separator" value="@Model.Pmin" asp-for="@Model.Pmin">
+                                                    <input type="text" class="amount2 mt-0 thousand-separator" value="@Model.Pmax" asp-for="@Model.Pmax">
+                                                    <div class="slider-range mt-3 ms-2"></div>
+                                                </div>
+                                                <button type="submit" class="btn btn-log btn-thm mt20">Filter</button>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -66,230 +77,224 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="main-title bb1 pb10">
-                            <h2 class="title">Laptops and Accessories</h2>
-                            <p>
-                                Shop laptops, desktops, monitors, tablets, PC gaming, hard drives and storage, accessories and
-                                more
-                            </p>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    @if (Model.Category != 0)
+                                    {
+                                        var c = Model.Categories.Where(c => c.CategoryId == Model.Category).FirstOrDefault();
+                                        <text>
+                                            <h2 class="title">@c.Name</h2>
+                                            <p>@c.Description</p>
+                                        </text>
+                                    }
+                                    else
+                                    {
+                                        <text>
+                                            <h2 class="title">All Categories</h2>
+                                            <p>Browse products of all categories</p>
+                                        </text>
+                                    }
+                                </div>
+                                <div class="col-lg-5">
+                                    <form id="form-search-name" asp-controller="Product" asp-action="Index" method="GET">
+                                        <div class="row mt5">
+                                            <div class="col-lg-8">
+                                                <input type="hidden" asp-for="Category" value="@Model.Category" />
+                                                <input type="hidden" asp-for="Pmin" value="@Model.Pmin" />
+                                                <input type="hidden" asp-for="Pmax" value="@Model.Pmax" />
+                                                <input class="form_control" type="text" style="width:100%;"
+                                                       value="@Model.Name" asp-for="Name" placeholder="Search products…">
+                                            </div>
+                                            <div class="col-lg-4 position-relative">
+                                                <div class="advscrh_frm_btn" style="left: -12px">
+                                                    <button type="submit" class="btn search-btn">
+                                                        <span class="flaticon-search"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-7">
-                        <div class="filter_components">
-                            <ul class="mb0 align-items-center text-center text-lg-start">
-                                <li class="list-inline-item me-2 mb-3">
-                                    <p class="pagination_page_count">Showing 1–20 of 175 results</p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="filter_components text-center text-lg-end">
-                            <ul class="mb-2 mb-md-0">
-                                <li class="list-inline-item d-lg-none me-2 mb-3">
-                                    <a class="all-filter-btn flter_btn"
-                                       href="#"><span class="flaticon-sort me-2"></span>All Filter</a>
-                                </li>
-                                <li class="list-inline-item me-0">
-                                    <div class="page_control_shorting mb20 text-center text-md-end">
-                                        <select class="selectpicker show-tick">
-                                            <option>Default sorting</option>
-                                            <option>Best Seller</option>
-                                            <option>Best Match</option>
-                                            <option>Price Low</option>
-                                            <option>Price High</option>
-                                        </select>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
-                            <div class="shop_item bdr1 m--1">
-                                <div class="thumb pb30">
-                                    <img src="images/shop-items/shop-item1.png" alt="Shop Item1">
-                                    <div class="thumb_info">
-                                        <ul class="mb0">
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-heart"></span></a></li>
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-show"></span></a></li>
-                                            <li><a href="page-shop-list-v6.html"><span class="flaticon-graph"></span></a></li>
+
+                    @if (Model.ProductsPaginated.Count != 0)
+                    {
+                        int startingNum = (Model.Page - 1) * 12 + 1;
+                        int endingNum = Math.Min(Model.Page * 12, Model.TotalCount);
+                        <text>
+                            <div class="col-lg-7">
+                                <div class="filter_components">
+                                    <ul class="mb0 align-items-center text-center text-lg-start">
+                                        <li class="list-inline-item me-2 mb-3">
+                                            <p class="pagination_page_count">Showing @startingNum – @endingNum of @Model.TotalCount results</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <form id="form-search-orderby" asp-controller="Product" asp-action="Index" method="GET">
+                                    <input type="hidden" asp-for="Category" value="@Model.Category" />
+                                    <input type="hidden" asp-for="Pmin" value="@Model.Pmin" />
+                                    <input type="hidden" asp-for="Pmax" value="@Model.Pmax" />
+                                    <input type="hidden" asp-for="Name" value="@Model.Name" />
+                                    <div class="filter_components text-center text-lg-end">
+                                        <ul class="mb-2 mb-md-0">
+                                            <li class="list-inline-item d-lg-none me-2 mb-3">
+                                                <a class="all-filter-btn flter_btn"
+                                               href="#"><span class="flaticon-sort me-2"></span>All Filter</a>
+                                            </li>
+                                            <li class="list-inline-item me-0">
+                                                <div class="page_control_shorting mb20 text-center text-md-end">
+                                                    <select class="selectpicker show-tick" asp-for="Order" onchange="selectChangeHandler()">
+                                                        <option value="0">Newest</option>
+                                                        <option value="1">Oldest</option>
+                                                        <option value="2">Price: High to Low</option>
+                                                        <option value="3">Price: Low to High</option>
+                                                    </select>
+                                                </div>
+                                            </li>
                                         </ul>
                                     </div>
-                                    <div class="shop_item_cart_btn d-grid">
-                                        <a href="page-shop-cart.html" class="btn btn-thm">Add to Cart</a>
+                                </form>
+                            </div>
+                        </text>
+                    }
+
+
+
+                    @if (Model.ProductsPaginated.Count == 0)
+                    {
+                        <div class="my-5">
+                            <h3 class="text-center">No products to be shown</h3>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row" id="product-list-get">
+                            @foreach (var item in Model.ProductsPaginated)
+                            {
+                                <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
+                                    <div class="shop_item bdr1 m--1">
+                                        <div class="thumb pb30">
+                                            <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                <img style="height: 180px" class="img-fluid" src="@item.Image" alt="Shop Item1">
+                                            </a>
+                                            <div class="shop_item_cart_btn d-grid">
+                                                <a href="#cart" data-itemid="@item.ProductId" class="btn btn-thm">Add to Cart</a>
+                                            </div>
+                                        </div>
+                                        <div class="details">
+                                            <div class="sub_title">@item.CategoryName</div>
+                                            <div class="title" style="height:3.5em; display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;">
+                                                <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                    @item.Name
+                                                </a>
+                                            </div>
+                                            <div class="si_footer">
+                                                <div class="price">@item.UnitPrice.ToString("#,##0").Replace(",",".") VND</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="details">
-                                    <div class="sub_title">SAMSUNG</div>
-                                    <div class="title">
-                                        <a href="#">
-                                            Acer Aspire 5 15.6" Laptop - Silver (Intel Core i7-1165G7/512GB
-                                            SSD/12GB RAM/Windows 11)
-                                        </a>
-                                    </div>
-                                    <div class="review d-flex db-500">
-                                        <ul class="mb0 me-2">
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
+                            }
+                        </div>
+                        @if (Model.TotalCount > 12)
+                        {
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mbp_pagination mt30 text-center">
+                                        <ul class="page_navigation">
+                                            <!-- Previous Page -->
+                                            @if (Model.Page != 1)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" tabindex="-1" aria-disabled="true"
+                                           asp-action="Index" asp-controller="Product" asp-route-page="@(@Model.Page - 1)"
+                                           asp-route-name="@Model.Name" asp-route-category="@Model.Category"
+                                           asp-route-pmin="@Model.Pmin" asp-route-pmax="@Model.Pmax"
+                                           asp-route-order="@Model.Order">
+                                                        <span class="fas fa-angle-left"></span>
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            <!-- First page -->
+                                            @if (!Model.PageNumbers.Contains(1))
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                           asp-action="Index" asp-controller="Product" asp-route-page="1"
+                                           asp-route-name="@Model.Name" asp-route-category="@Model.Category"
+                                           asp-route-pmin="@Model.Pmin" asp-route-pmax="@Model.Pmax"
+                                           asp-route-order="@Model.Order">
+                                                        1
+                                                    </a>
+                                                </li>
+                                                <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                            }
+
+                                            <!-- Page items -->
+                                            @foreach (int pageNo in Model.PageNumbers)
+                                            {
+                                                <li class="page-item @(@Model.Page == pageNo ? "active" : "")">
+                                                    <a class="page-link"
+                                           asp-action="Index" asp-controller="Product" asp-route-page="@pageNo"
+                                           asp-route-name="@Model.Name" asp-route-category="@Model.Category"
+                                           asp-route-pmin="@Model.Pmin" asp-route-pmax="@Model.Pmax"
+                                           asp-route-order="@Model.Order">
+                                                        @pageNo
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            <!-- Last page -->
+                                            @if (!Model.PageNumbers.Contains(Model.TotalPage))
+                                            {
+                                                <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                           asp-action="Index" asp-controller="Product" asp-route-page="@Model.TotalPage"
+                                           asp-route-name="@Model.Name" asp-route-category="@Model.Category"
+                                           asp-route-pmin="@Model.Pmin" asp-route-pmax="@Model.Pmax"
+                                           asp-route-order="@Model.Order">
+                                                        @Model.TotalPage
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            <!-- Next Page -->
+                                            @if (Model.Page != Model.TotalPage)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" tabindex="-1" aria-disabled="true"
+                                           asp-action="Index" asp-controller="Product" asp-route-page="@(@Model.Page + 1)"
+                                           asp-route-name="@Model.Name" asp-route-category="@Model.Category"
+                                           asp-route-pmin="@Model.Pmin" asp-route-pmax="@Model.Pmax"
+                                           asp-route-order="@Model.Order">
+                                                        <span class="fas fa-angle-right"></span>
+                                                    </a>
+                                                </li>
+                                            }
                                         </ul>
-                                        <div class="review_count"><a href="#">3,014 reviews</a></div>
-                                    </div>
-                                    <div class="si_footer">
-                                        <div class="price">$32.50 <small><del>$45</del></small></div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
-                            <div class="shop_item bdr1 m--1">
-                                <div class="thumb pb30">
-                                    <img src="images/shop-items/shop-item2.png" alt="Shop Item2">
-                                    <div class="thumb_info">
-                                        <ul class="mb0">
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-heart"></span></a></li>
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-show"></span></a></li>
-                                            <li><a href="page-shop-list-v6.html"><span class="flaticon-graph"></span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="shop_item_cart_btn d-grid">
-                                        <a href="page-shop-cart.html" class="btn btn-thm">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div class="sub_title">SONY</div>
-                                    <div class="title">
-                                        <a href="#">
-                                            Acer Nitro 5 15.6" Gaming Laptop - Black (Intel Core
-                                            i5-10300H/512GB SSD/12GB RAM/GTX 1650/Windows 11)
-                                        </a>
-                                    </div>
-                                    <div class="review d-flex db-500">
-                                        <ul class="mb0 me-2">
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                        </ul>
-                                        <div class="review_count"><a href="#">3,014 reviews</a></div>
-                                    </div>
-                                    <div class="si_footer">
-                                        <div class="price">$32.50 <small><del>$45</del></small></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
-                            <div class="shop_item bdr1 m--1">
-                                <div class="thumb pb30">
-                                    <img src="images/shop-items/shop-item3.png" alt="Shop Item3">
-                                    <div class="thumb_info">
-                                        <ul class="mb0">
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-heart"></span></a></li>
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-show"></span></a></li>
-                                            <li><a href="page-shop-list-v6.html"><span class="flaticon-graph"></span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="shop_item_cart_btn d-grid">
-                                        <a href="page-shop-cart.html" class="btn btn-thm">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div class="sub_title">Eastsport</div>
-                                    <div class="title">
-                                        <a href="#">
-                                            Acer Nitro 5 15.6" Gaming Laptop - Black (Intel Core
-                                            i5-10300H/512GB SSD/12GB RAM/GTX 1650/Windows 11)
-                                        </a>
-                                    </div>
-                                    <div class="review d-flex db-500">
-                                        <ul class="mb0 me-2">
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                        </ul>
-                                        <div class="review_count"><a href="#">3,014 reviews</a></div>
-                                    </div>
-                                    <div class="si_footer">
-                                        <div class="price">$32.50 <small><del>$45</del></small></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
-                            <div class="shop_item bdr1 m--1">
-                                <div class="thumb pb30">
-                                    <img src="images/shop-items/shop-item4.png" alt="Shop Item4">
-                                    <div class="thumb_info">
-                                        <ul class="mb0">
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-heart"></span></a></li>
-                                            <li><a href="page-dashboard-wish-list.html"><span class="flaticon-show"></span></a></li>
-                                            <li><a href="page-shop-list-v6.html"><span class="flaticon-graph"></span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="shop_item_cart_btn d-grid">
-                                        <a href="page-shop-cart.html" class="btn btn-thm">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div class="sub_title">Rolex</div>
-                                    <div class="title">
-                                        <a href="#">
-                                            Apple MacBook Air 13.3" w/ Touch ID (Fall 2020) - Space Grey
-                                            (Apple M1 Chip / 256GB SSD / 8GB RAM) - En
-                                        </a>
-                                    </div>
-                                    <div class="review d-flex db-500">
-                                        <ul class="mb0 me-2">
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                            <li class="list-inline-item"><a href="#"><i class="fas fa-star"></i></a></li>
-                                        </ul>
-                                        <div class="review_count"><a href="#">3,014 reviews</a></div>
-                                    </div>
-                                    <div class="si_footer">
-                                        <div class="price">$18.124 <small><del>$45</del></small></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mbp_pagination mt30 text-center">
-                                <ul class="page_navigation">
-                                    <li class="page-item">
-                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                            <span class="fas fa-angle-left"></span>
-                                        </a>
-                                    </li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item active" aria-current="page">
-                                        <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-                                    </li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">...</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">20</a></li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#"><span class="fas fa-angle-right"></span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
     </div>
 </section>
+<!-- End Content -->
+@section Scripts {
+    <script>
+        function selectChangeHandler() {
+            document.getElementById("form-search-orderby").submit();
+        }
+    </script>
+}

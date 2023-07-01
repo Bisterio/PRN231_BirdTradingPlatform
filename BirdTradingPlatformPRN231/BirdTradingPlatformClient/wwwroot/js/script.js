@@ -164,8 +164,8 @@
         $(".slider-range").slider({
             range: true,
             min: 0,
-            max: 100000,
-            values: [ 20, 70987 ],
+            max: 10000000,
+            values: [ 0, 10000000 ],
             slide: function( event, ui ) {
                 $( ".amount" ).val( ui.values[ 0 ] );
                 $( ".amount2" ).val( ui.values[ 1 ] );
@@ -500,23 +500,26 @@
         }
       })();
     });
-    $(function() {
-      (function quantityProducts() {
-        var $quantityArrowMinus = $(".quantity-arrow-minus2");
-        var $quantityArrowPlus = $(".quantity-arrow-plus2");
-        var $quantityNum = $(".quantity-num2");
-        $quantityArrowMinus.click(quantityMinus);
-        $quantityArrowPlus.click(quantityPlus);
-        function quantityMinus() {
-          if ($quantityNum.val() > 1) {
-            $quantityNum.val(+$quantityNum.val() - 1);
-          }
-        }
-        function quantityPlus() {
-          $quantityNum.val(+$quantityNum.val() + 1);
-        }
-      })();
-    });
+    //$(function() {
+    //  (function quantityProducts() {
+    //    var $quantityArrowMinus = $(".quantity-arrow-minus2");
+    //    var $quantityArrowPlus = $(".quantity-arrow-plus2");
+    //    var $quantityNum = $(".quantity-num2");
+    //    $quantityNum.val(1);
+
+    //    $quantityArrowMinus.click(quantityMinus);
+    //    $quantityArrowPlus.click(quantityPlus);
+    //    function quantityMinus() {
+    //      if ($quantityNum.val() > 1) {
+    //        $quantityNum.val(+$quantityNum.val() - 1);
+    //      }
+    //    }
+    //      function quantityPlus() {
+    //        console.log($('.quantity-num2').attr('max'));
+    //        $quantityNum.val(+$quantityNum.val() + 1);
+    //    }
+    //  })();
+    //});
     $(function() {
       (function quantityProducts() {
         var $quantityArrowMinus = $(".quantity-arrow-minus3");

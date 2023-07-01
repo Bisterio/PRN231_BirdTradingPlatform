@@ -23,5 +23,7 @@ namespace BusinessObject.DTOs
         public string? StoreDescription { get; set; }
         public string? StoreLogoImage { get; set; }
         public string? StoreCoverImage { get; set; }
+
+        public List<ProductViewDTO> RelatedProducts { get; set; } = new List<ProductViewDTO>();
     }
 }

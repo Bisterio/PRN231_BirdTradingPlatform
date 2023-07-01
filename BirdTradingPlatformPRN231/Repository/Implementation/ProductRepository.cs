@@ -49,6 +49,9 @@ namespace Repository.Implementation
                 pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
             }
 
+            // Get categories list for filtering
+            List<Category> categories = CategoryDAO.GetCategories();
+
             return new ClientProductViewListDTO()
             {
                 ProductsPaginated = paginatedProduct,
@@ -56,7 +59,13 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = productCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                Categories = categories,
+                Category = categoryId,
+                Name = nameSearch,
+                Order = orderBy,
+                Pmin = priceMin,
+                Pmax = priceMax
             };
         }
 
@@ -64,7 +73,16 @@ namespace Repository.Implementation
         public ProductViewDTO? GetProductDetailPublicById(long productId)
         {
             Product? entity = ProductDAO.GetProductDetailPublicById(productId);
-            return Mapper.ToProductViewDTO(entity);
+            if (entity == null) return null;
+            ProductViewDTO? dto = Mapper.ToProductViewDTO(entity);
+
+            // Get related products
+            List<ProductViewDTO?> relatedProducts = ProductDAO
+                .GetRelatedProductsByCategoryId(entity.CategoryId, productId)
+                .Select(x => Mapper.ToProductViewDTO(x))
+                .ToList();
+            dto.RelatedProducts = relatedProducts;
+            return dto;
         }
 
         // Get product list of currently logined store

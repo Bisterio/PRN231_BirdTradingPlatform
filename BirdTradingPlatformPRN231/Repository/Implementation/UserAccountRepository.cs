@@ -102,7 +102,7 @@ namespace Repository.Implementation
             return new APISuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public APIResult<bool> Register(RegisterDTO request)
+        public APIResult<bool> RegisterCustomer(RegisterCustomerDTO request)
         {
             // Get Account by email
             UserAccount? user = UserAccountDAO.FindUserByEmail(request.Email);
@@ -113,36 +113,40 @@ namespace Repository.Implementation
             // Validate Confirm Password
             if (!request.Password.Equals(request.ConfirmPassword)) return new APIErrorResult<bool>("Confirm Password doesn't match.");
 
-            // Validate Role
-            if (!(request.Role.Equals("CUSTOMER") || request.Role.Equals("STORE"))) return new APIErrorResult<bool>("Invalid Role");
-
-            // If user is customer / store with existing store
-            if (request.CreateNewStore == 0)
+            UserAccount newUser = new()
             {
-                UserAccount newUser = new()
-                {
-                    UserId = 0,
-                    Email = request.Email,
-                    Name = request.Name,
-                    Password = BC.HashPassword(request.Password),
-                    Phone = request.Phone,
-                    Role = request.Role,
-                    EmailVerified = 1,
-                    Status = 1,
-                    StoreId = null,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-                };
+                UserId = 0,
+                Email = request.Email,
+                Name = request.Name,
+                Password = BC.HashPassword(request.Password),
+                Phone = request.Phone,
+                Role = "CUSTOMER",
+                EmailVerified = 1,
+                Status = 1,
+                StoreId = null,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
 
-                UserAccountDAO.CreateUser(newUser);
-                if (newUser.UserId != 0)
-                {
-                    return new APISuccessResult<bool>();
-                }
-                return new APIErrorResult<bool>("Can't add new user to database.");
+            UserAccountDAO.CreateUser(newUser);
+            if (newUser.UserId != 0)
+            {
+                return new APISuccessResult<bool>();
             }
+            return new APIErrorResult<bool>("Can't add new user to database.");
+        }
 
-            // If user is store with new store
+        public APIResult<bool> RegisterStore(RegisterStoreDTO request)
+        {
+            // Get Account by email
+            UserAccount? user = UserAccountDAO.FindUserByEmail(request.Email);
+
+            // Validate user exist
+            if (user != null) return new APIErrorResult<bool>("This Email has already been used.");
+
+            // Validate Confirm Password
+            if (!request.Password.Equals(request.ConfirmPassword)) return new APIErrorResult<bool>("Confirm Password doesn't match.");
+
             // Add new Store
             // Validate store name and address
             if (string.IsNullOrEmpty(request.NewStoreName)) return new APIErrorResult<bool>("Store name required!");
@@ -169,7 +173,7 @@ namespace Repository.Implementation
                     Name = request.Name,
                     Password = BC.HashPassword(request.Password),
                     Phone = request.Phone,
-                    Role = request.Role,
+                    Role = "STORE",
                     Status = 1,
                     StoreId = newStore.StoreId,
                     CreatedAt = DateTime.Now,
@@ -177,7 +181,7 @@ namespace Repository.Implementation
                 };
 
                 UserAccountDAO.CreateUser(newUser);
-                
+
                 if (newUser.UserId == 0)
                 {
                     return new APIErrorResult<bool>("Can't add new user to database.");

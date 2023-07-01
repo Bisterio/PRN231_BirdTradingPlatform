@@ -24,13 +24,14 @@ Constants:
 ORDER STATUS
 0: Ko query đc
 1: Waiting for approval
-2: Completed
+2: Delivered
 3: Packing
 4: Delivering
 5: Waiting for cancel approval
 6: Cancelled by store
 7: Cancelled by customer
-8: Returned / Refunded
+8: Waiting for refund approval
+9: Refunded
 
 ORDER IS_REPORTED STATUS
 0: Ko query

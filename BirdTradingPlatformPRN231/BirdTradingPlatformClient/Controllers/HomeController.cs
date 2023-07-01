@@ -44,13 +44,13 @@ namespace BirdTradingPlatformClient.Controllers
             {
                 TempData["ReturnUrl"] = returnUrl;
             }
-            return View();
+            return View(new LoginDTO());
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            return View(new RegisterCustomerDTO());
         }
 
         [HttpGet]
@@ -60,6 +60,7 @@ namespace BirdTradingPlatformClient.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDTO request)
         {
             // Validate on client side
@@ -78,13 +79,18 @@ namespace BirdTradingPlatformClient.Controllers
             // If login failed
             if (!response.IsSuccessStatusCode)
             {
-                result = JsonConvert.DeserializeObject<APIErrorResult<string>>(await response.Content.ReadAsStringAsync());
-                ViewBag.ErrorMessage = result?.Message;
+                ViewBag.ErrorMessage = "Email or Password is incorrect";
+                return View(request);
+            }
+
+            result = JsonConvert.DeserializeObject<APIResult<string>>(await response.Content.ReadAsStringAsync());
+            if (!result.IsSuccess)
+            {
+                ViewBag.ErrorMessage = result.Message;
                 return View(request);
             }
 
             // If login success
-            result = JsonConvert.DeserializeObject<APISuccessResult<string>>(await response.Content.ReadAsStringAsync());
             var userPrincipal = this.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
@@ -110,6 +116,48 @@ namespace BirdTradingPlatformClient.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterCustomerDTO request)
+        {
+            // Validate on client side
+            if (!ModelState.IsValid) return View(request);
+
+            // Initiate ApiResult obj
+            APIResult<bool>? result;
+
+            // Validate Confirm Password
+            if (!request.Password.Equals(request.ConfirmPassword))
+            {
+                ViewBag.ErrorMessage = "Confirm Password must match Password";
+                return View(request);
+            }
+
+            // Post RegisterCustomerDTO request
+            var jsonRequest = JsonConvert.SerializeObject(request);
+
+            HttpResponseMessage response = await client.PostAsync(UserApilUrl + "/RegisterCustomer",
+                new StringContent(jsonRequest, Encoding.UTF8, "application/json"));
+
+            // Get response
+            // If register failed
+            if (!response.IsSuccessStatusCode)
+            {
+                ViewBag.ErrorMessage = "Can't register a new account";
+                return View(request);
+            }
+
+            result = JsonConvert.DeserializeObject<APIResult<bool>>(await response.Content.ReadAsStringAsync());
+            if (!result.IsSuccess)
+            {
+                ViewBag.ErrorMessage = result.Message;
+                return View(request);
+            }
+
+            ViewBag.SuccessMessage = "Create a new account successfully";
+            return View(request);
         }
 
         private ClaimsPrincipal ValidateToken(string jwtToken)
@@ -140,7 +188,7 @@ namespace BirdTradingPlatformClient.Controllers
             // Back to home
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Login");
             }
             return Redirect(returnUrl);
         }

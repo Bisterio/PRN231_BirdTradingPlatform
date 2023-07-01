@@ -8141,7 +8141,7 @@ td.cp_price, td.cp_instock, td.cp_desc, td.cp_sku, td.cp_weight, td.cp_dimention
     font-weight: 500;
     font-size: 15px;
     height: 75px;
-    line-height: 45px;
+    line-height: 20px;
     padding-left: 30px
 }
 
@@ -10801,7 +10801,7 @@ input.amount, input.amount2, input.amount3, input.amount4 {
     line-height: 22px;
     letter-spacing: 0;
     margin-top: 45px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     text-align: center;
     width: 95px
 }
