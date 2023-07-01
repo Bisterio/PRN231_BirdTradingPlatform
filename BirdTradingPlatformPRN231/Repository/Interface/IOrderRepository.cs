@@ -16,5 +16,10 @@ namespace Repository.Interface
         public OrderViewDTO? GetOrderDetailCustomer(long orderId, long currentUserId);
         public OrderViewDTO? GetOrderDetailStore(long orderId, long currentUserId);
         public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId);
+        public APIResult<string> DeliverOrder(long orderId, long currentStoreStaffId);
+        public APIResult<string> ConfirmOrderDelivered(long orderId, long currentStoreStaffId);
+        public APIResult<string> RefundRequest(long orderId, long currentUserId, string refundReason);
+        public APIResult<string> RefundDecline(long orderId, long currentStoreStaffId);
+        public APIResult<string> RefundAccept(long orderId, long currentStoreStaffId);
     }
 }
