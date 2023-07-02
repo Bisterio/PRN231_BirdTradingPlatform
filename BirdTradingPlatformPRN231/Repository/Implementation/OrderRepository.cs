@@ -236,14 +236,23 @@ namespace Repository.Implementation
         }
 
         // Customer cancel an order by orderId and userId
-        public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId)
+        public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId, string cancelReason)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
             if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
 
-            // Change order status to 0: Cancelled
-            orderEntity.Status = 0;
-            OrderDAO.UpdateOrder(orderEntity);
+            // Change order status to 7: Cancelled by customer
+            if (orderEntity.Status == 1)
+            {
+                orderEntity.Status = 7;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.CancelReason = cancelReason;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is being processed! You need to request for cancel from the store.");
+            }
 
             // Increase stock of product for each order item cancelled
             foreach (OrderItem od in orderEntity.OrderItems)
@@ -256,6 +265,128 @@ namespace Repository.Implementation
             }
 
             return new APISuccessResult<string>("Cancel order successfully!");
+        }
+
+
+        // Customer send cancel request of order by orderId and userId
+        public APIResult<string> RequestCancelOrderDetailCustomer(long orderId, long currentUserId, string cancelReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 5: waiting for cancel approval
+            if (orderEntity.Status == 3)
+            {
+                orderEntity.Status = 5;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.CancelReason = cancelReason;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is being delivered!");
+            }
+
+            return new APISuccessResult<string>("Request sent successfully!");
+        }
+        //Store approve order
+        public APIResult<string> ApproveOrderStore(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 5: waiting for cancel approval
+            if (orderEntity.Status == 1)
+            {
+                orderEntity.Status = 3;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is being processed!");
+            }
+
+            return new APISuccessResult<string>("Order approved!");
+        }
+        //Store cancel an order by orderId and storeId
+        public APIResult<string> CancelOrderDetailStore(long orderId, long currentUserId, string cancelReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 6: Cancelled by Store
+            if (orderEntity.Status == 3 || orderEntity.Status == 1)
+            {
+                orderEntity.Status = 6;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.CancelReason = cancelReason;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is being delivered!");
+            }
+
+            // Increase stock of product for each order item cancelled
+            foreach (OrderItem od in orderEntity.OrderItems)
+            {
+                Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
+                if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
+                updateStockProduct.Stock += od.Quantity;
+                updateStockProduct.UpdatedAt = DateTime.Now;
+                ProductDAO.UpdateProduct(updateStockProduct);
+            }
+            return new APISuccessResult<string>("Cancel order successfully!");
+        }
+        //Store approve order cancel request
+        public APIResult<string> ApproveOrderCancelRequestStore(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 7: Cancelled by Customer
+            if (orderEntity.Status == 5)
+            {
+                orderEntity.Status = 7;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is either being packed or delivered!");
+            }
+
+            // Increase stock of product for each order item cancelled
+            foreach (OrderItem od in orderEntity.OrderItems)
+            {
+                Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
+                if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
+                updateStockProduct.Stock += od.Quantity;
+                updateStockProduct.UpdatedAt = DateTime.Now;
+                ProductDAO.UpdateProduct(updateStockProduct);
+            }
+            return new APISuccessResult<string>("Request approved!");
+        }
+        //Store decline order cancel request
+        public APIResult<string> DeclineOrderCancelRequestStore(long orderId, long currentUserId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            // Change order status to 4: delivering
+            if (orderEntity.Status == 5)
+            {
+                orderEntity.Status = 4;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order is either being packed or delivered!");
+            }
+
+            return new APISuccessResult<string>("Request declined!");
         }
 
         // Store deliver the order by orderId

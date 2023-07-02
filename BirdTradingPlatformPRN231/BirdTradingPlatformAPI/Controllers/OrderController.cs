@@ -89,18 +89,79 @@ namespace BirdTradingPlatformAPI.Controllers
         }
 
         // CUSTOMER: Cancel an order detail of a currently logined user *** doi thanh post kem voi cancel reason ***
-        //[HttpGet("Customer/Cancel/{id}")]
-        //[Authorize(Roles = "CUSTOMER")]
-        //public IActionResult CancelOrderDetailCustomer(long id)
-        //{
-        //    var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    if (String.IsNullOrEmpty(idString)) return Unauthorized();
-        //    long currentUserId = long.Parse(idString);
+        [HttpPut("CustomerCancel/{id}")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult CancelOrderDetailCustomer(long id, [FromBody] string cancelReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
 
-        //    var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId);
-        //    if (result == null) return NotFound("Can't cancel this order!");
-        //    return Ok(result);
-        //}
+            var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId, cancelReason);
+            if (result == null) return NotFound("Can't cancel this order!");
+            return Ok(result);
+        }
+        //CUSTOMER: Send cancel request of an order detail of currently logined user
+        [HttpPut("CancelRequest/{id}")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult RequestCancelOrderDetailCustomer(long id, [FromBody] string cancelReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.RequestCancelOrderDetailCustomer(id, currentUserId, cancelReason);
+            if (result == null) return NotFound("Can't cancel this order!");
+            return Ok(result);
+        }
+        [HttpPut("ApproveOrder/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult ApproveOrderStore(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.ApproveOrderStore(id, currentUserId);
+            if (result == null) return NotFound("Can't approve this order!");
+            return Ok(result);
+        }
+        [HttpPut("StoreCancel/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult CancelOrderDetailStore(long id, [FromBody] string cancelReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.CancelOrderDetailStore(id, currentUserId, cancelReason);
+            if (result == null) return NotFound("Can't cancel this order!");
+            return Ok(result);
+        }
+        [HttpPut("CancelApprove/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult ApproveOrderCancelRequestStore(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.ApproveOrderCancelRequestStore(id, currentUserId);
+            if (result == null) return NotFound("Can't approve this request!");
+            return Ok(result);
+        }
+        [HttpPut("CancelDeclined/{id}")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult DeclineOrderCancelRequestStore(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.DeclineOrderCancelRequestStore(id, currentUserId);
+            if (result == null) return NotFound("Can't approve this request!");
+            return Ok(result);
+        }
 
         [HttpPut("Deliver/{id}")]
         [Authorize(Roles = "STORE")]
