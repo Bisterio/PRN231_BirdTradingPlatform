@@ -101,6 +101,7 @@ namespace BirdTradingPlatformAPI.Controllers
             if (result == null) return NotFound("Can't cancel this order!");
             return Ok(result);
         }
+
         //CUSTOMER: Send cancel request of an order detail of currently logined user
         [HttpPut("CancelRequest/{id}")]
         [Authorize(Roles = "CUSTOMER")]
@@ -114,6 +115,7 @@ namespace BirdTradingPlatformAPI.Controllers
             if (result == null) return NotFound("Can't cancel this order!");
             return Ok(result);
         }
+
         [HttpPut("ApproveOrder/{id}")]
         [Authorize(Roles = "STORE")]
         public IActionResult ApproveOrderStore(long id)
@@ -126,6 +128,7 @@ namespace BirdTradingPlatformAPI.Controllers
             if (result == null) return NotFound("Can't approve this order!");
             return Ok(result);
         }
+
         [HttpPut("StoreCancel/{id}")]
         [Authorize(Roles = "STORE")]
         public IActionResult CancelOrderDetailStore(long id, [FromBody] string cancelReason)
@@ -138,6 +141,7 @@ namespace BirdTradingPlatformAPI.Controllers
             if (result == null) return NotFound("Can't cancel this order!");
             return Ok(result);
         }
+
         [HttpPut("CancelApprove/{id}")]
         [Authorize(Roles = "STORE")]
         public IActionResult ApproveOrderCancelRequestStore(long id)
@@ -150,6 +154,7 @@ namespace BirdTradingPlatformAPI.Controllers
             if (result == null) return NotFound("Can't approve this request!");
             return Ok(result);
         }
+
         [HttpPut("CancelDeclined/{id}")]
         [Authorize(Roles = "STORE")]
         public IActionResult DeclineOrderCancelRequestStore(long id)

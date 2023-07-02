@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Implementation;
 using Repository.Interface;
+using System.Security.Claims;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
@@ -64,6 +65,42 @@ namespace BirdTradingPlatformAPI.Controllers
             }
 
             var result = _userRepository.RegisterStore(request);
+
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateProfile")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult UpdateProfile([FromBody] UserProfileUpdateDTO profile)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _userRepository.UpdateProfile(currentUserId, profile);
+
+            return Ok(result);
+        }
+
+        [HttpPut("ChangePassword")]
+        [Authorize]
+        public IActionResult ChangePassword([FromBody] UserPasswordUpdateDTO password)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _userRepository.ChangePassword(currentUserId, password);
 
             return Ok(result);
         }

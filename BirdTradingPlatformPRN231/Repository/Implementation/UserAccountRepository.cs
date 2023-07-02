@@ -4,6 +4,7 @@ using BusinessObject.Models;
 using DataAccess;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -192,6 +193,54 @@ namespace Repository.Implementation
             }
 
             return new APIErrorResult<bool>("Can't add new store to database.");
+        }
+
+        public APIResult<bool> UpdateProfile(long currentUserId, UserProfileUpdateDTO profile)
+        {
+            if (profile == null) return new APIErrorResult<bool>("The new profile cannot be empty.");
+
+            UserAccount user = UserAccountDAO.FindUserById(currentUserId);
+
+            if (user == null) return new APIErrorResult<bool>("This user is not existed.");
+            else
+            {
+                // Change user's name and phone
+                user.Name = profile.Name;
+                user.Phone = profile.Phone;
+
+                UserAccountDAO.UpdateUser(user);
+                return new APISuccessResult<bool>();
+            }
+        }
+
+        public APIResult<bool> ChangePassword(long currentUserId, UserPasswordUpdateDTO password)
+        {
+            if (password == null) return new APIErrorResult<bool>("The new password cannot be empty.");
+
+            UserAccount user = UserAccountDAO.FindUserById(currentUserId);
+
+            if (!BC.Verify(password.OldPassword, user.Password))
+            {
+                return new APIErrorResult<bool>("The old password is not corrected.");
+            }
+            else if (password.NewPassword == password.OldPassword)
+            {
+                return new APIErrorResult<bool>("The new password must be diffent from old password.");
+            } 
+            else if (password.ConfirmPassword != password.NewPassword)
+            {
+                return new APIErrorResult<bool>("The new password and confirm password are not the same.");
+            }
+
+            if (user == null) return new APIErrorResult<bool>("This user is not existed.");
+            else
+            {
+                // Change user's password
+                user.Password = BC.HashPassword(password.NewPassword);
+
+                UserAccountDAO.UpdateUser(user);
+                return new APISuccessResult<bool>();
+            }
         }
     }
 }
