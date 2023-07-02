@@ -1,7 +1,18 @@
 ﻿@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
     ViewData["Title"] = "Checkout";
 }
+<style>
+    .item-name-style{
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 30px !important;
+    }
 
+</style>
 <!-- Shop Checkouts Content -->
 <section class="shop-checkouts pt30">
     <div class="container">
@@ -11,6 +22,8 @@
                     <h2 class="title">Checkout</h2>
                 </div>
             </div>
+        </div>
+        <div class="ui_kit_message_box" id="alert-box">
         </div>
         <div class="row">
             <div class="col-lg-8 col-xl-9">
@@ -22,31 +35,31 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="form-label">Full Name</label>
-                                        <input class="form-control form_control" type="text">
+                                        <input id="name-input" class="form-control form_control" type="text" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="form-label">Street address*</label>
-                                        <input class="form-control form_control" type="text">
+                                        <input id="shipping-address" class="form-control form_control" type="text" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">Contact Phone*</label>
-                                        <input name="form_phone" class="form-control form_control" type="number">
+                                        <input id="phone-input" name="form_phone" class="form-control form_control" type="number" required pattern="^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">Contact Email</label>
-                                        <input name="form_email" class="form-control form_control email" type="email">
+                                        <input id="email-input" name="form_email" class="form-control form_control email" type="email" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group mb0">
                                         <label class="ai_title">Order notes (optional)</label>
-                                        <textarea name="form_message" class="form-control" rows="12" placeholder="">Order Notes</textarea>
+                                        <textarea id="note-input" name="form_message" class="form-control" rows="12" placeholder="">Order Notes</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -57,12 +70,8 @@
             <div class="col-lg-4 col-xl-3">
                 <div class="order_sidebar_widget checkout_page mb30 mb30">
                     <h4 class="title">Your Order</h4>
-                    <ul>
-                        <li><p class="product_name_qnt">Apple MacBook Pro with Apple M1 Chip x 2 </p><span class="price">$229.99</span></li>
-                        <li class="pb0"><p class="product_name_qnt">Apple MacBook Pro with Apple M1 Chip x 2 </p><span class="price">$229.99</span></li>
-                        <li class="subtitle"><p>Sub Total <span class="float-end totals">$854.98</span></p></li>
-                        <li class="subtitle"><p>Shipping <span class="float-end totals">$20</span></p></li>
-                        <li class="subtitle"><p>Total <span class="float-end totals">$225.98</span></p></li>
+                    <ul id="total-widget">
+                        
                     </ul>
                 </div>
                 <div class="order_sidebar_widget checkout_page mb30 mb30">
@@ -98,9 +107,129 @@
                     </label>
                 </div>
                 <div class="ui_kit_button payment_widget_btn">
-                    <button type="button" class="btn btn-thm btn-block mb0">Place Order</button>
+                    <button type="button" id="submit-button" class="btn btn-thm btn-block mb0">Place Order</button>
                 </div>
             </div>
         </div>
     </div>
 </section>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let checkoutItems = [];
+            let totalShippingCost = 0;
+            if (localStorage.getItem("checkoutItems") && localStorage.getItem("shippingAddress")) {
+                checkoutItems = JSON.parse(localStorage.getItem("checkoutItems"));
+                $("#shipping-address").val(localStorage.getItem("shippingAddress"));
+
+                var itemGroups = checkoutItems.reduce((stores, item) => {
+                    const store = (stores[item.storeId] || []);
+                    store.push(item);
+                    stores[item.storeId] = store;
+                    return stores;
+                }, {});
+                
+
+                var totalWidget = $("#total-widget");
+                totalWidget.html("");
+                
+                for (let storeId in itemGroups) {
+                    let item = itemGroups[storeId];
+                    
+                    totalShippingCost += item[0].shippingCost;
+                    totalWidget.append(`<li class="subtitle store-section" data-id="` + storeId + `">
+                     <p>`+ item[0].product.storeName + `</p>
+                     </li>`);
+
+                    let storeProducts = $(".store-section").filter(function () {
+                        return $(this).data('id') == storeId;
+                    });
+
+                    item.forEach((cartItem, index) => {
+                        let totalOfProduct = cartItem.product.unitPrice * cartItem.quantity;
+                        storeProducts.append(`<p class="item-name-style">` + cartItem.product.name + ` x ` + cartItem.quantity + ` <span class="float-end totals">` + totalOfProduct.toLocaleString('vi') + ` VND</span></p>`);
+                    });
+
+                    storeProducts.append(`<p class="item-name-style">Shipping Cost <span class="float-end totals">` + item[0].shippingCost.toLocaleString('vi') + ` VND</span></p>`);
+                }
+                let sumPrice = checkoutItems.reduce((accumulator, item) => {
+                    return accumulator + item.quantity * item.product.unitPrice;
+                }, 0) + totalShippingCost;
+                
+                totalWidget.append(`<li class="subtitle"><p>Total <span class="float-end totals">` + sumPrice.toLocaleString('vi') + ` VND</span></p></li>`);
+                
+            }else {
+                window.location.href = "/Cart";
+            }
+
+            // Form submit
+            $("#submit-button").unbind().on('click', function (e) {
+                $("#coupon_form").submit();
+            });
+
+            $("#coupon_form").unbind().on('submit', function (e) {
+                e.preventDefault();
+                submitOrder();
+            });
+
+            function submitOrder() {
+                let address = $("#shipping-address").val();
+                let email = $("#email-input").val();
+                let name = $("#name-input").val();
+                let paymentMethod = 'Direct Bank Transfer';
+                let phone = $("#phone-input").val();
+                let note = $("#note-input").val();
+
+                let checkoutList = [];
+                if (localStorage.getItem("checkoutItems")) {
+                    checkoutList = JSON.parse(localStorage.getItem("checkoutItems"));
+                    checkoutList = checkoutList.map(function (i) {
+                        return {
+                            productId: i.product.productId,
+                            quantity: i.quantity,
+                            storeId: i.storeId,
+                            unitPrice: i.product.unitPrice,
+                            shippingCost: i.shippingCost
+                        }
+                    });
+                } else {
+                    return false;
+                }
+
+                $.ajax({
+                    url: "/Cart/CreateOrder",
+                    type: "post",
+                    data: JSON.stringify({
+                        address: address,
+                        email: email,
+                        name: name,
+                        paymentMethod: paymentMethod,
+                        phone: phone,
+                        totalShippingCost: totalShippingCost,
+                        note: note,
+                        cartItems: checkoutList
+                    }),
+                    contentType: "application/json",
+                    success: function (result, status, xhr) {
+                        if (result.isSuccess) {
+                            localStorage.removeItem('checkoutItems');
+                            localStorage.removeItem('shippingAddress');
+                            localStorage.removeItem('cart');
+                            console.log(result.resultObj);
+                            window.location.href = "/Invoice/Detail/" + result.resultObj;
+                        } else {
+                            $("#alert-box").append(`<div class="alert alart_style_three alert-dismissible fade show" role="alert">
+                                        `+ result.message + `
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                    </div>`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                        window.location.href = "/Home/Logout";
+                    }
+                });
+            }
+        });
+    </script>
+}

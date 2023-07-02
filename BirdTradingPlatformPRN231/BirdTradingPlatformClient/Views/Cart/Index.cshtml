@@ -16,6 +16,9 @@
                 </div>
             </div>
         </div>
+        <div class="ui_kit_message_box" id="alert-box">
+                
+        </div>
         <div class="row mt15" id="cart-page">
             <div class="col-lg-8 col-xl-9">
                 <div class="shopping_cart_table table-responsive" id="cart-items-table">
@@ -49,7 +52,7 @@
             var cartPage = $("#cart-page");
             cartItemTable.html("");
             let cart = {};
-            if (localStorage.getItem("cart")) {
+            if (localStorage.getItem("cart") && JSON.parse(localStorage.getItem("cart")) != {}) {
                 cart = JSON.parse(localStorage.getItem("cart"));
                 var cartList = Object.values(cart);
                 var cartGroups = cartList.reduce((stores, item) => {
@@ -63,19 +66,19 @@
                     let item = cartGroups[storeId];
                     // Each store section
                     cartItemTable.append(`<table class="table table-borderless table-store-order"  data-id="` + storeId + `">
-                            <thead>
-                             <tr style="background-color: #d2caf7"><th colspan="5">Store: `+ item[0].product.storeName + ` - ` + item[0].product.storeAddress + `</th></tr>
-                            <tr>
-                            <th scope="col">PRODUCT</th>
-                           <th scope="col">PRICE</th>
-                           <th scope="col">QUANTITY</th>
-                            <th scope="col">TOTAL</th>
-                           <th scope="col">REMOVE</th>
-                            </tr>
-                          </thead>
-                         <tbody class="table_body store-product" data-id="` + storeId + `">
-                        </tbody>
-                         </table>`);
+                                    <thead>
+                                     <tr style="background-color: #d2caf7"><th colspan="5">Store: `+ item[0].product.storeName + ` - ` + item[0].product.storeAddress + `</th></tr>
+                                    <tr>
+                                    <th scope="col">PRODUCT</th>
+                                   <th scope="col">PRICE</th>
+                                   <th scope="col">QUANTITY</th>
+                                    <th scope="col">TOTAL</th>
+                                   <th scope="col">REMOVE</th>
+                                    </tr>
+                                  </thead>
+                                 <tbody class="table_body store-product" data-id="` + storeId + `">
+                                </tbody>
+                                 </table>`);
 
                     let storeProducts = $(".store-product").filter(function () {
                         return $(this).data('id') == storeId;
@@ -84,33 +87,33 @@
                     item.forEach((cartItem, index) => {
                         let totalOfProduct = cartItem.product.unitPrice * cartItem.quantity;
                         storeProducts.append(`<tr class="order-item-tr" data-id="` + cartItem.product.productId + `">
-                           <th scope="row">
-                            <ul class="cart_list d-block d-xl-flex">
-                           <li class="ps-1 ps-sm-4 pe-1 pe-sm-4">
-                           <a asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
-                            <img src="`+ cartItem.product.image + `" alt="cart1.png" style="width: 180px" class="img-fluid">
-                           </a></li>
-                             <li class="ms-2 ms-md-3">
-                            <a class="cart_title" asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
-                            <span class="fz16">`+ cartItem.product.name + `</span> <br>
-                             <span class="fz14"><span class="fw500">Category:</span> `+ cartItem.product.categoryName + `</span><br>
-                           </a>
-                           </li>
-                           </ul>
-                            </th>
-                           <td>` + cartItem.product.unitPrice.toLocaleString('vi') + ` VND</td>
-                            <td>
-                           <div class="cart_btn">
-                           <div class="quantity-block">
-                        <button class="quantity-arrow-minus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fa fa-minus"></span> </button>
-                        <input class="quantity-num inner_page" type="number" value="`+ cartItem.quantity + `" data-id="` + cartItem.product.productId + `" data-stock="` + cartItem.product.stock + `" data-price="` + cartItem.product.unitPrice + `"/>
-                         <button class="quantity-arrow-plus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fas fa-plus"></span> </button>
-                            </div>
-                           </div>
-                          </td>
-                           <td class="total-of-product" data-id="`+ cartItem.product.productId + `">` + totalOfProduct.toLocaleString('vi') + ` VND</td>
-                          <td class=""><span class="flaticon-close remove-item" data-id="`+ cartItem.product.productId + `"></span></td>
-                           </tr>`);
+                                   <th scope="row">
+                                    <ul class="cart_list d-block d-xl-flex">
+                                   <li class="ps-1 ps-sm-4 pe-1 pe-sm-4">
+                                   <a asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
+                                    <img src="`+ cartItem.product.image + `" alt="cart1.png" style="width: 180px" class="img-fluid">
+                                   </a></li>
+                                     <li class="ms-2 ms-md-3">
+                                    <a class="cart_title" asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
+                                    <span class="fz16">`+ cartItem.product.name + `</span> <br>
+                                     <span class="fz14"><span class="fw500">Category:</span> `+ cartItem.product.categoryName + `</span><br>
+                                   </a>
+                                   </li>
+                                   </ul>
+                                    </th>
+                                   <td>` + cartItem.product.unitPrice.toLocaleString('vi') + ` VND</td>
+                                    <td>
+                                   <div class="cart_btn">
+                                   <div class="quantity-block">
+                                <button class="quantity-arrow-minus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fa fa-minus"></span> </button>
+                                <input class="quantity-num inner_page" type="number" value="`+ cartItem.quantity + `" data-id="` + cartItem.product.productId + `" data-stock="` + cartItem.product.stock + `" data-price="` + cartItem.product.unitPrice + `"/>
+                                 <button class="quantity-arrow-plus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fas fa-plus"></span> </button>
+                                    </div>
+                                   </div>
+                                  </td>
+                                   <td class="total-of-product" data-id="`+ cartItem.product.productId + `">` + totalOfProduct.toLocaleString('vi') + ` VND</td>
+                                  <td class=""><span class="flaticon-close remove-item" data-id="`+ cartItem.product.productId + `"></span></td>
+                                   </tr>`);
 
                         let $quantityNum1 = $('.quantity-num').filter(function () {
                             return $(this).data('id') == cartItem.product.productId;
@@ -178,6 +181,7 @@
                                 if (removeTr.parent().children().length == 1) {
 
                                     if ($('#cart-items-table').children().length == 1) {
+                                        localStorage.removeItem("cart");
                                         cartPage.html("");
                                         cartPage.append(`<div class="my-5"><h3 class="text-center">No items to be shown</h3></div>`);
                                     } else {
@@ -191,10 +195,10 @@
                                     removeTr.remove();
                                 }
 
-                                if ($.trim($(".store-product").html()) == '') {
-                                    console.log($(this).data('id'));
+                                if (!isEmpty(cart)) {
+                                    localStorage.setItem("cart", JSON.stringify(cart));
                                 }
-                                localStorage.setItem("cart", JSON.stringify(cart));
+
                                 loadCart();
                                 loadCartTotal();
                             };
@@ -203,6 +207,7 @@
                     });
                 }
             } else {
+                localStorage.removeItem("cart");
                 cartPage.html("");
                 cartPage.append(`<div class="my-5"><h3 class="text-center">No items to be shown</h3></div>`);
             }
@@ -230,19 +235,19 @@
                 if (localStorage.getItem("cart")) {
                     cart = JSON.parse(localStorage.getItem("cart"));
                     cartList = Object.values(cart);
-                    cartList = cartList.map(function (i) { 
-                        return { 
+                    cartList = cartList.map(function (i) {
+                        return {
                             productId: i.product.productId,
                             quantity: i.quantity,
                             storeId: i.storeId
-                        } 
+                        }
                     });
                 } else {
                     return false;
                 }
 
                 $.ajax({
-                    url: "/Cart",
+                    url: "/Cart/GetShippingCost",
                     type: "post",
                     data: JSON.stringify({
                         shippingAddress: address,
@@ -250,13 +255,33 @@
                     }),
                     contentType: "application/json",
                     success: function (result, status, xhr) {
+                        if (result.isSuccess){
+                            localStorage.setItem("checkoutItems", JSON.stringify(result.resultObj.cartItems));
+                            localStorage.setItem("shippingAddress", result.resultObj.shippingAddress);
+                            window.location.href = "/Cart/Checkout";
+                        } else {
+                            $("#alert-box").append(`<div class="alert alart_style_three alert-dismissible fade show" role="alert">
+                                `+ result.message +`
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                            </div>`);
+                        }
                     },
                     error: function (xhr, status, error) {
-                        console.log(xhr);
+                        if(xhr.status == 401){
+                            window.location.href = "/Home/Login";
+                        }
                     }
                 });
             }
 
+            function isEmpty(obj) {
+                for (const prop in obj) {
+                    if (Object.hasOwn(obj, prop)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
     </script>
 }
