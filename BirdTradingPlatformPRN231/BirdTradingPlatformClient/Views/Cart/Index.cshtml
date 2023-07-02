@@ -1,4 +1,8 @@
 ﻿@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
     ViewData["Title"] = "Cart";
 }
 
@@ -12,105 +16,247 @@
                 </div>
             </div>
         </div>
-        <div class="row mt15">
+        <div class="row mt15" id="cart-page">
             <div class="col-lg-8 col-xl-9">
-                <div class="shopping_cart_table table-responsive">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">PRODUCT</th>
-                                <th scope="col">PRICE</th>
-                                <th scope="col">QUANTITY</th>
-                                <th scope="col">TOTAL</th>
-                                <th scope="col">REMOVE</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table_body">
-                            <tr>
-                                <th scope="row">
-                                    <ul class="cart_list d-block d-xl-flex">
-                                        <li class="ps-1 ps-sm-4 pe-1 pe-sm-4"><a href="#"><img src="images/shop/cart1.png" alt="cart1.png"></a></li>
-                                        <li class="ms-2 ms-md-3">
-                                            <a class="cart_title" href="#">
-                                                <span class="fz16">Apple MacBook Pro with <br class="d-none d-md-block"> Apple M1 Chip</span> <br>
-                                                <span class="fz14"><span class="fw500">Hard Drive Capacity:</span> 256</span><br>
-                                                <span class="fz14"><span class="fw500">Actual Color:</span> Silver</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </th>
-                                <td>$3.399</td>
-                                <td>
-                                    <div class="cart_btn">
-                                        <div class="quantity-block">
-                                            <button class="quantity-arrow-minus inner_page"> <span class="fa fa-minus"></span> </button>
-                                            <input class="quantity-num inner_page" type="number" value="3" />
-                                            <button class="quantity-arrow-plus inner_page"> <span class="fas fa-plus"></span> </button>
-                                        </div>
-                                    </div>
-                                    <!-- <input class="cart_count text-center" placeholder="2" type="number"> -->
-                                </td>
-                                <td class="">$3.399</td>
-                                <td class=""><span class="flaticon-close"></span></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <ul class="cart_list d-block d-xl-flex">
-                                        <li class="ps-1 ps-sm-4 pe-1 pe-sm-4"><a href="#"><img src="images/shop/cart1.png" alt="cart1.png"></a></li>
-                                        <li class="ms-2 ms-md-3">
-                                            <a class="cart_title" href="#">
-                                                <span class="fz16">Apple MacBook Pro with <br class="d-none d-md-block"> Apple M1 Chip</span> <br>
-                                                <span class="fz14"><span class="fw500">Hard Drive Capacity:</span> 256</span><br>
-                                                <span class="fz14"><span class="fw500">Actual Color:</span> Silver</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </th>
-                                <td>$3.399</td>
-                                <td>
-                                    <div class="cart_btn">
-                                        <div class="quantity-block">
-                                            <button class="quantity-arrow-minus2 inner_page"> <span class="fa fa-minus"></span> </button>
-                                            <input class="quantity-num2 inner_page" type="number" value="3" />
-                                            <button class="quantity-arrow-plus2 inner_page"> <span class="fas fa-plus"></span> </button>
-                                        </div>
-                                    </div>
-                                    <!-- <input class="cart_count text-center" placeholder="2" type="number"> -->
-                                </td>
-                                <td class="">$3.399</td>
-                                <td class=""><span class="flaticon-close"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="checkout_form mt30">
-                        <div class="checkout_coupon posr d-block d-xl-flex">
-                            <form class="form_one posr mb10-lg">
-                                <button type="button" class="btn btn_shopping btn-white me-3">Remove All</button>
-                            </form>
-                            <form class="form_two">
-                                <button type="button" class="btn btn_shopping btn-white me-3">Continue Shopping</button>
-                                <button type="button" class="btn btn_cart btn3 btn-thm">Update Cart</button>
-                            </form>
-                        </div>
-                    </div>
+                <div class="shopping_cart_table table-responsive" id="cart-items-table">
                 </div>
             </div>
-            <div class="col-lg-4 col-xl-3">
+            <div class="col-lg-4 col-xl-3" id="cart-total-widget">
                 <div class="order_sidebar_widget style2">
                     <h4 class="title">Cart Totals</h4>
                     <ul>
-                        <li class="subtitle"><p>Product Subtotal <span class="float-end">$229.99</span></p></li>
-                        <li class="subtitle"><p>Order Discounts <span class="float-end">-$30.01</span></p></li>
-                        <li class="subtitle"><p>Estimated Shipping <span class="float-end">Free</span></p></li>
-                        <li class="subtitle"><p>Estimated Taxes <span class="float-end">$26.00</span></p></li>
-                        <li class="subtitle"><hr></li>
-                        <li class="subtitle totals"><p>Total <span class="float-end">$225.98</span></p></li>
+                        <li class="subtitle"><p>Totals <span class="float-end" id="cart-widget-total">0 VND</span></p></li>
+
                     </ul>
-                    <div class="ui_kit_button payment_widget_btn">
-                        <button type="button" class="btn btn-thm btn-block">Proceed to checkout</button>
-                    </div>
+                    <label class="form-label">Shipping Address (to calculate shipping cost)</label>
+                    <form id="shipping-form">
+                        <input type="text" class="form-control" id="address-input" placeholder="Enter your Address" required>
+                        <div class="ui_kit_button payment_widget_btn">
+                            <button type="submit" class="btn btn-thm btn-block" id="checkout-button">Proceed to checkout</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadCartTotal();
+            var cartItemTable = $("#cart-items-table");
+            var cartTotal = $("#cart-total-widget");
+            var cartPage = $("#cart-page");
+            cartItemTable.html("");
+            let cart = {};
+            if (localStorage.getItem("cart")) {
+                cart = JSON.parse(localStorage.getItem("cart"));
+                var cartList = Object.values(cart);
+                var cartGroups = cartList.reduce((stores, item) => {
+                    const store = (stores[item.storeId] || []);
+                    store.push(item);
+                    stores[item.storeId] = store;
+                    return stores;
+                }, {});
+
+                for (let storeId in cartGroups) {
+                    let item = cartGroups[storeId];
+                    // Each store section
+                    cartItemTable.append(`<table class="table table-borderless table-store-order"  data-id="` + storeId + `">
+                            <thead>
+                             <tr style="background-color: #d2caf7"><th colspan="5">Store: `+ item[0].product.storeName + ` - ` + item[0].product.storeAddress + `</th></tr>
+                            <tr>
+                            <th scope="col">PRODUCT</th>
+                           <th scope="col">PRICE</th>
+                           <th scope="col">QUANTITY</th>
+                            <th scope="col">TOTAL</th>
+                           <th scope="col">REMOVE</th>
+                            </tr>
+                          </thead>
+                         <tbody class="table_body store-product" data-id="` + storeId + `">
+                        </tbody>
+                         </table>`);
+
+                    let storeProducts = $(".store-product").filter(function () {
+                        return $(this).data('id') == storeId;
+                    });
+
+                    item.forEach((cartItem, index) => {
+                        let totalOfProduct = cartItem.product.unitPrice * cartItem.quantity;
+                        storeProducts.append(`<tr class="order-item-tr" data-id="` + cartItem.product.productId + `">
+                           <th scope="row">
+                            <ul class="cart_list d-block d-xl-flex">
+                           <li class="ps-1 ps-sm-4 pe-1 pe-sm-4">
+                           <a asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
+                            <img src="`+ cartItem.product.image + `" alt="cart1.png" style="width: 180px" class="img-fluid">
+                           </a></li>
+                             <li class="ms-2 ms-md-3">
+                            <a class="cart_title" asp-action="Detail" asp-controller="Product" asp-route-id="`+ cartItem.product.productId + `">
+                            <span class="fz16">`+ cartItem.product.name + `</span> <br>
+                             <span class="fz14"><span class="fw500">Category:</span> `+ cartItem.product.categoryName + `</span><br>
+                           </a>
+                           </li>
+                           </ul>
+                            </th>
+                           <td>` + cartItem.product.unitPrice.toLocaleString('vi') + ` VND</td>
+                            <td>
+                           <div class="cart_btn">
+                           <div class="quantity-block">
+                        <button class="quantity-arrow-minus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fa fa-minus"></span> </button>
+                        <input class="quantity-num inner_page" type="number" value="`+ cartItem.quantity + `" data-id="` + cartItem.product.productId + `" data-stock="` + cartItem.product.stock + `" data-price="` + cartItem.product.unitPrice + `"/>
+                         <button class="quantity-arrow-plus inner_page" data-id="`+ cartItem.product.productId + `"> <span class="fas fa-plus"></span> </button>
+                            </div>
+                           </div>
+                          </td>
+                           <td class="total-of-product" data-id="`+ cartItem.product.productId + `">` + totalOfProduct.toLocaleString('vi') + ` VND</td>
+                          <td class=""><span class="flaticon-close remove-item" data-id="`+ cartItem.product.productId + `"></span></td>
+                           </tr>`);
+
+                        let $quantityNum1 = $('.quantity-num').filter(function () {
+                            return $(this).data('id') == cartItem.product.productId;
+                        });
+                        $quantityNum1.val(cartItem.quantity);
+
+                        var $removeItemButton = $(".remove-item");
+                        var $quantityArrowMinus1 = $(".quantity-arrow-minus");
+                        var $quantityArrowPlus1 = $(".quantity-arrow-plus");
+
+                        $quantityArrowMinus1.unbind().on('click', function () {
+                            var clickedItemId = $(this).data("id");
+                            let quantityNum = $('.quantity-num').filter(function () {
+                                return $(this).data('id') == clickedItemId;
+                            });
+                            let productTotal = $('.total-of-product').filter(function () {
+                                return $(this).data('id') == clickedItemId;
+                            });
+                            if (quantityNum.val() > 1) {
+                                quantityNum.val(+quantityNum.val() - 1);
+                                let newTotalOfProduct = quantityNum.data("price") * +quantityNum.val();
+                                productTotal.html(newTotalOfProduct.toLocaleString('vi') + " VND");
+                                let cart = {};
+                                if (localStorage.getItem("cart")) {
+                                    cart = JSON.parse(localStorage.getItem("cart"));
+                                    cart[clickedItemId].quantity = quantityNum.val();
+                                    localStorage.setItem("cart", JSON.stringify(cart));
+                                    loadCart();
+                                    loadCartTotal();
+                                };
+                            }
+                        });
+                        $quantityArrowPlus1.unbind().on('click', function () {
+                            var clickedItemId = $(this).data("id");
+                            let quantityNum = $('.quantity-num').filter(function () {
+                                return $(this).data('id') == clickedItemId;
+                            });
+                            let productTotal = $('.total-of-product').filter(function () {
+                                return $(this).data('id') == clickedItemId;
+                            });
+                            if (quantityNum.val() < quantityNum.data('stock')) {
+                                quantityNum.val(+quantityNum.val() + 1);
+                                let newTotalOfProduct = quantityNum.data("price") * +quantityNum.val();
+                                productTotal.html(newTotalOfProduct.toLocaleString('vi') + " VND");
+                                let cart = {};
+                                if (localStorage.getItem("cart")) {
+                                    cart = JSON.parse(localStorage.getItem("cart"));
+                                    cart[clickedItemId].quantity = quantityNum.val();
+                                    localStorage.setItem("cart", JSON.stringify(cart));
+                                    loadCart();
+                                    loadCartTotal();
+                                };
+                            }
+                        });
+
+                        $removeItemButton.unbind().on('click', function () {
+                            var clickedItemId = $(this).data("id");
+                            let removeTr = $('.order-item-tr').filter(function () {
+                                return $(this).data('id') == clickedItemId;
+                            });
+                            let cart = {};
+                            if (localStorage.getItem("cart")) {
+                                cart = JSON.parse(localStorage.getItem("cart"));
+                                delete cart[clickedItemId];
+                                if (removeTr.parent().children().length == 1) {
+
+                                    if ($('#cart-items-table').children().length == 1) {
+                                        cartPage.html("");
+                                        cartPage.append(`<div class="my-5"><h3 class="text-center">No items to be shown</h3></div>`);
+                                    } else {
+                                        let storeDeleteId = removeTr.parent().data('id');
+                                        let removeTable = $('.table-store-order').filter(function () {
+                                            return $(this).data('id') == storeDeleteId;
+                                        });
+                                        removeTable.remove();
+                                    }
+                                } else {
+                                    removeTr.remove();
+                                }
+
+                                if ($.trim($(".store-product").html()) == '') {
+                                    console.log($(this).data('id'));
+                                }
+                                localStorage.setItem("cart", JSON.stringify(cart));
+                                loadCart();
+                                loadCartTotal();
+                            };
+                        });
+
+                    });
+                }
+            } else {
+                cartPage.html("");
+                cartPage.append(`<div class="my-5"><h3 class="text-center">No items to be shown</h3></div>`);
+            }
+
+
+            function loadCartTotal() {
+                let cart = {};
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                    let sumPrice = sum(cart);
+                    $("#cart-widget-total").html(sumPrice.toLocaleString('vi') + " VND");
+                }
+            }
+
+            $("#shipping-form").unbind().on('submit', function (e) {
+                e.preventDefault();
+                submitCartAddress();
+            });
+
+            function submitCartAddress() {
+                let address = $("#address-input").val();
+
+                let cart = {};
+                let cartList = [];
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                    cartList = Object.values(cart);
+                    cartList = cartList.map(function (i) { 
+                        return { 
+                            productId: i.product.productId,
+                            quantity: i.quantity,
+                            storeId: i.storeId
+                        } 
+                    });
+                } else {
+                    return false;
+                }
+
+                $.ajax({
+                    url: "/Cart",
+                    type: "post",
+                    data: JSON.stringify({
+                        shippingAddress: address,
+                        cartItems: cartList
+                    }),
+                    contentType: "application/json",
+                    success: function (result, status, xhr) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                    }
+                });
+            }
+
+        });
+    </script>
+}

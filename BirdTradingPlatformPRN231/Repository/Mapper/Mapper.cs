@@ -47,7 +47,8 @@ namespace Repository
                 StoreAddress = entity.Store?.Address,
                 StoreDescription = entity.Store?.Description,
                 StoreCoverImage = entity.Store?.CoverImage,
-                StoreLogoImage = entity.Store?.LogoImage
+                StoreLogoImage = entity.Store?.LogoImage,
+                StoreId = entity.StoreId
             };
         }
 

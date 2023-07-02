@@ -40,6 +40,10 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index");
+            }
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 TempData["ReturnUrl"] = returnUrl;
@@ -50,6 +54,10 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index");
+            }
             return View(new RegisterCustomerDTO());
         }
 

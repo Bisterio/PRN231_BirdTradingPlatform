@@ -126,5 +126,15 @@ namespace BirdTradingPlatformAPI.Controllers
 
             return Ok(result);
         }
+
+        // CUSTOMER: Check for shipping cost and item's valid
+        [HttpPost("CalculateShip")]
+        //[Authorize(Roles = "CUSTOMER")]
+        public async Task <IActionResult> CheckShippingCost([FromBody] CartAddressDTO request)
+        {
+            var result = await _productRepository.CheckShippingCost(request);
+
+            return Ok(result);
+        }
     }
 }

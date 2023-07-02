@@ -1,6 +1,10 @@
 ﻿@model BusinessObject.DTOs.ClientProductViewListDTO
 
 @{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
     ViewData["Title"] = "Products";
 }
 
@@ -184,7 +188,7 @@
                                                 <img style="height: 180px" class="img-fluid" src="@item.Image" alt="Shop Item1">
                                             </a>
                                             <div class="shop_item_cart_btn d-grid">
-                                                <a href="#cart" data-itemid="@item.ProductId" class="btn btn-thm">Add to Cart</a>
+                                                <button data-id="@item.ProductId" class="add-cart-btn btn btn-thm">Add to Cart</button>
                                             </div>
                                         </div>
                                         <div class="details">
@@ -293,6 +297,38 @@
 <!-- End Content -->
 @section Scripts {
     <script>
+        $(document).ready(function () {
+            var currentProductList = @Html.Raw(Json.Serialize(Model.ProductsPaginated));
+
+            // Set add to cart button onclick
+            $(".add-cart-btn").unbind().on('click', function () {
+                var clickedItemId = $(this).data("id");
+                var clickedItem = currentProductList.find(obj => {
+                    return obj.productId == clickedItemId;
+                });
+
+                let cart = {};
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                };
+
+                if(clickedItemId in cart){
+                    if(cart[clickedItemId].quantity < clickedItem.stock){
+                        cart[clickedItemId].quantity++;
+                    }
+                } else {
+                    let cartItem = {
+                        product: clickedItem,
+                        storeId: clickedItem.storeId,
+                        quantity: 1
+                    };
+                    cart[clickedItemId] = cartItem
+                }
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+                loadCart();
+            });
+        });
         function selectChangeHandler() {
             document.getElementById("form-search-orderby").submit();
         }

@@ -71,12 +71,12 @@
                                 <ul class="mb0">
                                     <li class="list-inline-item">
                                         <a class="header_top_iconbox"
-                                           asp-action="Login" asp-controller="Home">
+                                           asp-action="Index" asp-controller="Account">
                                             <div class="d-block d-md-flex">
                                                 <div class="icon"><span class="flaticon-profile"></span></div>
                                                 <div class="details">
-                                                    <p class="subtitle">Sign In</p>
-                                                    <h5 class="title">Customer</h5>
+                                                    <p class="subtitle"></p>
+                                                    <h5 class="title">My Account</h5>
                                                 </div>
                                             </div>
                                         </a>
@@ -143,7 +143,6 @@
                         <ul class="cart">
                             <li class="list-inline-item">
                                 <ul class="dropdown_content" id="cart-list-ul">
-                                    
                                 </ul>
                             </li>
                         </ul>
@@ -405,24 +404,24 @@
                 for (let id in cart) {
                     let item = cart[id];
                     ulList.append(`<li class="list_content cart-item-li" data-id="` + id + `">
-                    <div>
-                    <img class="float-start mt10" src="` + item.product.image + `" alt="75x75">
-                    <p>` + item.product.name + `</p>
-                    <div class="cart_btn home_page_sidebar mt10">
-                    <div class="home_page_sidebar">
-                    <p>Quantity: ` + item.quantity + `</p>
-                    </div><span class="home_page_sidebar price">` + item.product.unitPrice.toLocaleString('vi') + ` VND</span>
-                    </div>
-                    </div>
-                    </li>`);
+                            <div>
+                            <img class="float-start mt10" src="` + item.product.image + `" alt="75x75">
+                            <p>` + item.product.name + `</p>
+                            <div class="cart_btn home_page_sidebar mt10">
+                            <div class="home_page_sidebar">
+                            <p>Quantity: ` + item.quantity + `</p>
+                            </div><span class="home_page_sidebar price">` + item.product.unitPrice.toLocaleString('vi') + ` VND</span>
+                            </div>
+                            </div>
+                            </li>`);
                 }
                 let sumProduct = Object.keys(cart).length;
                 $("#cart-product-items").html(sumProduct);
                 let sumPrice = sum(cart);
                 $("#cart-total").html(sumPrice.toLocaleString('vi') + " VND");
                 ulList.append(`<li class="list_content_total_price">
-                <h5>Total:<span class="total_price float-end">` + sumPrice.toLocaleString('vi') + ` VND</span></h5>
-                </li>`);
+                        <h5>Total:<span class="total_price float-end">` + sumPrice.toLocaleString('vi') + ` VND</span></h5>
+                        </li>`);
             }
         }
 

@@ -166,6 +166,8 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     product = context.Products
+                        .Include(p => p.Store)
+                        .Include(p => p.Category)
                         .SingleOrDefault(p => p.ProductId == productId);
                 }
             }

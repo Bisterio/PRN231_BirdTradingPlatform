@@ -18,6 +18,7 @@ namespace BusinessObject.DTOs
         public decimal UnitPrice { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? CategoryName { get; set; }
+        public long? StoreId { get; set; }
         public string? StoreName { get; set; }
         public string? StoreAddress { get; set; }
         public string? StoreDescription { get; set; }

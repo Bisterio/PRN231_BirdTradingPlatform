@@ -19,5 +19,7 @@ namespace Repository.Interface
         public APIResult<long> AddProduct(ProductCreateDTO product, long currentUserId);
         public APIResult<long> EditProduct(long productId, ProductCreateDTO product, long currentUserId);
         public APIResult<bool> DeleteProduct(long productId, long currentUserId);
+
+        public Task<APIResult<CheckoutViewDTO>> CheckShippingCost(CartAddressDTO request);
     }
 }

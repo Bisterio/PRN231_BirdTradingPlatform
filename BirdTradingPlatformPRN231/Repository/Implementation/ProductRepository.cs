@@ -7,13 +7,27 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Repository.Implementation
 {
     public class ProductRepository : IProductRepository
     {
+        private readonly HttpClient client = null;
+        private string GoogleMapApi = "";
+
+        public ProductRepository()
+        {
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            GoogleMapApi = "https://maps.googleapis.com/maps/api/distancematrix/json";
+        }
+
         // Get product list to be show on client page
         public ClientProductViewListDTO GetProductsPublic(int page, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy)
         {
@@ -174,7 +188,7 @@ namespace Repository.Implementation
             // Get current store
             Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
 
-            if(product != null && currentStore.StoreId != null)
+            if (product != null && currentStore.StoreId != null)
             {
                 Product newProduct = new()
                 {
@@ -198,7 +212,7 @@ namespace Repository.Implementation
                     return new APISuccessResult<long>(newProduct.ProductId);
                 }
                 return new APIErrorResult<long>("Can't add new product to database.");
-            }            
+            }
 
             return new APIErrorResult<long>("Can't add new product to database.");
         }
@@ -280,6 +294,79 @@ namespace Repository.Implementation
             }
 
             return new APIErrorResult<bool>("Can't delete this product.");
+        }
+
+        public async Task<APIResult<CheckoutViewDTO>> CheckShippingCost(CartAddressDTO request)
+        {
+            CheckoutViewDTO resultDTO = new CheckoutViewDTO();
+            List<ShippingCalculatedCartItemDTO> cart = new List<ShippingCalculatedCartItemDTO>();
+
+            // Check for valid product (product status == 1, quantity does not exceed stock)
+            foreach (OrderItemCartDTO cartItem in request.CartItems)
+            {
+                // Get each product and check for status and stock
+                Product? p = ProductDAO.GetProductDetailById(cartItem.ProductId);
+                if (p == null || p.Status == 0)
+                    return new APIErrorResult<CheckoutViewDTO>("Your cart contain one or more item that is unavailable. Please update your cart!");
+                if (cartItem.Quantity <= 0)
+                    return new APIErrorResult<CheckoutViewDTO>($"Quantity for product '{p.Name}' cannot be lower than 0. Please update the quantity of this product!");
+                if (cartItem.Quantity > p.Stock)
+                    return new APIErrorResult<CheckoutViewDTO>($"Quantity for product '{p.Name}' has exceeded the current units in stock for this product. Please update the quantity of this product!");
+            }
+
+            // Separate cart items by storeid
+            var cartItemsGroupedByStore =
+                request.CartItems.GroupBy(c => c.StoreId)
+                .Select(g => new
+                {
+                    StoreId = g.Key,
+                    CartItems = g.Select(cartItem => new
+                    {
+                        cartItem.ProductId,
+                        cartItem.Quantity
+                    })
+                });
+
+            foreach (var storeOrder in cartItemsGroupedByStore.OrderBy(g => g.StoreId))
+            {
+                Store currentStore = StoreDAO.GetStoreById(storeOrder.StoreId);
+
+                // GET distance
+                HttpResponseMessage response = await client.GetAsync(GoogleMapApi + $"?origins={request.ShippingAddress}&destinations={currentStore.Address}&key=AIzaSyDNHSAw4yrVYpCRmZQg43S50ffsoZwqqD8");
+                if (!response.IsSuccessStatusCode) return new APIErrorResult<CheckoutViewDTO>("Cannot get shipping cost from store to user");
+
+                string strData = await response.Content.ReadAsStringAsync();
+                DistanceMatrixResult? data = JsonSerializer.Deserialize<DistanceMatrixResult>(strData, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                long distance = (data.Rows[0].Elements[0].Distance.Value) / 1000;
+                decimal shippingCost = 0;
+                if (distance <= 2)
+                {
+                    shippingCost = 10000;
+                }
+                else
+                {
+                    shippingCost = 10000 + (distance - 2) * 3000;
+                }
+
+                // Add shipping cost
+                foreach (var cartItem in storeOrder.CartItems)
+                {
+                    cart.Add(new ShippingCalculatedCartItemDTO()
+                    {
+                        Product = Mapper.ToProductViewDTO(ProductDAO.GetProductDetailById(cartItem.ProductId)),
+                        ProductId = cartItem.ProductId,
+                        Quantity = cartItem.Quantity,
+                        ShippingCost = shippingCost,
+                        StoreId = storeOrder.StoreId,
+                    });
+                }
+            }
+            resultDTO.ShippingAddress = request.ShippingAddress;
+            resultDTO.CartItems = cart;
+            return new APISuccessResult<CheckoutViewDTO>(resultDTO);
         }
     }
 }

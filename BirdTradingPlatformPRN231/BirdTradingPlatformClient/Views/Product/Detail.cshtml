@@ -1,6 +1,10 @@
 ﻿@model BusinessObject.DTOs.ProductViewDTO
 
 @{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
     ViewData["Title"] = Model.Name;
 }
 
@@ -77,20 +81,7 @@
                 <div class="shop_single_product_details shop_single3_style sidebar ss3_style mb-3 mb-xl-0">
                     <div class="sspd_price mb25">@Model.UnitPrice.ToString("#,##0").Replace(",",".") VND</div>
                     <ul class="cart_btns ui_kit_button mb15">
-                        <li>
-                            <div class="cart_btn home_page_sidebar mb10">
-                                <div class="quantity-block home_page_sidebar">
-                                    <button class="quantity-arrow-minus2 shop_single_page_sidebar">
-                                        <img src="~/images/icons/minus.svg" alt="">
-                                    </button>
-                                    <input class="quantity-num2 shop_single_page_sidebar" type="number" onkeyup="enforceMinMax(this)">
-                                    <button class="quantity-arrow-plus2 shop_single_page_sidebar">
-                                        <span class="flaticon-close"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                        <li><button type="button" class="btn btn-thm w100">Add to cart</button></li>
+                        <li><button type="button" data-id="@Model.ProductId" class="add-cart-btn-detail btn btn-thm w100">Add to cart</button></li>
                     </ul>
                     <hr>
                     <div class="vendor_iconbox style2 d-block d-sm-flex mb-1">
@@ -182,7 +173,7 @@
                                             <img style="height: 180px" class="img-fluid" src="@item.Image" alt="Shop Item1">
                                         </a>
                                         <div class="shop_item_cart_btn d-grid">
-                                            <a href="#cart" class="btn btn-thm">Add to Cart</a>
+                                            <a data-id="@item.ProductId" class="add-cart-btn btn btn-thm">Add to Cart</a>
                                         </div>
                                     </div>
                                     <div class="details">
@@ -205,35 +196,66 @@
         </div>
     </div>
 </section>
-<script>
-    $(document).ready(function () {
-        var $quantityArrowMinus = $(".quantity-arrow-minus2");
-        var $quantityArrowPlus = $(".quantity-arrow-plus2");
-        var $quantityNum = $(".quantity-num2");
-        $quantityNum.val(1);
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var relatedProductList = @Html.Raw(Json.Serialize(Model.RelatedProducts));
 
-        $quantityArrowMinus.click(quantityMinus);
-        $quantityArrowPlus.click(quantityPlus);
-        function quantityMinus() {
-            if ($quantityNum.val() > 1) {
-                $quantityNum.val(+$quantityNum.val() - 1);
-            }
-        }
-        function quantityPlus() {
-            if ($quantityNum.val() < '@Model.Stock') {
-                $quantityNum.val(+$quantityNum.val() + 1);
-            }
-        }
+            // Set add to cart button onclick for related product
+            $(".add-cart-btn").unbind().on('click', function () {
+                var clickedItemId = $(this).data("id");
+                var clickedItem = relatedProductList.find(obj => {
+                    return obj.productId == clickedItemId;
+                });
 
-        function enforceMinMax(el) {
-            if (el.value != "") {
-                if (parseInt(el.value) < 1) {
-                    el.value = el.min;
+                let cart = {};
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                };
+
+                if (clickedItemId in cart) {
+                    if (cart[clickedItemId].quantity < clickedItem.stock) {
+                        cart[clickedItemId].quantity++;
+                    }
+                } else {
+                    let cartItem = {
+                        product: clickedItem,
+                        storeId: clickedItem.storeId,
+                        quantity: 1
+                    };
+                    cart[clickedItemId] = cartItem
                 }
-                if (parseInt(el.value) > '@Model.Stock') {
-                    el.value = el.max;
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+                loadCart();
+            });
+
+            // Set add to cart button main detail
+            $(".add-cart-btn-detail").unbind().on('click', function () {
+                var clickedItemId = $(this).data("id");
+                var clickedItem = @Html.Raw(Json.Serialize(Model));
+
+                let cart = {};
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                };
+
+                if (clickedItemId in cart) {
+                    if (cart[clickedItemId].quantity < clickedItem.stock) {
+                        cart[clickedItemId].quantity++;
+                    }
+                } else {
+                    let cartItem = {
+                        product: clickedItem,
+                        storeId: clickedItem.storeId,
+                        quantity: 1
+                    };
+                    cart[clickedItemId] = cartItem
                 }
-            }
-        }
-    });
-</script>
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+                loadCart();
+            });
+        });
+    </script>
+}
