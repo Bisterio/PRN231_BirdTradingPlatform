@@ -403,7 +403,8 @@ namespace Repository.Implementation
                 OrderDAO.UpdateOrder(orderEntity);
 
                 return new APISuccessResult<string>("Order is delivering.");
-            } else
+            }
+            else
             {
                 return new APIErrorResult<string>("Cannot deliver this order.");
             }
@@ -445,7 +446,7 @@ namespace Repository.Implementation
                 {
                     return new APIErrorResult<string>("This order's refund duration is expired.");
                 }
-            
+
                 orderEntity.Status = 8;
                 orderEntity.UpdatedAt = DateTime.Now;
                 orderEntity.RefundReason = refundReason;
@@ -481,7 +482,7 @@ namespace Repository.Implementation
             }
         }
 
-        // Store decline the refund request by orderId
+        // Store accept the refund request by orderId
         public APIResult<string> RefundAccept(long orderId, long currentStoreStaffId)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
@@ -494,6 +495,16 @@ namespace Repository.Implementation
                 orderEntity.UpdatedAt = DateTime.Now;
                 orderEntity.RefundDuration = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
+
+                // Increase stock of product for each order item refunded
+                foreach (OrderItem od in orderEntity.OrderItems)
+                {
+                    Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
+                    if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
+                    updateStockProduct.Stock += od.Quantity;
+                    updateStockProduct.UpdatedAt = DateTime.Now;
+                    ProductDAO.UpdateProduct(updateStockProduct);
+                }
 
                 return new APISuccessResult<string>("Refund request is successfully accepted.");
             }
