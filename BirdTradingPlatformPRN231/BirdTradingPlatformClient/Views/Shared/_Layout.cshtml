@@ -155,7 +155,7 @@
                     <div class="lc">
                     </div>
                     <a asp-action="Index" asp-controller="Cart" class="cart_btns btn btn-white">View Cart</a>
-                    <a asp-action="Index" asp-controller="Cart" class="checkout_btns btn btn-thm">Checkout</a>
+                    <a asp-action="Checkout" asp-controller="Cart" class="checkout_btns btn btn-thm">Checkout</a>
                 </div>
             </div>
         </div>
@@ -423,6 +423,12 @@
                 ulList.append(`<li class="list_content_total_price">
                 <h5>Total:<span class="total_price float-end">` + sumPrice.toLocaleString('vi') + ` VND</span></h5>
                 </li>`);
+            }
+            else{
+                let ulList = $("#cart-list-ul");
+                ulList.html("");
+                $("#cart-product-items").html(0);
+                $("#cart-total").html("0 VND");
             }
         }
 

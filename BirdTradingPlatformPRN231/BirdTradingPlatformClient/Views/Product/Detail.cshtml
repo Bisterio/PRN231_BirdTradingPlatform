@@ -88,7 +88,7 @@
                         <span class="icon fz30 heading-color"><span class="flaticon-shop"></span></span>
                         <div class="details ms-0 ms-sm-4 mt-2 mt-sm-0">
                             <p class="heading-color">Sold and shipped by</p>
-                            <h5>@Model.StoreName</h5>
+                            <h5><a asp-action="Detail" asp-controller="Store" asp-route-id="@Model.StoreId">@Model.StoreName</a></h5>
                         </div>
                     </div>
                     <div class="vendor_iconbox style2 d-block d-sm-flex mb-1">

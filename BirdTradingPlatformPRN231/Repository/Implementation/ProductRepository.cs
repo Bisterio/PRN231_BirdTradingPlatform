@@ -348,7 +348,7 @@ namespace Repository.Implementation
                 }
                 else
                 {
-                    shippingCost = 10000 + (distance - 2) * 3000;
+                    shippingCost = 10000 + (distance - 2) * 1000;
                 }
 
                 // Add shipping cost

@@ -22,7 +22,9 @@ namespace Repository
                 Address = entity.Address,
                 Description = entity.Description,
                 LogoImage = entity.LogoImage,
-                CoverImage = entity.CoverImage
+                CoverImage = entity.CoverImage,
+                Email = entity.User?.Email,
+                Phone = entity.User?.Phone,
             };
         }
 

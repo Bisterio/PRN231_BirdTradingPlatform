@@ -1,4 +1,8 @@
 ﻿@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
     ViewData["Title"] = "My Invoices";
 }
 

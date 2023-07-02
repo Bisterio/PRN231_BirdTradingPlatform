@@ -15,5 +15,7 @@ namespace BusinessObject.DTOs
         public string? LogoImage { get; set; }
         public string? CoverImage { get; set; }
         public List<ProductViewDTO?> ProductList { get; set; } = new List<ProductViewDTO?>();
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
     }
 }
