@@ -3,6 +3,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,12 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Services
+namespace Repository.Implementation
 {
     public class MailRepository : IMailRepository
     {
         private readonly MailSettings _mailSettings;
+
         public MailRepository(IOptions<MailSettings> mailSettings)
         {
             _mailSettings = mailSettings.Value;
@@ -28,22 +30,22 @@ namespace Repository.Services
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
-            if (mailRequest.Attachments != null)
-            {
-                byte[] fileBytes;
-                foreach (var file in mailRequest.Attachments)
-                {
-                    if (file.Length > 0)
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            file.CopyTo(ms);
-                            fileBytes = ms.ToArray();
-                        }
-                        builder.Attachments.Add(file.FileName, fileBytes, MimeKit.ContentType.Parse(file.ContentType));
-                    }
-                }
-            }
+            //if (mailRequest.Attachments != null)
+            //{
+            //    byte[] fileBytes;
+            //    foreach (var file in mailRequest.Attachments)
+            //    {
+            //        if (file.Length > 0)
+            //        {
+            //            using (var ms = new MemoryStream())
+            //            {
+            //                file.CopyTo(ms);
+            //                fileBytes = ms.ToArray();
+            //            }
+            //            builder.Attachments.Add(file.FileName, fileBytes, MimeKit.ContentType.Parse(file.ContentType));
+            //        }
+            //    }
+            //}
             builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
             using var smtp = new MailKit.Net.Smtp.SmtpClient();

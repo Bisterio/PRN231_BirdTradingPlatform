@@ -4,7 +4,7 @@ using MailKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository.Services;
+using Repository.Interface;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
