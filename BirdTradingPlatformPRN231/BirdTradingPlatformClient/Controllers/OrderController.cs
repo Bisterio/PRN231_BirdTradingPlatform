@@ -1,8 +1,11 @@
-﻿using BusinessObject.DTOs;
+﻿using BusinessObject.Common;
+using BusinessObject.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Xml.Linq;
 
 namespace BirdTradingPlatformClient.Controllers
@@ -50,9 +53,70 @@ namespace BirdTradingPlatformClient.Controllers
         }
 
         [Authorize]
-        public IActionResult Detail()
+        public async Task<IActionResult> Detail(long id)
         {
-            return View();
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // GET Invoice Detail
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.GetAsync(OrderApilUrl + $"/Customer/{id}");
+            if ((int)response.StatusCode != 200)
+            {
+                return RedirectToAction("Index");
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            OrderViewDTO model = data.ToObject<OrderViewDTO>();
+
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            }
+
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Cancel([FromForm] long orderId, [FromForm] string cancelReason)
+        {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // Cancel Order
+            string jsonString = JsonConvert.SerializeObject(cancelReason);
+            StringContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.PutAsync(OrderApilUrl + $"/CustomerCancel/{orderId}", content);
+            if ((int)response.StatusCode != 200)
+            {
+                TempData["ErrorMessage"] = "Cannot cancel this order";
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            APIResult<string> result = data.ToObject<APIResult<string>>();
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+
+            TempData["SuccessMessage"] = "Cancel order successfully";
+            return RedirectToAction("Detail", new { id = orderId });
         }
     }
 }

@@ -276,7 +276,7 @@ namespace Repository.Implementation
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
 
-            return new APISuccessResult<string>("Cancel order successfully!");
+            return new APISuccessResult<string>("orderId");
         }
 
 
