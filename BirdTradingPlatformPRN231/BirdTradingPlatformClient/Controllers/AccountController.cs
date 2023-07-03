@@ -73,7 +73,7 @@ namespace BirdTradingPlatformClient.Controllers
                 return RedirectToAction("Index");
             }
 
-            var regex = new Regex(@"^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$");
+            var regex = new Regex(@"^(\+84|84|0[1-9]|84[1-9]|\+84[1-9])+([0-9]{8})\b$");
             if (String.IsNullOrEmpty(phone) || !regex.IsMatch(phone))
             {
                 TempData["ErrorMessage"] = "Phone is required and must be in valid format: 0123456789 or 84123456789";
