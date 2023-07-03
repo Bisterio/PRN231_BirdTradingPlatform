@@ -513,5 +513,58 @@ namespace Repository.Implementation
                 return new APIErrorResult<string>("This order's refund is not requested.");
             }
         }
+
+        // Customer report to admin to refund by orderId
+        public APIResult<string> Report(long orderId, long currentUserId, string reportReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if(orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 2: Checking
+            if (orderEntity.IsReported == 1 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 2;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.ReportedReason = reportReason;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Reported to admin successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and decline refund report
+        public APIResult<string> ResolveReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Reported to admin successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
     }
 }

@@ -26,5 +26,7 @@ namespace Repository.Interface
         public APIResult<string> RefundRequest(long orderId, long currentUserId, string refundReason);
         public APIResult<string> RefundDecline(long orderId, long currentStoreStaffId);
         public APIResult<string> RefundAccept(long orderId, long currentStoreStaffId);
+        public APIResult<string> Report(long orderId, long currentUserId, string reportReason);
+        public APIResult<string> ResolveReport(long orderId);
     }
 }

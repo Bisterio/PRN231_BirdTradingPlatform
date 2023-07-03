@@ -237,5 +237,29 @@ namespace BirdTradingPlatformAPI.Controllers
 
             return Ok(result);
         }
+
+        [HttpPut("Report/{id}")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult Report(int id, [FromBody] string reportReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.Report(id, currentUserId, reportReason);
+            if (result == null) return NotFound("Can't accept this order's report.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("Report/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult ResolveReport(int id)
+        {
+            var result = _orderRepository.ResolveReport(id);
+            if (result == null) return NotFound("Can't resolve this order's report.");
+
+            return Ok(result);
+        }
     }
 }
