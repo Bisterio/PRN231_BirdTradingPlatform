@@ -4,7 +4,6 @@ using BusinessObject.Models;
 using DataAccess;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
