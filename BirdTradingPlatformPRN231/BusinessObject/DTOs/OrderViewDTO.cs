@@ -12,6 +12,7 @@ namespace BusinessObject.DTOs
         public string Address { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeliveredAt { get; set; }
         public DateTime? RefundDuration { get; set; }
         public string? Email { get; set; }
         public string Name { get; set; } = null!;

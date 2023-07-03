@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -56,6 +57,11 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO request)
         {
+            // Check modelstate
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             // Post Request Check shipping cost
             string postJson = JsonConvert.SerializeObject(request,
                new JsonSerializerSettings
@@ -65,9 +71,13 @@ namespace BirdTradingPlatformClient.Controllers
             StringContent content = new StringContent(postJson, Encoding.UTF8, "application/json");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
             HttpResponseMessage response = await client.PostAsync(OrderApilUrl, content);
-            if (!response.IsSuccessStatusCode)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return NotFound();
+                return Unauthorized();
+            }
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return BadRequest(response);
             }
             string strData = await response.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(strData);

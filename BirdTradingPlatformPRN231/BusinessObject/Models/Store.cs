@@ -9,6 +9,7 @@ namespace BusinessObject.Models
         {
             Orders = new HashSet<Order>();
             Products = new HashSet<Product>();
+            UserAccounts = new HashSet<UserAccount>();
         }
 
         public long StoreId { get; set; }
@@ -23,8 +24,8 @@ namespace BusinessObject.Models
         public long? UserId { get; set; }
 
         public virtual UserAccount? User { get; set; }
-        public virtual UserAccount? UserAccount { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<UserAccount> UserAccounts { get; set; }
     }
 }

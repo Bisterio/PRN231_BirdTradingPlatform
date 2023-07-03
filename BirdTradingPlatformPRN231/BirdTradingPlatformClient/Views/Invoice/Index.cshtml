@@ -1,30 +1,22 @@
-﻿@{
-    if (User.Identity.IsAuthenticated)
-    {
-        Layout = "_LayoutCustomer";
-    }
+﻿@model BusinessObject.DTOs.ClientInvoiceViewListDTO
+
+@{
+    Layout = "_LayoutCustomer";
     ViewData["Title"] = "My Invoices";
 }
 
-<!-- Our Dashbord -->
+<!-- Our Dashboard -->
 <section class="our-dashbord dashbord pb80">
     <div class="container">
         <div class="row">
             <div class="col-lg-3 col-xl-2 dn-md">
                 <div class="users_account_details extra-dashboard-menu">
-                    <div class="account_details_user d-flex pb10 bb1 mb10">
-                        <img class="me-3" src="images/team/ad-thumb.png" alt="Generic placeholder image">
-                        <div class="content_details text-start">
-                            <h5 class="title">Ali Tufan</h5>
-                            <a class="stitle" href="mailto:alitfn58@gmail.com">alitfn58@gmail.com</a>
-                        </div>
-                    </div>
                     <div class="ed_menu_list">
                         <ul>
-                            <li><a href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                            <li><a class="active" href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                            <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                            <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                            <li><a asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                            <li><a asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                            <li><a class="active" asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                            <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -36,10 +28,10 @@
                             <div class="dropdown">
                                 <button onclick="myFunction()" class="dropbtn"><i class="fas fa-bars pr10"></i> Dashboard Navigation</button>
                                 <ul id="myDropdown" class="dropdown-content">
-                                    <li><a href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                                    <li><a class="active" href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                                    <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                                    <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                                    <li><a asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                                    <li><a asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                                    <li><a class="active" asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                                    <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -48,39 +40,136 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="account_user_deails pl40 pl0-lg">
-                            <h2 class="title mb30">Invoice</h2>
-                            <div class="order_table table-responsive">
-                                <table class="table">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Date</th>
-                                            <th scope="col">Payment</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Amount</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">#1923</th>
-                                            <td>Aug 15, 2020</td>
-                                            <td>Momo</td>
-                                            <td class="status"><span class="style1">Paid</span></td>
-                                            <td>$56.00</td>
-                                            <td class="action"><span class="details">...</span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">#1923</th>
-                                            <td>Aug 15, 2020</td>
-                                            <td>Momo</td>
-                                            <td class="status"><span class="style2">Paid</span></td>
-                                            <td>$56.00</td>
-                                            <td class="action"><span class="details">...</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <h2 class="title mb30">My Invoices</h2>
+                            @if (Model.InvoicesPaginated.Count != 0)
+                            {
+                                <div class="order_table table-responsive">
+                                    <table class="table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Payment Method</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Amount</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var invoice in Model.InvoicesPaginated)
+                                            {
+                                                <tr>
+                                                    <th scope="row">#@invoice.InvoiceId</th>
+                                                    @if (invoice.CreatedAt != null)
+                                                    {
+                                                        DateTime createdAtDateTime = invoice.CreatedAt ?? DateTime.Now;
+                                                        <td>
+                                                            @createdAtDateTime.ToString("MMMM dd yyyy")
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            N/A
+                                                        </td>
+                                                    }
+                                                    <td>@invoice.PaymentMethod</td>
+                                                    <td class="status">
+                                                        @if (invoice.IsPaid == 1)
+                                                        {
+                                                            <span class="style1">Paid</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="style2">On Hold</span>
+                                                        }
+                                                    </td>
+                                                    <td>@invoice.TotalAmount.ToString("#,##0").Replace(",",".") VND</td>
+                                                    <td class="action">
+                                                        <span class="details">
+                                                            <a asp-action="Detail" asp-controller="Invoice" asp-route-id="@invoice.InvoiceId">View</a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.TotalCount > Model.Size)
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mbp_pagination mt30 text-center">
+                                                <ul class="page_navigation">
+                                                    <!-- Previous Page -->
+                                                    @if (Model.Page != 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" tabindex="-1" aria-disabled="true"
+                                                   asp-action="Index" asp-controller="Invoice" asp-route-page="@(@Model.Page - 1)">
+                                                                <span class="fas fa-angle-left"></span>
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- First page -->
+                                                    @if (!Model.PageNumbers.Contains(1))
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Invoice" asp-route-page="1">
+                                                                1
+                                                            </a>
+                                                        </li>
+                                                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                                    }
+
+                                                    <!-- Page items -->
+                                                    @foreach (int pageNo in Model.PageNumbers)
+                                                    {
+                                                        <li class="page-item @(@Model.Page == pageNo ? "active" : "")">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Invoice" asp-route-page="@pageNo">
+                                                                @pageNo
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- Last page -->
+                                                    @if (!Model.PageNumbers.Contains(Model.TotalPage))
+                                                    {
+                                                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Invoice" asp-route-page="@Model.TotalPage">
+                                                                @Model.TotalPage
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- Next Page -->
+                                                    @if (Model.Page != Model.TotalPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" tabindex="-1" aria-disabled="true"
+                                                   asp-action="Index" asp-controller="Invoice" asp-route-page="@(@Model.Page + 1)">
+                                                                <span class="fas fa-angle-right"></span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                <div class="my-5">
+                                    <h3 class="text-center">No Invoices to be shown</h3>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
