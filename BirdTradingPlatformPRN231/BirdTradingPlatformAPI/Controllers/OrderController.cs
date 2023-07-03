@@ -382,5 +382,15 @@ namespace BirdTradingPlatformAPI.Controllers
 
             return Ok(result);
         }
+
+        [HttpPut("ApproveRefundReport/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult ApproveRefundReport(int id)
+        {
+            var result = _orderRepository.ApproveRefundReport(id);
+            if (result == null) return NotFound("Can't resolve accept this order's report.");
+
+            return Ok(result);
+        }
     }
 }

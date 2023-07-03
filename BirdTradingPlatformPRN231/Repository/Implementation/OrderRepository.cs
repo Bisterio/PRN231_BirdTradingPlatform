@@ -572,7 +572,34 @@ namespace Repository.Implementation
                 orderEntity.UpdatedAt = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
 
-                return new APISuccessResult<string>("Reported to admin successfully.");
+                return new APISuccessResult<string>("Resolve decline successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and accept refund report
+        public APIResult<string> ApproveRefundReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved and Status to 9: Refunded
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.Status = 9;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Resolve accept successfully.");
             }
             else
             {
