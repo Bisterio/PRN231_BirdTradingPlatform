@@ -13,7 +13,17 @@ namespace Repository.Implementation
 {
     public class OrderRepository : IOrderRepository
     {
-        private IMailRepository _mailRepository;
+        private readonly IMailRepository _mailRepository;
+
+        public OrderRepository(IMailRepository mailRepository)
+        {
+            _mailRepository = mailRepository;
+        }
+
+        public OrderRepository()
+        {
+
+        }
 
         // Function to create new orders
         public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId)
@@ -122,6 +132,15 @@ namespace Repository.Implementation
                     ProductDAO.UpdateProduct(updateStockProduct);
                 }
             }
+
+            var mail = new MailRequest()
+            {
+                ToEmail = newOrders.Email,
+                Subject = $"Your order has been created successfully.",
+                Body = $"Your order has been created successfully. Here is your invoice."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
 
             return new APISuccessResult<string>(newInvoice.InvoiceId.ToString());
         }
@@ -276,6 +295,15 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
+
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"You have cancelled your order #{orderId}.",
+                Body = $"You have cancelled your order #{orderId}."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
 
             return new APISuccessResult<string>("Cancel order successfully!");
         }

@@ -14,12 +14,6 @@ namespace BirdTradingPlatformAPI.Controllers
     public class OrderController : ControllerBase
     {
         private IOrderRepository _orderRepository = new OrderRepository();
-        private IMailRepository _mailRepository;
-
-        public OrderController(IMailRepository mailRepository)
-        {
-            _mailRepository = mailRepository;
-        }
 
         // CUSTOMER: Create a new invoice, sub orders and order items
         [HttpPost]
@@ -36,15 +30,6 @@ namespace BirdTradingPlatformAPI.Controllers
             }
 
             var result = _orderRepository.CreateNewOrders(newOrders, currentUserId);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = newOrders.Email,
-                Subject = $"Your order has been created successfully.",
-                Body = $"Your order has been created successfully. Here is your invoice."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
 
             return Ok(result);
         }
@@ -116,17 +101,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId, cancelReason);
             if (result == null) return NotFound("Can't cancel this order!");
-
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"You have cancelled your order #{id}.",
-                Body = $"You have cancelled your order #{id}."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
 
             return Ok(result);
         }
@@ -210,7 +184,7 @@ namespace BirdTradingPlatformAPI.Controllers
             long currentUserId = long.Parse(idString);
 
             var result = _orderRepository.DeliverOrder(id, currentUserId);
-            if (result == null) return NotFound("Can't deliver this order.")
+            if (result == null) return NotFound("Can't deliver this order.");
 
             return Ok(result);
         }
