@@ -136,6 +136,10 @@ namespace BusinessObject.Models
                     .HasPrecision(6)
                     .HasColumnName("created_at");
 
+                entity.Property(e => e.DeliveredAt)
+                    .HasPrecision(6)
+                    .HasColumnName("delivered_at");
+
                 entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
 
                 entity.Property(e => e.IsReported)
@@ -190,7 +194,7 @@ namespace BusinessObject.Models
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId })
-                    .HasName("PK__order_it__022945F6BFE88155");
+                    .HasName("PK__order_it__022945F643BC442E");
 
                 entity.ToTable("order_item");
 
@@ -274,10 +278,6 @@ namespace BusinessObject.Models
             {
                 entity.ToTable("store");
 
-                entity.HasIndex(e => e.UserId, "UK_bjqth9sjo3phwbmybuysm65be")
-                    .IsUnique()
-                    .HasFilter("([user_id] IS NOT NULL)");
-
                 entity.Property(e => e.StoreId).HasColumnName("store_id");
 
                 entity.Property(e => e.Address)
@@ -313,23 +313,19 @@ namespace BusinessObject.Models
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Store)
-                    .HasForeignKey<Store>(d => d.UserId)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FKs6piet5tft2wg1tgg2rn3nux2");
             });
 
             modelBuilder.Entity<UserAccount>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__user_acc__B9BE370F34907619");
+                    .HasName("PK__user_acc__B9BE370FE9E7DA64");
 
                 entity.ToTable("user_account");
 
-                entity.HasIndex(e => e.StoreId, "UK_dxl2svtvk03jxhu01ufoq82kl")
-                    .IsUnique()
-                    .HasFilter("([store_id] IS NOT NULL)");
-
-                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164878FDADA")
+                entity.HasIndex(e => e.Email, "UQ__user_acc__AB6E6164F29185B4")
                     .IsUnique();
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
@@ -368,9 +364,9 @@ namespace BusinessObject.Models
                     .HasPrecision(6)
                     .HasColumnName("updated_at");
 
-                entity.HasOne(d => d.StoreNavigation)
-                    .WithOne(p => p.UserAccount)
-                    .HasForeignKey<UserAccount>(d => d.StoreId)
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.UserAccounts)
+                    .HasForeignKey(d => d.StoreId)
                     .HasConstraintName("FK7vqhqxt45ua0j213qal23oqd5");
             });
 

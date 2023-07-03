@@ -13,6 +13,7 @@ namespace BusinessObject.DTOs
         public int Size { get; set; }
         public int TotalCount { get; set; }
         public int TotalPage { get; set; }
+        public int Status { get; set; }
         public List<int>? PageNumbers { get; set; }
     }
 }

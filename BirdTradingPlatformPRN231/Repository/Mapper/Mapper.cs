@@ -81,7 +81,8 @@ namespace Repository
                 IsReported = entity.IsReported,
                 RefundDuration = entity.RefundDuration,
                 RefundReason = entity.RefundReason,
-                ReportedReason = entity.ReportedReason
+                ReportedReason = entity.ReportedReason,
+                DeliveredAt = entity.DeliveredAt,
             };
         }
 

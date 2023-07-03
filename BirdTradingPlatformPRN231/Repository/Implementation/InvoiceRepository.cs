@@ -10,7 +10,7 @@ namespace Repository.Implementation
         public ClientInvoiceViewListDTO GetCurrentUserInvoices(int page, long currentUserId)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             // Get paginated invoices list

@@ -6,7 +6,7 @@
     ViewData["Title"] = "Checkout";
 }
 <style>
-    .item-name-style{
+    .item-name-style {
         font-size: 14px !important;
         font-weight: 400 !important;
         line-height: 30px !important;
@@ -25,92 +25,93 @@
         </div>
         <div class="ui_kit_message_box" id="alert-box">
         </div>
-        <div class="row">
-            <div class="col-lg-8 col-xl-9">
-                <div class="checkout_form style2">
-                    <h4 class="title mb20">Shipping details</h4>
-                    <div class="checkout_coupon ui_kit_button">
-                        <form class="form2" id="coupon_form" name="contact_form" action="#" method="post">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Full Name</label>
-                                        <input id="name-input" class="form-control form_control" type="text" required>
+        <form id="checkout-form">
+            <div class="row">
+                <div class="col-lg-8 col-xl-9">
+                    <div class="checkout_form style2">
+                        <h4 class="title mb20">Shipping details</h4>
+                        <div class="checkout_coupon ui_kit_button">
+                            <div class="form2" id="coupon_form">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Full Name</label>
+                                            <input id="name-input" class="form-control form_control" type="text" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Street address*</label>
+                                            <input id="shipping-address" class="form-control form_control" type="text" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Contact Phone*</label>
+                                            <input id="phone-input" name="form_phone" class="form-control form_control" type="number" required pattern="^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Contact Email</label>
+                                            <input id="email-input" name="form_email" class="form-control form_control email" type="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group mb0">
+                                            <label class="ai_title">Order notes (optional)</label>
+                                            <textarea id="note-input" name="form_message" class="form-control" rows="12" placeholder="Order Notes"></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Street address*</label>
-                                        <input id="shipping-address" class="form-control form_control" type="text" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Contact Phone*</label>
-                                        <input id="phone-input" name="form_phone" class="form-control form_control" type="number" required pattern="^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Contact Email</label>
-                                        <input id="email-input" name="form_email" class="form-control form_control email" type="email" required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group mb0">
-                                        <label class="ai_title">Order notes (optional)</label>
-                                        <textarea id="note-input" name="form_message" class="form-control" rows="12" placeholder="">Order Notes</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-xl-3">
-                <div class="order_sidebar_widget checkout_page mb30 mb30">
-                    <h4 class="title">Your Order</h4>
-                    <ul id="total-widget">
-                        
-                    </ul>
-                </div>
-                <div class="order_sidebar_widget checkout_page mb30 mb30">
-                    <div class="payment_method">
-                        <div class="ui_kit_radiobox pm_content bb1">
-                            <div class="radio mb10">
-                                <input id="radio_one" name="radio" type="radio" checked="">
-                                <label class="pmtitle" for="radio_one"><span class="radio-label"></span> Direct bank transfer</label>
-                            </div>
-                            <div class="pm_details">
-                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                            </div>
-                        </div>
-                        <div class="ui_kit_radiobox pm_content bb1">
-                            <div class="radio mb10">
-                                <input id="radio_one2" name="radio" type="radio">
-                                <label class="pmtitle" for="radio_one2"><span class="radio-label"></span> Check Payment</label>
-                            </div>
-                        </div>
-                        <div class="ui_kit_radiobox pm_content">
-                            <div class="radio mb10">
-                                <input id="radio_one3" name="radio" type="radio">
-                                <label class="pmtitle" for="radio_one3"><span class="radio-label"></span> Cash on Delivery</label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="ui_kit_checkbox checkout_pm">
-                    <label class="custom_checkbox">
-                        Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <div class="ui_kit_button payment_widget_btn">
-                    <button type="button" id="submit-button" class="btn btn-thm btn-block mb0">Place Order</button>
+                <div class="col-lg-4 col-xl-3">
+                    <div class="order_sidebar_widget checkout_page mb30 mb30">
+                        <h4 class="title">Your Order</h4>
+                        <ul id="total-widget">
+                        </ul>
+                    </div>
+                    <div class="order_sidebar_widget checkout_page mb30 mb30">
+                        <div class="payment_method">
+                            <div class="ui_kit_radiobox pm_content bb1">
+                                <div class="radio mb10">
+                                    <input id="radio_one" name="radio" type="radio" checked="">
+                                    <label class="pmtitle" for="radio_one"><span class="radio-label"></span> Direct bank transfer</label>
+                                </div>
+                                <div class="pm_details">
+                                    <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
+                                </div>
+                            </div>
+                            <div class="ui_kit_radiobox pm_content bb1">
+                                <div class="radio mb10">
+                                    <input id="radio_one2" name="radio" type="radio">
+                                    <label class="pmtitle" for="radio_one2"><span class="radio-label"></span> Check Payment</label>
+                                </div>
+                            </div>
+                            <div class="ui_kit_radiobox pm_content">
+                                <div class="radio mb10">
+                                    <input id="radio_one3" name="radio" type="radio">
+                                    <label class="pmtitle" for="radio_one3"><span class="radio-label"></span> Cash on Delivery</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui_kit_checkbox checkout_pm">
+                        <label class="custom_checkbox">
+                            Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="ui_kit_button payment_widget_btn">
+                        <button type="submit" id="submit-button" class="btn btn-thm btn-block mb0">Place Order</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </section>
 @section Scripts {
@@ -128,18 +129,18 @@
                     stores[item.storeId] = store;
                     return stores;
                 }, {});
-                
+
 
                 var totalWidget = $("#total-widget");
                 totalWidget.html("");
-                
+
                 for (let storeId in itemGroups) {
                     let item = itemGroups[storeId];
-                    
+
                     totalShippingCost += item[0].shippingCost;
                     totalWidget.append(`<li class="subtitle store-section" data-id="` + storeId + `">
-                     <p>`+ item[0].product.storeName + `</p>
-                     </li>`);
+                             <p>`+ item[0].product.storeName + `</p>
+                             </li>`);
 
                     let storeProducts = $(".store-section").filter(function () {
                         return $(this).data('id') == storeId;
@@ -155,19 +156,15 @@
                 let sumPrice = checkoutItems.reduce((accumulator, item) => {
                     return accumulator + item.quantity * item.product.unitPrice;
                 }, 0) + totalShippingCost;
-                
+
                 totalWidget.append(`<li class="subtitle"><p>Total <span class="float-end totals">` + sumPrice.toLocaleString('vi') + ` VND</span></p></li>`);
-                
-            }else {
+
+            } else {
                 window.location.href = "/Cart";
             }
 
-            // Form submit
-            $("#submit-button").unbind().on('click', function (e) {
-                $("#coupon_form").submit();
-            });
-
-            $("#coupon_form").unbind().on('submit', function (e) {
+            // Checkout form submit
+            $("#checkout-form").unbind().on('submit', function (e) {
                 e.preventDefault();
                 submitOrder();
             });
@@ -219,14 +216,22 @@
                             window.location.href = "/Invoice/Detail/" + result.resultObj;
                         } else {
                             $("#alert-box").append(`<div class="alert alart_style_three alert-dismissible fade show" role="alert">
-                                        `+ result.message + `
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
-                                    </div>`);
+                                                `+ result.message + `
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                            </div>`);
                         }
                     },
                     error: function (xhr, status, error) {
                         console.log(xhr);
-                        window.location.href = "/Home/Logout";
+                        if (xhr.status == 400) {
+                            let errorMsg = Object.values(xhr.responseJSON)[0];
+                            $("#alert-box").append(`<div class="alert alart_style_three alert-dismissible fade show" role="alert">
+                                    `+ errorMsg + `
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                             </div>`);
+                        } else {
+                            window.location.href = "/Home/Logout";
+                        }
                     }
                 });
             }

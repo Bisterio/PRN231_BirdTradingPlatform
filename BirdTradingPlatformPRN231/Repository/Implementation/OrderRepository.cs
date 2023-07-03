@@ -73,10 +73,21 @@ namespace Repository.Implementation
                 decimal totalShippingCost = storeOrder.CartItems.First().ShippingCost;
                 decimal totalAmount = totalAmountPreShipping + totalShippingCost;
 
+                DateTime expectedDeliveryDate = DateTime.Now;
+                if (totalShippingCost <= 28000)
+                {
+                    expectedDeliveryDate = DateTime.Now.AddDays(3);
+                }
+                else
+                {
+                    expectedDeliveryDate = DateTime.Now.AddDays(7);
+                }
+
                 // Create order for each store
                 Order newOrder = new Order()
                 {
                     CreatedAt = DateTime.Now,
+                    DeliveredAt = expectedDeliveryDate,
                     UpdatedAt = DateTime.Now,
                     Status = 1,
                     IsReported = 1,
@@ -118,7 +129,7 @@ namespace Repository.Implementation
         public ClientOrderViewListDTO GetCurrentUserOrders(int page, byte status, long currentUserId)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             List<OrderViewDTO?> orderByUser = OrderDAO
@@ -155,7 +166,8 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = orderCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                Status = status
             };
         }
 
@@ -422,6 +434,7 @@ namespace Repository.Implementation
             {
                 orderEntity.Status = 2;
                 orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.DeliveredAt = DateTime.Now;
                 orderEntity.RefundDuration = DateTime.Now.AddDays(3);
                 OrderDAO.UpdateOrder(orderEntity);
 
