@@ -156,17 +156,6 @@ namespace BirdTradingPlatformAPI.Controllers
             var result = _orderRepository.ApproveOrderStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this order!");
 
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} has been approved.",
-                Body = $"Your order #{id} has been approved. Please wait."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return Ok(result);
         }
 
@@ -180,17 +169,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.CancelOrderDetailStore(id, currentUserId, cancelReason);
             if (result == null) return NotFound("Can't cancel this order!");
-
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} has been cancelled.",
-                Body = $"Your order #{id} has been cancelled. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
 
             return Ok(result);
         }
@@ -206,17 +184,6 @@ namespace BirdTradingPlatformAPI.Controllers
             var result = _orderRepository.ApproveOrderCancelRequestStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this request!");
 
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for cancel is approved.",
-                Body = $"Your order #{id} request for cancel is approved."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return Ok(result);
         }
 
@@ -231,17 +198,6 @@ namespace BirdTradingPlatformAPI.Controllers
             var result = _orderRepository.DeclineOrderCancelRequestStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this request!");
 
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for cancel is declined.",
-                Body = $"Your order #{id} request for cancel is declined. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return Ok(result);
         }
 
@@ -254,18 +210,7 @@ namespace BirdTradingPlatformAPI.Controllers
             long currentUserId = long.Parse(idString);
 
             var result = _orderRepository.DeliverOrder(id, currentUserId);
-            if (result == null) return NotFound("Can't deliver this order.");
-
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} is now delivering.",
-                Body = $"Your order #{id} is now delivering. Please wait."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
+            if (result == null) return NotFound("Can't deliver this order.")
 
             return Ok(result);
         }
@@ -280,17 +225,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.ConfirmOrderDelivered(id, currentUserId);
             if (result == null) return NotFound("Can't confirm this order's delivery.");
-
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} is successfully delivered.",
-                Body = $"Your order #{id} is successfully delivered. Thank you for your purchase."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
 
             return Ok(result);
         }
@@ -320,17 +254,6 @@ namespace BirdTradingPlatformAPI.Controllers
             var result = _orderRepository.RefundDecline(id, currentUserId);
             if (result == null) return NotFound("Can't decline this order's refund request.");
 
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for refund is declined.",
-                Body = $"Your order #{id} request for refund is declined. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return Ok(result);
         }
 
@@ -344,17 +267,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.RefundAccept(id, currentUserId);
             if (result == null) return NotFound("Can't accept this order's refund request.");
-
-            var order = OrderDAO.GetOrderById(id);
-
-            var mail = new MailRequest()
-            {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for refund is approved.",
-                Body = $"Your order #{id} request for refund is approved. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
 
             return Ok(result);
         }
