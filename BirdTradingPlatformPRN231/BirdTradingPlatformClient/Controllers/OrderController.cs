@@ -61,7 +61,7 @@ namespace BirdTradingPlatformClient.Controllers
                 return RedirectToAction("Logout", "Home");
             }
 
-            // GET Invoice Detail
+            // GET Order Detail
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
             HttpResponseMessage response = await client.GetAsync(OrderApilUrl + $"/Customer/{id}");
             if ((int)response.StatusCode != 200)
@@ -116,6 +116,74 @@ namespace BirdTradingPlatformClient.Controllers
             }
 
             TempData["SuccessMessage"] = "Cancel order successfully";
+            return RedirectToAction("Detail", new { id = orderId });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Refund([FromForm] long orderId, [FromForm] string refundReason)
+        {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // Cancel Order
+            string jsonString = JsonConvert.SerializeObject(refundReason);
+            StringContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.PutAsync(OrderApilUrl + $"/RefundRequest/{orderId}", content);
+            if ((int)response.StatusCode != 200)
+            {
+                TempData["ErrorMessage"] = "Cannot request a refund for this order";
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            APIResult<string> result = data.ToObject<APIResult<string>>();
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+
+            TempData["SuccessMessage"] = "Request a refund for this order successfully";
+            return RedirectToAction("Detail", new { id = orderId });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CancelRequest([FromForm] long orderId, [FromForm] string cancelReason)
+        {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // Cancel Order
+            string jsonString = JsonConvert.SerializeObject(cancelReason);
+            StringContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.PutAsync(OrderApilUrl + $"/CancelRequest/{orderId}", content);
+            if ((int)response.StatusCode != 200)
+            {
+                TempData["ErrorMessage"] = "Cannot cancel this order";
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            APIResult<string> result = data.ToObject<APIResult<string>>();
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+
+            TempData["SuccessMessage"] = "Issue a cancel request for this order successfully";
             return RedirectToAction("Detail", new { id = orderId });
         }
     }

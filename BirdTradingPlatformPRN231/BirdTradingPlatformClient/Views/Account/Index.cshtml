@@ -1,8 +1,7 @@
-﻿@{
-    if (User.Identity.IsAuthenticated)
-    {
-        Layout = "_LayoutCustomer";
-    }
+﻿@model BusinessObject.DTOs.UserProfileViewDTO
+
+@{
+    Layout = "_LayoutCustomer";
     ViewData["Title"] = "Account Detail";
 }
 
@@ -12,19 +11,12 @@
         <div class="row">
             <div class="col-lg-3 col-xl-2 dn-md">
                 <div class="users_account_details extra-dashboard-menu">
-                    <div class="account_details_user d-flex pb10 bb1 mb10">
-                        <img class="me-3" src="images/team/ad-thumb.png" alt="Generic placeholder image">
-                        <div class="content_details text-start">
-                            <h5 class="title">Ali Tufan</h5>
-                            <a class="stitle" href="mailto:alitfn58@gmail.com">alitfn58@gmail.com</a>
-                        </div>
-                    </div>
                     <div class="ed_menu_list">
                         <ul>
-                            <li><a class="active" href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                            <li><a href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                            <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                            <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                            <li><a class="active" asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                            <li><a asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                            <li><a asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                            <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -36,10 +28,10 @@
                             <div class="dropdown">
                                 <button onclick="myFunction()" class="dropbtn"><i class="fas fa-bars pr10"></i> Dashboard Navigation</button>
                                 <ul id="myDropdown" class="dropdown-content">
-                                    <li><a class="active" href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                                    <li><a href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                                    <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                                    <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                                    <li><a class="active" asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                                    <li><a asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                                    <li><a asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                                    <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -48,6 +40,24 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="account_user_deails pl40 pl0-md">
+                            @if (ViewBag.ErrorMessage != null)
+                            {
+                                <div class="ui_kit_message_box">
+                                    <div class="alert alart_style_three alert-dismissible fade show" role="alert">
+                                        @ViewBag.ErrorMessage
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                    </div>
+                                </div>
+                            }
+                            @if (@ViewBag.SuccessMessage != null)
+                            {
+                                <div class="ui_kit_message_box">
+                                    <div class="alert alart_style_four alert-dismissible fade show" role="alert">
+                                        @ViewBag.SuccessMessage
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
+                                    </div>
+                                </div>
+                            }
                             <h2 class="title mb30">Account Details</h2>
                             <div class="ui_kit_tab style2">
                                 <!-- nav tab Nav List Start -->
@@ -64,24 +74,29 @@
                                 <div class="tab-content pt20 row" id="myTabContent">
                                     <div class="tab-pane fade show active col-lg-12" id="t20" role="tabpanel" aria-labelledby="t20-tab">
                                         <div class="account_details_page form_grid">
-                                            <form class="contact_form" name="contact_form" action="#" method="post" novalidate>
+                                            <form class="contact_form" name="contact_form" asp-action="UpdateProfile" asp-controller="Account" method="post">
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group mb-4">
-                                                            <label class="form-label">Full Name</label>
-                                                            <input class="form-control" type="text" placeholder="Your Name">
+                                                            <label class="form-label">Email</label>
+                                                            <input class="form-control" type="text" value="@Model.Email" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group mb-4">
+                                                            <label class="form-label">Full Name</label>
+                                                            <input class="form-control" name="name" value="@Model.Name" maxlength="100" type="text" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
                                                         <div class="form-group mb-4">
                                                             <label class="form-label">Phone Number</label>
-                                                            <input class="form-control" type="number" placeholder="Phone Number">
+                                                            <input class="form-control" name="phone" value="@Model.Phone" type="text" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-12">
                                                         <div class="form-group d-flex mb0">
-                                                            <button type="button" class="btn btn-thm me-3">Update</button>
-                                                            <button type="button" class="btn btn-white">Cancel</button>
+                                                            <button type="Submit" class="btn btn-thm me-3">Update</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -90,30 +105,29 @@
                                     </div>
                                     <div class="tab-pane fade col-xl-6" id="baby" role="tabpanel" aria-labelledby="baby-tab">
                                         <div class="account_details_page form_grid">
-                                            <form class="contact_form" name="contact_form" action="#" method="post" novalidate>
+                                            <form class="contact_form" name="contact_form" asp-action="ChangePassword" asp-controller="Account" method="post">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="form-group mb-4">
                                                             <label class="form-label">Current password</label>
-                                                            <input class="form-control" type="text" placeholder="Your Password">
+                                                            <input class="form-control" name="oldPassword" type="password" minlength="8" maxlength="100" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">
                                                         <div class="form-group mb-4">
                                                             <label class="form-label">New password</label>
-                                                            <input class="form-control" type="text" placeholder="Your Password">
+                                                            <input class="form-control" name="newPassword" type="password" minlength="8" maxlength="100" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">
                                                         <div class="form-group mb-4">
                                                             <label class="form-label">Confirm New Password</label>
-                                                            <input class="form-control email" type="email" placeholder="Your Email">
+                                                            <input class="form-control" name="confirmPassword" type="password" minlength="8" maxlength="100" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-12">
                                                         <div class="form-group d-flex mb0">
-                                                            <button type="button" class="btn btn-thm me-3">Update</button>
-                                                            <button type="button" class="btn btn-white">Cancel</button>
+                                                            <button type="Submit" class="btn btn-thm me-3">Update</button>
                                                         </div>
                                                     </div>
                                                 </div>
