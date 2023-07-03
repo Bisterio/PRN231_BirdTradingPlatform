@@ -194,6 +194,24 @@ namespace Repository.Implementation
             return new APIErrorResult<bool>("Can't add new store to database.");
         }
 
+        public APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId)
+        {
+            if (currentUserId == null) return new APIErrorResult<UserProfileViewDTO>("Can't find user.");
+
+            UserAccount user = UserAccountDAO.FindUserById(currentUserId);
+
+            if (user == null) return new APIErrorResult<UserProfileViewDTO>("This user is not existed.");
+
+            UserProfileViewDTO newUser = new()
+            {
+                Email = user.Email,
+                Name = user.Name,
+                Phone = user.Phone
+            };
+
+            return new APISuccessResult<UserProfileViewDTO>(newUser);
+        }
+
         public APIResult<bool> UpdateProfile(long currentUserId, UserProfileUpdateDTO profile)
         {
             if (profile == null) return new APIErrorResult<bool>("The new profile cannot be empty.");

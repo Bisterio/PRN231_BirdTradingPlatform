@@ -69,6 +69,19 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Profile")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult GetCurrentCustomer()
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _userRepository.GetCurrentCustomer(currentUserId);
+
+            return Ok(result);
+        }
+
         [HttpPut("UpdateProfile")]
         [Authorize(Roles = "CUSTOMER")]
         public IActionResult UpdateProfile([FromBody] UserProfileUpdateDTO profile)
