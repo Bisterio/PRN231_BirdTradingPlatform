@@ -54,6 +54,7 @@ namespace BirdTradingPlatformAPI.Controllers
             long currentUserId = long.Parse(idString);
 
             var result = _productRepository.GetProductsStore(page, name, category, pmin, pmax, order, currentUserId);
+            if(result == null) return NotFound();
             return Ok(result);
         }
 

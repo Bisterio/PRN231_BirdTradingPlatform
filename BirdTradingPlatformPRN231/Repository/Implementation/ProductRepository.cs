@@ -139,6 +139,9 @@ namespace Repository.Implementation
                     pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
                 }
 
+                // Get categories list for filtering
+                List<Category> categories = CategoryDAO.GetCategories();
+
                 return new ClientProductViewListDTO()
                 {
                     ProductsPaginated = paginatedProduct,
@@ -146,7 +149,13 @@ namespace Repository.Implementation
                     Size = size,
                     PageNumbers = pageNumbers,
                     TotalCount = productCount,
-                    TotalPage = totalPages
+                    TotalPage = totalPages,
+                    Categories = categories,
+                    Category = categoryId,
+                    Name = nameSearch,
+                    Order = orderBy,
+                    Pmin = priceMin,
+                    Pmax = priceMax
                 };
             }
 
