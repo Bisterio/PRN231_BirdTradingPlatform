@@ -133,15 +133,6 @@ namespace Repository.Implementation
                 }
             }
 
-            var mail = new MailRequest()
-            {
-                ToEmail = newOrders.Email,
-                Subject = $"Your order has been created successfully.",
-                Body = $"Your order has been created successfully. Here is your invoice."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return new APISuccessResult<string>(newInvoice.InvoiceId.ToString());
         }
 
@@ -296,15 +287,6 @@ namespace Repository.Implementation
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
 
-            var mail = new MailRequest()
-            {
-                ToEmail = orderEntity.Invoice.Email,
-                Subject = $"You have cancelled your order #{orderId}.",
-                Body = $"You have cancelled your order #{orderId}."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return new APISuccessResult<string>("Cancel order successfully!");
         }
 
@@ -348,15 +330,6 @@ namespace Repository.Implementation
                 return new APIErrorResult<string>("This order is being processed!");
             }
 
-            var mail = new MailRequest()
-            {
-                ToEmail = orderEntity.Invoice.Email,
-                Subject = $"Your order #{orderId} has been approved.",
-                Body = $"Your order #{orderId} has been approved. Please wait."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return new APISuccessResult<string>("Order approved!");
         }
 
@@ -388,16 +361,6 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
-            
-            var mail = new MailRequest()
-            {
-                ToEmail = orderEntity.Invoice.Email,
-                Subject = $"Your order #{orderId} has been cancelled.",
-                Body = $"Your order #{orderId} has been cancelled. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
 
             return new APISuccessResult<string>("Cancel order successfully!");
         }
@@ -430,15 +393,6 @@ namespace Repository.Implementation
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
 
-            var mail = new MailRequest()
-            {
-                ToEmail = orderEntity.Invoice.Email,
-                Subject = $"Your order #{orderId} request for cancel is approved.",
-                Body = $"Your order #{orderId} request for cancel is approved."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return new APISuccessResult<string>("Request approved!");
         }
 
@@ -460,15 +414,6 @@ namespace Repository.Implementation
                 return new APIErrorResult<string>("This order is either being packed or delivered!");
             }
 
-            var mail = new MailRequest()
-            {
-                ToEmail = orderEntity.Invoice.Email,
-                Subject = $"Your order #{orderId} request for cancel is declined.",
-                Body = $"Your order #{orderId} request for cancel is declined. Due to some reasons."
-            };
-
-            _mailRepository.SendEmailAsync(mail);
-
             return new APISuccessResult<string>("Request declined!");
         }
 
@@ -484,15 +429,6 @@ namespace Repository.Implementation
                 orderEntity.Status = 4;
                 orderEntity.UpdatedAt = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
-
-                var mail = new MailRequest()
-                {
-                    ToEmail = orderEntity.Invoice.Email,
-                    Subject = $"Your order #{orderId} is now delivering.",
-                    Body = $"Your order #{orderId} is now delivering. Please wait."
-                };
-
-                _mailRepository.SendEmailAsync(mail);
 
                 return new APISuccessResult<string>("Order is delivering.");
             }
@@ -517,15 +453,6 @@ namespace Repository.Implementation
                 orderEntity.DeliveredAt = DateTime.Now;
                 orderEntity.RefundDuration = DateTime.Now.AddDays(3);
                 OrderDAO.UpdateOrder(orderEntity);
-
-                var mail = new MailRequest()
-                {
-                    ToEmail = orderEntity.Invoice.Email,
-                    Subject = $"Your order #{orderId} is successfully delivered.",
-                    Body = $"Your order #{orderId} is successfully delivered. Thank you for your purchase."
-                };
-
-                _mailRepository.SendEmailAsync(mail);
 
                 return new APISuccessResult<string>("Order is successfully delivered.");
             }
@@ -576,15 +503,6 @@ namespace Repository.Implementation
                 orderEntity.RefundDuration = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
 
-                var mail = new MailRequest()
-                {
-                    ToEmail = orderEntity.Invoice.Email,
-                    Subject = $"Your order #{orderId} request for refund is declined.",
-                    Body = $"Your order #{orderId} request for refund is declined. Due to some reasons."
-                };
-
-                _mailRepository.SendEmailAsync(mail);
-
                 return new APISuccessResult<string>("Refund request is successfully declined.");
             }
             else
@@ -616,15 +534,6 @@ namespace Repository.Implementation
                     updateStockProduct.UpdatedAt = DateTime.Now;
                     ProductDAO.UpdateProduct(updateStockProduct);
                 }
-
-                var mail = new MailRequest()
-                {
-                    ToEmail = orderEntity.Invoice.Email,
-                    Subject = $"Your order #{orderId} request for refund is approved.",
-                    Body = $"Your order #{orderId} request for refund is approved. Due to some reasons."
-                };
-
-                _mailRepository.SendEmailAsync(mail);
 
                 return new APISuccessResult<string>("Refund request is successfully accepted.");
             }
@@ -712,6 +621,12 @@ namespace Repository.Implementation
             {
                 return new APIErrorResult<string>("This order hasn't been requested for refund.");
             }
+        }
+
+        public Order GetOrderForEmail(long id)
+        {
+            var order = OrderDAO.GetOrderById(id);
+            return order;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Common;
 using BusinessObject.DTOs;
+using BusinessObject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,5 +30,6 @@ namespace Repository.Interface
         public APIResult<string> Report(long orderId, long currentUserId, string reportReason);
         public APIResult<string> ResolveReport(long orderId);
         public APIResult<string> ApproveRefundReport(long orderId);
+        public Order GetOrderForEmail(long id);
     }
 }
