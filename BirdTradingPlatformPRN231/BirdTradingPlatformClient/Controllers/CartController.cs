@@ -69,6 +69,12 @@ namespace BirdTradingPlatformClient.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
             // Post Request Check shipping cost
             string postJson = JsonConvert.SerializeObject(request,
                new JsonSerializerSettings
