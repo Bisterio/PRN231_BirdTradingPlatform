@@ -60,14 +60,6 @@
         const template = '' +
             '<"sa-datatables"' +
                 '<"sa-datatables__table"t>' +
-                '<"sa-datatables__footer"' +
-                    '<"sa-datatables__pagination"p>' +
-                    '<"sa-datatables__controls"' +
-                        '<"sa-datatables__legend"i>' +
-                        '<"sa-datatables__divider">' +
-                        '<"sa-datatables__page-size"l>' +
-                    '>' +
-                '>' +
             '>';
 
         $('.sa-datatables-init').each(function() {

@@ -10,7 +10,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
              .AddCookie(options =>
              {
                  options.LoginPath = "/Home/Login";
-                 options.AccessDeniedPath = "/Home/Forbidden/";
              });
 
 // Add session

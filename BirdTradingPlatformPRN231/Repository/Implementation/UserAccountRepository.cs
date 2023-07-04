@@ -86,7 +86,9 @@ namespace Repository.Implementation
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("StoreName", user.Store.Name),
+                new Claim("StoreLogo", user.Store.LogoImage)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

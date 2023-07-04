@@ -80,7 +80,7 @@ namespace BirdTradingPlatformClient.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Cancel Order
+            // Update profile
             string jsonString = JsonConvert.SerializeObject(new UserProfileUpdateDTO()
             {
                 Name = name,
@@ -149,7 +149,7 @@ namespace BirdTradingPlatformClient.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Cancel Order
+            // Change password
             string jsonString = JsonConvert.SerializeObject(new UserPasswordUpdateDTO()
             {
                OldPassword = oldPassword,
