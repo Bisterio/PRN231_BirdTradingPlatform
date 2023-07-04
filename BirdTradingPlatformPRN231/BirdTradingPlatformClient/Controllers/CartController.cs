@@ -64,12 +64,6 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO request)
         {
-            // Check for valid jwt token
-            if (HttpContext.Session.GetString("Token") == null)
-            {
-                return RedirectToAction("Logout", "Home");
-            }
-
             // Check modelstate
             if (!ModelState.IsValid)
             {
