@@ -35,6 +35,12 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpPost]
         public async Task<IActionResult> GetShippingCost([FromBody] CartAddressDTO request)
         {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
             // Post Request Check shipping cost
             string postJson = JsonConvert.SerializeObject(request,
                new JsonSerializerSettings
@@ -42,6 +48,7 @@ namespace BirdTradingPlatformClient.Controllers
                    DateTimeZoneHandling = DateTimeZoneHandling.Local
                });
             StringContent content = new StringContent(postJson, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
             HttpResponseMessage response = await client.PostAsync(ProductApilUrl + "/CalculateShip", content);
             if (!response.IsSuccessStatusCode)
             {
@@ -57,6 +64,12 @@ namespace BirdTradingPlatformClient.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO request)
         {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
             // Check modelstate
             if (!ModelState.IsValid)
             {
