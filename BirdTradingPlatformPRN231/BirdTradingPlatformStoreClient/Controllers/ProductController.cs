@@ -135,40 +135,10 @@ namespace BirdTradingPlatformStoreClient.Controllers
             // Upload Image
             // Get Img file
             var fileUpload = model.UploadImage;
-            FileStream fs;
 
             if (fileUpload != null && fileUpload.Length > 0)
             {
-                string fileExtension = Path.GetExtension(fileUpload.FileName).Substring(1);
-                string fileName = $"{Path.GetRandomFileName()}.{fileExtension}";
-                // Upload file to firebase
-                string folderName = "upload-image";
-                string path = Path.Combine(_env.WebRootPath, $"{folderName}");
-                using (fs = new FileStream(Path.Combine(path, fileName), FileMode.Create))
-                {
-                    await fileUpload.CopyToAsync(fs);
-                }
-                fs = new FileStream(Path.Combine(path, fileName), FileMode.Open);
-                // Firebase uploading
-                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-
-                // Cancellation Token
-                var upload = new FirebaseStorage
-                (
-                    Bucket,
-                    new FirebaseStorageOptions
-                    {
-                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
-                        ThrowOnCancel = true
-                    }
-                )
-                .Child(fileName)
-                .PutAsync(fs);
-
-                var downloadUrl = await upload;
-
-                model.Image = downloadUrl;
+                model.Image = await UploadImage(fileUpload);
             }
 
             ProductCreateDTO dto = new ProductCreateDTO
@@ -258,40 +228,10 @@ namespace BirdTradingPlatformStoreClient.Controllers
             // Upload Image
             // Get Img file
             var fileUpload = model.UploadImage;
-            FileStream fs;
 
             if (fileUpload != null && fileUpload.Length > 0)
             {
-                string fileExtension = Path.GetExtension(fileUpload.FileName).Substring(1);
-                string fileName = $"{Path.GetRandomFileName()}.{fileExtension}";
-                // Upload file to firebase
-                string folderName = "upload-image";
-                string path = Path.Combine(_env.WebRootPath, $"{folderName}");
-                using (fs = new FileStream(Path.Combine(path, fileName), FileMode.Create))
-                {
-                    await fileUpload.CopyToAsync(fs);
-                }
-                fs = new FileStream(Path.Combine(path, fileName), FileMode.Open);
-                // Firebase uploading
-                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-
-                // Cancellation Token
-                var upload = new FirebaseStorage
-                (
-                    Bucket,
-                    new FirebaseStorageOptions
-                    {
-                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
-                        ThrowOnCancel = true
-                    }
-                )
-                .Child(fileName)
-                .PutAsync(fs);
-
-                var downloadUrl = await upload;
-
-                model.Image = downloadUrl;
+                model.Image = await UploadImage(fileUpload);
             }
 
             ProductCreateDTO dto = new ProductCreateDTO
@@ -326,6 +266,41 @@ namespace BirdTradingPlatformStoreClient.Controllers
 
             TempData["SuccessMessage"] = "Create product successfully";
             return RedirectToAction("Detail", new { id = resultPost.ResultObj });
+        }
+
+        public async Task<string> UploadImage(IFormFile file)
+        {
+            FileStream fs;
+            string fileExtension = Path.GetExtension(file.FileName).Substring(1);
+            string fileName = $"{Path.GetRandomFileName()}.{fileExtension}";
+            // Upload file to firebase
+            string folderName = "upload-image";
+            string path = Path.Combine(_env.WebRootPath, $"{folderName}");
+            using (fs = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+            {
+                await file.CopyToAsync(fs);
+            }
+            fs = new FileStream(Path.Combine(path, fileName), FileMode.Open);
+            // Firebase uploading
+            var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+            var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+
+            // Cancellation Token
+            var upload = new FirebaseStorage
+            (
+                Bucket,
+                new FirebaseStorageOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                    ThrowOnCancel = true
+                }
+            )
+            .Child(fileName)
+            .PutAsync(fs);
+
+            var downloadUrl = await upload;
+
+            return downloadUrl;
         }
     }
 }
