@@ -216,6 +216,26 @@ namespace DataAccess
             return order;
         }
 
+        // Get Total sells of order by store user id
+        public static decimal GetTotalSells(long currentUserId)
+        {
+            decimal totalSells = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    totalSells = context.Orders
+                        .Where(o => o.Store.UserId == currentUserId && o.Status == 2)
+                        .Sum(o => o.TotalAmountPreShipping);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return totalSells;
+        }
+
         public static void CreateOrder(Order o)
         {
             try

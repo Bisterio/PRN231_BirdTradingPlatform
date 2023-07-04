@@ -276,6 +276,39 @@ namespace DataAccess
             return product;
         }
 
+        public static List<Product> GetTopProductsByStore(long currentUserId, int numberOfProducts)
+        {
+
+            List<Product> productList = new List<Product>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    List<long> productIds = context.OrderItems
+                        .Where(oi => oi.Order.Store.UserId == currentUserId && oi.Product.Status == 1)
+                        .GroupBy(x => x.ProductId)
+                        .Select(x => new { ProductId = x.Key, QuantitySum = x.Sum(a => a.Quantity) })
+                        .OrderByDescending(x => x.QuantitySum)
+                        .Select(x => x.ProductId)
+                        .Take(numberOfProducts)
+                        .AsQueryable()
+                        .ToList();
+
+                    productList = context.Products
+                        .Where(p => productIds.Contains(p.ProductId))
+                        .Include(p => p.Store)
+                        .Include(p => p.Category)
+                        .AsQueryable()
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return productList;
+        }
+
         public static void SaveProduct(Product Product)
         {
             try

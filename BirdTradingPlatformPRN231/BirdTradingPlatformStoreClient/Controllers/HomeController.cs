@@ -15,6 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Firebase.Auth;
 using Firebase.Storage;
+using Newtonsoft.Json.Linq;
 
 namespace BirdTradingPlatformStoreClient.Controllers
 {
@@ -22,6 +23,7 @@ namespace BirdTradingPlatformStoreClient.Controllers
     {
         private readonly HttpClient client = null;
         private string UserApilUrl = "";
+        private string DashboardApilUrl = "";
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
 
@@ -31,6 +33,7 @@ namespace BirdTradingPlatformStoreClient.Controllers
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             UserApilUrl = "http://localhost:5208/api/User";
+            DashboardApilUrl = "http://localhost:5208/api/Dashboard";
             _configuration = configuration;
             _env = env;
         }
@@ -43,14 +46,32 @@ namespace BirdTradingPlatformStoreClient.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Check for valid jwt token
             if (HttpContext.Session.GetString("Token") == null)
             {
                 return RedirectToAction("Logout", "Home");
             }
-            return View();
+
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // GET User Detail
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.GetAsync(DashboardApilUrl + "/Store");
+            if ((int)response.StatusCode != 200)
+            {
+                return RedirectToAction("Index");
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            StoreDashboardDTO result = data.ToObject<StoreDashboardDTO>();
+
+            return View(result);
         }
 
         [HttpGet]
