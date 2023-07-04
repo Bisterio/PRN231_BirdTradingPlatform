@@ -19,7 +19,7 @@ namespace BusinessObject.DTOs
         [Required]
         public string PaymentMethod { get; set; } = null!;
         [Required]
-        [RegularExpression(@"^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
+        [RegularExpression(@"^(\+84|84|0[1-9]|84[1-9]|\+84[1-9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
         public string? Phone { get; set; }
         public decimal TotalShippingCost { get; set; }
         public string? Note { get; set; }

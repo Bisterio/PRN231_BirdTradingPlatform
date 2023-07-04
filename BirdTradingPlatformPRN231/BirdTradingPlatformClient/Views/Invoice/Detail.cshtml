@@ -162,7 +162,7 @@
                                                         {
                                                             decimal productTotal = orderItem.UnitPrice * orderItem.Quantity;
                                                             <li>
-                                                                <p class="product_name_qnt">@orderItem.Name x @orderItem.Quantity <span class="float-end">@productTotal.ToString("#,##0").Replace(",",".") VND</span></p>
+                                                                <p class="product_name_qnt"><a asp-action="Detail" asp-controller="Product" asp-route-id="@orderItem.ProductId">@orderItem.Name</a> x @orderItem.Quantity <span class="float-end">@productTotal.ToString("#,##0").Replace(",",".") VND</span></p>
                                                             </li>
                                                         }
                                                     }

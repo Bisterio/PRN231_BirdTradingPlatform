@@ -274,7 +274,7 @@ namespace Repository.Implementation
             }
             else
             {
-                return new APIErrorResult<string>("This order is being processed! You need to request for cancel from the store.");
+                return new APIErrorResult<string>("Cannot cancel this order!");
             }
 
             // Increase stock of product for each order item cancelled

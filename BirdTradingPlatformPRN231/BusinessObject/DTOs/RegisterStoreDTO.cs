@@ -30,7 +30,7 @@ namespace BusinessObject.DTOs
         public string ConfirmPassword { get; set; } = null!;
 
         [Required(ErrorMessage = "Phone number is required")]
-        [RegularExpression(@"^(84|0[3|5|7|8|9]|84[3|5|7|8|9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
+        [RegularExpression(@"^(\+84|84|0[1-9]|84[1-9]|\+84[1-9])+([0-9]{8})\b$", ErrorMessage = "Invalid phone number")]
         public string Phone { get; set; } = null!;
 
 

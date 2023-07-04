@@ -54,6 +54,23 @@ namespace Repository
             };
         }
 
+        // Map ProductEntity to ProductCreateDTO
+        public static ProductCreateDTO? ToProductCreateDTO(Product? entity)
+        {
+            if (entity == null) return null;
+
+            return new ProductCreateDTO()
+            {
+                Name = entity.Name,
+                CategoryId = entity.CategoryId,
+                Description = entity.Description,
+                Image = entity.Image,
+                ProductId = entity.ProductId,
+                Stock = entity.Stock,
+                UnitPrice = entity.UnitPrice
+            };
+        }
+
         // Map Order Entity to OrderViewDTO
         public static OrderViewDTO? ToOrderViewDTO(Order? entity)
         {

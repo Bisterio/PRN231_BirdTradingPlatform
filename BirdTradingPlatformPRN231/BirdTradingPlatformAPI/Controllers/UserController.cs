@@ -41,6 +41,20 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        [HttpPost("AuthenticateAdmin")]
+        [AllowAnonymous]
+        public IActionResult AuthenticateAdmin([FromBody] LoginDTO request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _userRepository.AuthenticateAdmin(request);
+
+            return Ok(result);
+        }
+
         [HttpPost("RegisterCustomer")]
         [AllowAnonymous]
         public IActionResult RegisterCustomer([FromBody] RegisterCustomerDTO request)

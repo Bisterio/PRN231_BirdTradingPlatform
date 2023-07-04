@@ -24,5 +24,8 @@ namespace BusinessObject.DTOs
         public decimal UnitPrice { get; set; }
         [Required]
         public long? CategoryId { get; set; }
+        public long ProductId { get; set; }
+
+        public List<Category> Categories { get; set; } = new List<Category>();
     }
 }
