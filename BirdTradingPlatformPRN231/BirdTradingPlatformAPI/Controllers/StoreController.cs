@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BusinessObject.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Implementation;
 using Repository.Interface;
+using System.Security.Claims;
 
 namespace BirdTradingPlatformAPI.Controllers
 {
@@ -26,6 +28,24 @@ namespace BirdTradingPlatformAPI.Controllers
         public IActionResult GetPublicStoreList()
         {
             var result = _storeRepository.GetStoresPublic();
+
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateStore")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult UpdateStore([FromBody] StoreInformationUpdateDTO info)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _storeRepository.UpdateStore(currentUserId, info);
 
             return Ok(result);
         }
