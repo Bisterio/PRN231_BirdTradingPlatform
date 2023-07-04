@@ -50,7 +50,6 @@ namespace BirdTradingPlatformAPI.Controllers
                 _mailRepository.SendEmailAsync(mail);
             }
 
-
             return Ok(result);
         }
 
@@ -179,7 +178,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
             }
 
-
             return Ok(result);
         }
 
@@ -207,7 +205,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
                 _mailRepository.SendEmailAsync(mail);
             }
-
 
             return Ok(result);
         }
@@ -237,7 +234,6 @@ namespace BirdTradingPlatformAPI.Controllers
                 _mailRepository.SendEmailAsync(mail);
             }
 
-
             return Ok(result);
         }
 
@@ -265,7 +261,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
                 _mailRepository.SendEmailAsync(mail);
             }
-
 
             return Ok(result);
         }
@@ -295,7 +290,6 @@ namespace BirdTradingPlatformAPI.Controllers
                 _mailRepository.SendEmailAsync(mail);
             }
 
-
             return Ok(result);
         }
 
@@ -323,7 +317,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
                 _mailRepository.SendEmailAsync(mail);
             }
-
 
             return Ok(result);
         }
@@ -367,7 +360,6 @@ namespace BirdTradingPlatformAPI.Controllers
                 _mailRepository.SendEmailAsync(mail);
             }
 
-
             return Ok(result);
         }
 
@@ -395,7 +387,6 @@ namespace BirdTradingPlatformAPI.Controllers
 
                 _mailRepository.SendEmailAsync(mail);
             }
-
 
             return Ok(result);
         }
