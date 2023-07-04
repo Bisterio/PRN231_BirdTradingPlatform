@@ -1,4 +1,6 @@
-﻿@{
+﻿@model StoreCreateFormModel
+
+@{
     Layout = "_LayoutAuth";
     ViewData["Title"] = "Register";
 }
@@ -6,49 +8,119 @@
 <div class="min-h-100 p-0 p-sm-6 d-flex align-items-stretch">
     <div class="card w-25x flex-grow-1 flex-sm-grow-0 m-sm-auto">
         <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                    <div class="alert alert-danger mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.ErrorMessage
+                        <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+            }
+            @if (ViewBag.SuccessMessage != null)
+            {
+                <div class="alert alert-success mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.SuccessMessage
+                    <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <h1 class="mb-0 fs-3">Sign Up</h1>
-            <div class="fs-exact-14 text-muted mt-2 pt-1 mb-5 pb-2">Fill out the form to create a new account.</div>
-            <div class="mb-4">
-                <label class="form-label">Full name</label><input type="text"
-                                                                  class="form-control form-control-lg" />
-            </div>
-            <div class="mb-4">
-                <label class="form-label">Email Address</label><input type="email"
-                                                                      class="form-control form-control-lg" />
-            </div>
-            <div class="mb-4">
-                <label class="form-label">Password</label><input type="password"
-                                                                 class="form-control form-control-lg" />
-            </div>
-            <div class="mb-4 py-2">
-                <label class="form-check mb-0">
-                    <input type="checkbox"
-                           class="form-check-input" /><span class="form-check-label">
-                        I agree to the <a href="page-terms.html">terms and conditions</a>.
-                    </span>
-                </label>
-            </div>
-            <div><button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button></div>
+            <div class="fs-exact-14 text-muted mt-2 pt-1 mb-5 pb-2">Fill out the form to create a new store account.</div>
+            <form asp-action="Register" asp-controller="Home" method="post" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control form-control-lg" value="@Model.Email" asp-for="@Model.Email" placeholder="Enter your Email address" required />
+                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control form-control-lg" value="@Model.Name" asp-for="@Model.Name" placeholder="Enter your Name" required />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-control form-control-lg" value="@Model.Phone" asp-for="@Model.Phone" placeholder="Enter your Phone" required />
+                    <span asp-validation-for="@Model.Phone" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control form-control-lg" value="@Model.Password" asp-for="@Model.Password" placeholder="Enter your Password" minlength="8" required />
+                    <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control form-control-lg" value="@Model.ConfirmPassword" asp-for="@Model.ConfirmPassword" placeholder="Confirm your Password" minlength="8" required />
+                    <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Store Name</label>
+                    <input type="text" class="form-control form-control-lg" value="@Model.NewStoreName" asp-for="@Model.NewStoreName" placeholder="Enter your Store Name" required />
+                    <span asp-validation-for="@Model.NewStoreName" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Store Address</label>
+                    <input type="text" class="form-control form-control-lg" value="@Model.NewStoreAddress" asp-for="@Model.NewStoreAddress" placeholder="Enter your Store Address" required />
+                    <span asp-validation-for="@Model.NewStoreAddress" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Store Description</label>
+                    <input type="text" class="form-control form-control-lg" value="@Model.NewStoreDescription" asp-for="@Model.NewStoreDescription" placeholder="Enter your Store Description" required />
+                    <span asp-validation-for="@Model.NewStoreDescription" class="text-danger"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Logo Image</label>
+                    <input type="hidden" asp-for="@Model.NewStoreLogoImage" value="@(!string.IsNullOrEmpty(Model.NewStoreLogoImage) ? Model.NewStoreLogoImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                    <input class="form-control" type="file" asp-for="@Model.UploadLogoImage" onchange="chooseFile1(this)" accept="image/*">
+                    <img id="image-show-1" style="height: 240px" class="rounded mx-auto d-block mt-3" src="@(!string.IsNullOrEmpty(Model.NewStoreLogoImage) ? Model.NewStoreLogoImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Cover Image</label>
+                    <input type="hidden" asp-for="@Model.NewStoreCoverImage" value="@(!string.IsNullOrEmpty(Model.NewStoreCoverImage) ? Model.NewStoreCoverImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                    <input class="form-control" type="file" asp-for="@Model.UploadCoverImage" onchange="chooseFile2(this)" accept="image/*">
+                    <img id="image-show-2" style="height: 240px" class="rounded mx-auto d-block mt-3" src="@(!string.IsNullOrEmpty(Model.NewStoreCoverImage) ? Model.NewStoreCoverImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                </div>
+                <div class="mb-4 py-2">
+                    <label class="form-check mb-0">
+                        <input type="checkbox"
+                               class="form-check-input" /><span class="form-check-label">
+                            I agree to the <a href="page-terms.html">terms and conditions</a>.
+                        </span>
+                    </label>
+                </div>
+                <div><button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button></div>
+            </form>
         </div>
         <div class="sa-divider sa-divider--has-text">
-            <div class="sa-divider__text">Or continue with</div>
         </div>
         <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
-            <div class="d-flex flex-wrap me-n3 mt-n3">
-                <button type="button"
-                        class="btn btn-secondary flex-grow-1 me-3 mt-3">
-                    Google
-                </button><button type="button"
-                                 class="btn btn-secondary flex-grow-1 me-3 mt-3">
-                    Facebook
-                </button><button type="button"
-                                 class="btn btn-secondary flex-grow-1 me-3 mt-3">
-                    Twitter
-                </button>
-            </div>
             <div class="form-group mb-0 mt-4 pt-2 text-center text-muted">
-                Already have an account? <a href="auth-sign-in.html">Sign in</a>
+                Already have an account? <a asp-action="Login" asp-controller="Home">Sign in</a>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        function chooseFile1(fileInput) {
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image-show-1').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function chooseFile2(fileInput) {
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image-show-2').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    </script>
+}
