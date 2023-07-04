@@ -12,10 +12,10 @@ namespace BirdTradingPlatformStoreClient.Models
         [MaxLength(500)]
         public string Name { get; set; } = null!;
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         public int Stock { get; set; }
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         public decimal UnitPrice { get; set; }
         [Required]
         public long? CategoryId { get; set; }
