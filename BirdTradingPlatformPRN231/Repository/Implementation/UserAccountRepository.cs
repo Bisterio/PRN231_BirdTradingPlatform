@@ -179,6 +179,7 @@ namespace Repository.Implementation
                     Phone = request.Phone,
                     Role = "STORE",
                     Status = 1,
+                    EmailVerified = 1,
                     StoreId = newStore.StoreId,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
@@ -197,7 +198,7 @@ namespace Repository.Implementation
 
             return new APIErrorResult<bool>("Can't add new store to database.");
         }
-        //Admin get all users filter by role
+        // Admin get all users filter by role
         public ClientUserViewListDTO GetAllUsers(int page, string? roleSearch)
         {
             // Handle query data

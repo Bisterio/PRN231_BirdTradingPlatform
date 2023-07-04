@@ -87,9 +87,6 @@ namespace BirdTradingPlatformAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public IActionResult GetAllUsers([FromQuery] int page, [FromQuery] string? roleSearch)
         {
-            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrEmpty(idString)) return Unauthorized();
-
             var result = _userRepository.GetAllUsers(page, roleSearch);
 
             return Ok(result);
@@ -99,9 +96,6 @@ namespace BirdTradingPlatformAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public IActionResult GetUserDetail(long id)
         {
-            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrEmpty(idString)) return Unauthorized();
-
             var result = _userRepository.GetUserDetail(id);
 
             return Ok(result);
@@ -111,14 +105,6 @@ namespace BirdTradingPlatformAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public IActionResult DeactivateAccount( long id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrEmpty(idString)) return Unauthorized();
-
             var result = _userRepository.DeactivateAccount(id);
 
             return Ok(result);
@@ -128,14 +114,6 @@ namespace BirdTradingPlatformAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public IActionResult ActivateAccount( long id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (String.IsNullOrEmpty(idString)) return Unauthorized();
-
             var result = _userRepository.ActivateAccount(id);
 
             return Ok(result);
@@ -155,7 +133,7 @@ namespace BirdTradingPlatformAPI.Controllers
         }
 
         [HttpPut("UpdateProfile")]
-        [Authorize(Roles = "CUSTOMER")]
+        [Authorize]
         public IActionResult UpdateProfile([FromBody] UserProfileUpdateDTO profile)
         {
             if (!ModelState.IsValid)
