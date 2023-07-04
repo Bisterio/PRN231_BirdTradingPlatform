@@ -63,6 +63,11 @@ namespace BirdTradingPlatformStoreClient.Controllers
             dynamic data = JObject.Parse(strData);
             ClientProductViewListDTO model = data.ToObject<ClientProductViewListDTO>();
 
+            if(TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+
             return View(model);
         }
 
@@ -266,6 +271,37 @@ namespace BirdTradingPlatformStoreClient.Controllers
 
             TempData["SuccessMessage"] = "Create product successfully";
             return RedirectToAction("Detail", new { id = resultPost.ResultObj });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Delete(long id)
+        {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // Approve Order
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.DeleteAsync(ProductApilUrl + $"/{id}");
+            if ((int)response.StatusCode != 200)
+            {
+                TempData["ErrorMessage"] = "Cannot Delete this Product";
+                return RedirectToAction("Detail", new { id = id });
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            APIResult<bool> result = data.ToObject<APIResult<bool>>();
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Detail", new { id = id });
+            }
+
+            TempData["SuccessMessage"] = "Delete product successfully";
+            return RedirectToAction("Index");
         }
 
         public async Task<string> UploadImage(IFormFile file)

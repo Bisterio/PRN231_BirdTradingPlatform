@@ -19,6 +19,7 @@ namespace Repository.Interface
         APIResult<string> DeactivateAccount(long userId);
         APIResult<string> ActivateAccount(long userId);
         APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId);
+        APIResult<UserDetailViewDTO> GetCurrentStore(long currentUserId);
         APIResult<UserDetailViewDTO> GetUserDetail(long userId);
         APIResult<bool> UpdateProfile(long currentUserId, UserProfileUpdateDTO profile);
         APIResult<bool> ChangePassword(long currentUserId, UserPasswordUpdateDTO password);

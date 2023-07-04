@@ -425,5 +425,16 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
+
+        public APIResult<UserDetailViewDTO> GetCurrentStore(long currentUserId)
+        {
+            if (currentUserId == null) return new APIErrorResult<UserDetailViewDTO>("Can't find user.");
+
+            UserAccount user = UserAccountDAO.FindUserById(currentUserId);
+
+            if (user == null) return new APIErrorResult<UserDetailViewDTO>("This user is not existed.");
+
+            return new APISuccessResult<UserDetailViewDTO>(Mapper.ToUserDetailViewDTO(user));
+        }
     }
 }

@@ -160,6 +160,7 @@ namespace Repository
                 LogoImage = entity.Store?.LogoImage,
                 CoverImage = entity.Store?.CoverImage,
                 Description = entity.Store?.Description,
+                StoreAddress = entity.Store?.Address
             };
         }
     }

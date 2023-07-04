@@ -132,6 +132,19 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("StoreProfile")]
+        [Authorize(Roles = "STORE")]
+        public IActionResult GetCurrentStore()
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _userRepository.GetCurrentStore(currentUserId);
+
+            return Ok(result);
+        }
+
         [HttpPut("UpdateProfile")]
         [Authorize]
         public IActionResult UpdateProfile([FromBody] UserProfileUpdateDTO profile)
