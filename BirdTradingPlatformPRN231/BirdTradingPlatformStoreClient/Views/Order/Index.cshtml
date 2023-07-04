@@ -1,5 +1,299 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BusinessObject.DTOs.ClientOrderViewListDTO
 @{
+    ViewData["Title"] = "Order Management";
+
+    string statusName(int statusCode)
+    {
+        string temp = "Undefined";
+        switch (statusCode)
+        {
+            case 1:
+                temp = "Awaiting Approval";
+                break;
+            case 2:
+                temp = "Delivered";
+                break;
+            case 3:
+                temp = "Packing";
+                break;
+            case 4:
+                temp = "Delivering";
+                break;
+            case 5:
+                temp = "Awaiting Cancel Approval";
+                break;
+            case 6:
+                temp = "Store Cancelled";
+                break;
+            case 7:
+                temp = "Customer Cancelled";
+                break;
+            case 8:
+                temp = "Awaiting Refund Approval";
+                break;
+            case 9:
+                temp = "Refunded";
+                break;
+        }
+        return temp;
+    }
+
+    string statusStyle(int statusCode)
+    {
+        string temp = "badge-sa-warning";
+        switch (statusCode)
+        {
+            case 3:
+            case 4:
+                temp = "badge-sa-primary";
+                break;
+            case 6:
+            case 7:
+                temp = "badge-sa-danger";
+                break;
+            case 1:
+            case 5:
+            case 8:
+                temp = "badge-sa-warning";
+                break;
+            case 2:
+            case 9:
+                temp = "badge-sa-success";
+                break;
+        }
+        return temp;
+    }
+}
+
+<div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+    <div class="container">
+        <div class="py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col">
+                    <h1 class="h3 m-0">Orders</h1>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="p-4">
+                <form id="form-search" asp-controller="Order" asp-action="Index" method="GET">
+                    <div class="row g-4">
+                        <div class="col-auto sa-layout__filters-button">
+                            <select class="form-select" asp-for="Status" onchange="selectChangeHandler()">
+                                <option value="0">All Status</option>
+                                <option value="1">Awaiting Approval</option>
+                                <option value="2">Delivered</option>
+                                <option value="3">Packing</option>
+                                <option value="4">Delivering</option>
+                                <option value="5">Awaiting Cancel Approval</option>
+                                <option value="6">Store Cancelled</option>
+                                <option value="7">Customer Cancelled</option>
+                                <option value="8">Awaiting Refund Approval</option>
+                                <option value="9">Refunded</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input id="name-search-input" value="@Model.OrderIdSearch" asp-for="OrderIdSearch" type="text" placeholder="Search by Order Number" class="form-control form-control--search mx-auto">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="sa-divider"></div>
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                <div class="sa-datatables">
+                    @if (Model.OrdersPaginated.Count == 0)
+                    {
+                        <div class="my-5">
+                            <h5 class="text-center">No products to be shown</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        int startingNum = (Model.Page - 1) * Model.Size + 1;
+                        int endingNum = Math.Min(Model.Page * Model.Size, Model.TotalCount);
+                        <div class="sa-datatables__table">
+                            <table class="text-nowrap dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                                <thead>
+                                    <tr role="row">
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 105.5px;"
+                                        aria-sort="descending">Number</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 191.812px;">Order Date</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 191.812px;">Deliver Date</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 155.975px;">Customer</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 94.4375px;">Status</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 107.812px;">Total</th>
+                                        <th class="w-min sorting_disabled" data-orderable="false" rowspan="1" colspan="1" aria-label=""
+                                        style="width: 24.2px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.OrdersPaginated)
+                                    {
+                                        <tr>
+                                            <td><a asp-action="Detail" asp-controller="Order" asp-route-id="@order.OrderId" class="text-reset">#@order.OrderId</a></td>
+                                            @if (order.CreatedAt != null)
+                                            {
+                                                DateTime createdAtDateTime = order.CreatedAt ?? DateTime.Now;
+                                                <td>
+                                                    @createdAtDateTime.ToString("MMMM dd yyyy")
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    N/A
+                                                </td>
+                                            }
+                                            @if (order.DeliveredAt != null)
+                                            {
+                                                DateTime deliveredAtDateTime = order.DeliveredAt ?? DateTime.Now;
+                                                <td>
+                                                    @deliveredAtDateTime.ToString("MMMM dd yyyy")
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    N/A
+                                                </td>
+                                            }
+                                            <td>@order.Name</td>
+                                            <td>
+                                                <div class="d-flex fs-6">
+                                                    <div class="badge @statusStyle(order.Status)">@statusName(order.Status)</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="sa-price">@order.TotalAmount.ToString("#,##0").Replace(",",".") VND</div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sa-muted btn-sm" type="button"
+                                                    id="order-context-menu-0" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="3" height="13" fill="currentColor">
+                                                            <path d="M1.5,8C0.7,8,0,7.3,0,6.5S0.7,5,1.5,5S3,5.7,3,6.5S2.3,8,1.5,8z M1.5,3C0.7,3,0,2.3,0,1.5S0.7,0,1.5,0 S3,0.7,3,1.5S2.3,3,1.5,3z M1.5,10C2.3,10,3,10.7,3,11.5S2.3,13,1.5,13S0,12.3,0,11.5S0.7,10,1.5,10z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="order-context-menu-0" style="">
+                                                        <li>
+                                                            <a class="dropdown-item" asp-action="Detail" asp-controller="Order" asp-route-id="@order.OrderId">View</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="sa-datatables__footer">
+                            <div class="sa-datatables__pagination">
+                                @if (Model.TotalCount > Model.Size)
+                                {
+                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                        <ul class="pagination pagination-sm">
+                                            <!-- Previous Page -->
+                                            @if (Model.Page != 1)
+                                            {
+                                                <li class="paginate_button page-item previous" id="DataTables_Table_0_previous">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@(@Model.Page - 1)"
+                                           asp-route-status="@Model.Status" asp-route-orderIdSearch="@Model.OrderIdSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">Previous</a>
+                                                </li>
+                                            }
+
+                                            <!-- First page -->
+                                            @if (!Model.PageNumbers.Contains(1))
+                                            {
+                                                <li class="paginate_button page-item">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="1"
+                                           asp-route-status="@Model.Status" asp-route-orderIdSearch="@Model.OrderIdSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">1</a>
+                                                </li>
+
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">...</a>
+                                                </li>
+                                            }
+
+                                            <!-- Page items -->
+                                            @foreach (int pageNo in Model.PageNumbers)
+                                            {
+                                                <li class="paginate_button page-item @(@Model.Page == pageNo ? "active" : "")">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@pageNo"
+                                           asp-route-status="@Model.Status" asp-route-orderIdSearch="@Model.OrderIdSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">@pageNo</a>
+                                                </li>
+                                            }
+
+                                            <!-- Last page -->
+                                            @if (!Model.PageNumbers.Contains(Model.TotalPage))
+                                            {
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">...</a>
+                                                </li>
+
+                                                <li class="paginate_button page-item">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@Model.TotalPage"
+                                           asp-route-status="@Model.Status" asp-route-orderIdSearch="@Model.OrderIdSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">@Model.TotalPage</a>
+                                                </li>
+                                            }
+
+                                            <!-- Next Page -->
+                                            @if (Model.Page != Model.TotalPage)
+                                            {
+                                                <li class="paginate_button page-item next" id="DataTables_Table_0_previous">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@(@Model.Page + 1)"
+                                           asp-route-status="@Model.Status" asp-route-orderIdSearch="@Model.OrderIdSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">Next</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                            <div class="sa-datatables__controls">
+                                <div class="sa-datatables__legend">
+                                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                        Showing @startingNum to @endingNum of @Model.TotalCount
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#name-search-input").unbind().on('click', function (e) {
+                if (e.which == 13) {
+                    $("#form-search").submit();
+                }
+            });
+        });
+
+        function selectChangeHandler() {
+            document.getElementById("name-search-input").value = "";
+            document.getElementById("form-search").submit();
+        }
+    </script>
 }

@@ -44,16 +44,13 @@ namespace BirdTradingPlatformStoreClient.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index");
             }
-            if (!string.IsNullOrEmpty(returnUrl))
-            {
-                TempData["ReturnUrl"] = returnUrl;
-            }
+
             return View(new LoginDTO());
         }
 
@@ -112,18 +109,7 @@ namespace BirdTradingPlatformStoreClient.Controllers
                         userPrincipal,
                         authProperties);
 
-            // Redirect
-            object? returnUrl = string.Empty;
-            TempData.TryGetValue("ReturnUrl", out returnUrl);
-            string? returnUrlStr = returnUrl as string;
-            if (!string.IsNullOrEmpty(returnUrlStr))
-            {
-                return Redirect(returnUrlStr);
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         private ClaimsPrincipal ValidateToken(string jwtToken)

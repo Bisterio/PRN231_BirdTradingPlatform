@@ -86,7 +86,7 @@ namespace DataAccess
         }
 
         // Function to get count of orders of a logined store user by status
-        public static int CountOrdersByCurrentStore(byte status, long currentUserId)
+        public static int CountOrdersByCurrentStore(byte status, long currentUserId, string orderIdSearch)
         {
             int count = 0;
             try
@@ -95,6 +95,7 @@ namespace DataAccess
                 {
                     count = context.Orders
                         .Where(o => o.Store.UserId == currentUserId
+                        && (String.IsNullOrEmpty(orderIdSearch) || o.OrderId.ToString().Equals(orderIdSearch))
                         && (status == 0 || o.Status == status))
                         .Count();
                 }

@@ -80,6 +80,8 @@ namespace Repository.Implementation
             // Check for password encrypt match
             if (!BC.Verify(request.Password, user.Password)) return new APIErrorResult<string>("Wrong password.");
 
+            if(user.Store == null) return new APIErrorResult<string>("Invalid store account");
+
             // Create user identity with ID, Email, Name, Role
             var claims = new[]
             {

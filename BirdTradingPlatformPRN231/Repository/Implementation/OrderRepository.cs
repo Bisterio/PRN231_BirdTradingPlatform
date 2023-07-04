@@ -186,7 +186,7 @@ namespace Repository.Implementation
         public ClientOrderViewListDTO GetCurrentStoreOrders(int page, byte status, long currentUserId, string orderIdSearch)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             List<OrderViewDTO?> orderByStore = OrderDAO
@@ -195,7 +195,7 @@ namespace Repository.Implementation
                 .ToList();
 
             // Get count of orders by search/filter
-            int orderCount = OrderDAO.CountOrdersByCurrentStore(status, currentUserId);
+            int orderCount = OrderDAO.CountOrdersByCurrentStore(status, currentUserId, orderIdSearch);
             int totalPages = (int)Math.Ceiling((double)orderCount / size);
             List<int> pageNumbers = new List<int>();
             if (totalPages > 0)
@@ -223,7 +223,8 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = orderCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                OrderIdSearch = orderIdSearch
             };
         }
         // Get order detail and order items of a logined customer
