@@ -195,7 +195,129 @@ namespace Repository.Implementation
 
             return new APIErrorResult<bool>("Can't add new store to database.");
         }
+        //Admin get all users filter by role
+        public ClientUserViewListDTO GetAllUsers(int page, string? roleSearch)
+        {
+            // Handle query data
+            int size = 12;
+            page = page == 0 ? 1 : page;
 
+            List<UserDetailViewDTO?> userByAdmin = UserAccountDAO
+                .GetUsersByAdmin(page, size, roleSearch)
+                .Select(x => Mapper.ToUserDetailViewDTO(x))
+                .ToList();
+
+            // Get count of userrs by search/filter
+            int userCount = UserAccountDAO.CountUsersByAdmin(roleSearch);
+            int totalPages = (int)Math.Ceiling((double)userCount / size);
+            List<int> pageNumbers = new List<int>();
+            if (totalPages > 0)
+            {
+                int start = Math.Max(1, page - 2);
+                int end = Math.Min(page + 2, totalPages);
+
+                if (totalPages > 5)
+                {
+                    if (end == totalPages) start = end - 4;
+                    else if (start == 1) end = start + 4;
+                }
+                else
+                {
+                    start = 1;
+                    end = totalPages;
+                }
+                pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
+            }
+
+            return new ClientUserViewListDTO()
+            {
+                UsersPaginated = userByAdmin,
+                Page = page,
+                Size = size,
+                Role = roleSearch,
+                PageNumbers = pageNumbers,
+                TotalCount = userCount,
+                TotalPage = totalPages
+            };
+        }
+        //Admin get user detail
+        public APIResult<UserDetailViewDTO> GetUserDetail(long userId)
+        {
+            UserAccount user = UserAccountDAO.FindUserById(userId);
+
+            if (user == null) return new APIErrorResult<UserDetailViewDTO>("Can't find user.");
+
+            if (user.Store == null)
+            {
+                UserDetailViewDTO newUser = new()
+                {
+                    Id = userId,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Role = user.Role,
+                    Status = user.Status,
+                };
+                return new APISuccessResult<UserDetailViewDTO>(newUser);
+            }
+            else
+            {
+                UserDetailViewDTO newUser = new()
+                {
+                    Id = userId,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Role = user.Role,
+                    Status = user.Status,
+                    StoreName = user.Store.Name,
+                    LogoImage = user.Store.LogoImage,
+                    CoverImage = user.Store.CoverImage,
+                    Description = user.Store.Description,
+                };
+                return new APISuccessResult<UserDetailViewDTO>(newUser);
+            }
+        }
+        //Admin deactivate user account
+        public APIResult<string> DeactivateAccount(long userId)
+        {
+            UserAccount? userEntity = UserAccountDAO.FindUserById(userId);
+            if (userEntity == null) return new APIErrorResult<string>("Cannot find this user!");
+
+            // Change order status to 5: waiting for cancel approval
+            if (userEntity.Status == 1)
+            {
+                userEntity.Status = 0;
+                userEntity.UpdatedAt = DateTime.Now;
+                UserAccountDAO.UpdateUser(userEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This account is already deactivated!");
+            }
+
+            return new APISuccessResult<string>("Deactivate account successfully!");
+        }
+        //Admin activate user account
+        public APIResult<string> ActivateAccount(long userId)
+        {
+            UserAccount? userEntity = UserAccountDAO.FindUserById(userId);
+            if (userEntity == null) return new APIErrorResult<string>("Cannot find this user!");
+
+            // Change order status to 5: waiting for cancel approval
+            if (userEntity.Status == 0)
+            {
+                userEntity.Status = 1;
+                userEntity.UpdatedAt = DateTime.Now;
+                UserAccountDAO.UpdateUser(userEntity);
+            }
+            else
+            {
+                return new APIErrorResult<string>("This account is already activated!");
+            }
+
+            return new APISuccessResult<string>("Account is now active!");
+        }
         public APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId)
         {
             if (currentUserId == null) return new APIErrorResult<UserProfileViewDTO>("Can't find user.");
@@ -245,7 +367,7 @@ namespace Repository.Implementation
             else if (password.NewPassword == password.OldPassword)
             {
                 return new APIErrorResult<bool>("The new password must be diffent from old password.");
-            } 
+            }
             else if (password.ConfirmPassword != password.NewPassword)
             {
                 return new APIErrorResult<bool>("The new password and confirm password are not the same.");

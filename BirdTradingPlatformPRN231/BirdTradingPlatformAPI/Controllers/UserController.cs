@@ -83,6 +83,64 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("All")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult GetAllUsers([FromQuery] int page, [FromQuery] string? roleSearch)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+
+            var result = _userRepository.GetAllUsers(page, roleSearch);
+
+            return Ok(result);
+        }
+
+        [HttpGet("Detail/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult GetUserDetail(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+
+            var result = _userRepository.GetUserDetail(id);
+
+            return Ok(result);
+        }
+
+        [HttpPut("DeactivateAccount/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult DeactivateAccount( long id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+
+            var result = _userRepository.DeactivateAccount(id);
+
+            return Ok(result);
+        }
+
+        [HttpPut("ActivateAccount/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult ActivateAccount( long id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+
+            var result = _userRepository.ActivateAccount(id);
+
+            return Ok(result);
+        }
+
         [HttpGet("Profile")]
         [Authorize(Roles = "CUSTOMER")]
         public IActionResult GetCurrentCustomer()

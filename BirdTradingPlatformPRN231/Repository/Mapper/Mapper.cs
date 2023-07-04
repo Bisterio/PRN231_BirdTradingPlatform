@@ -144,5 +144,23 @@ namespace Repository
                 UpdatedAt = entity.UpdatedAt
             };
         }
+        public static UserDetailViewDTO? ToUserDetailViewDTO(UserAccount? entity)
+        {
+            if (entity == null) return null;
+
+            return new UserDetailViewDTO()
+            {
+                Id = entity.UserId,
+                Name = entity.Name,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                Role = entity.Role,
+                Status = entity.Status,
+                StoreName = entity.Store?.Name,
+                LogoImage = entity.Store?.LogoImage,
+                CoverImage = entity.Store?.CoverImage,
+                Description = entity.Store?.Description,
+            };
+        }
     }
 }

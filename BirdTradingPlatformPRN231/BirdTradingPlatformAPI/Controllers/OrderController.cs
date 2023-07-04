@@ -53,7 +53,30 @@ namespace BirdTradingPlatformAPI.Controllers
 
             return Ok(result);
         }
+        // ADMIN: Get all orders filter by isReported
+        [HttpGet("Admin")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult GetCurrentAdminOrders([FromQuery] int page, [FromQuery] byte isReported)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
 
+            var result = _orderRepository.GetCurrentAdminOrders(page, isReported);
+
+            return Ok(result);
+        }
+        // ADMIN: Get an order detail
+        [HttpGet("Admin/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult GetOrderDetailAdmin(long id)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+
+            var result = _orderRepository.GetOrderDetailAdmin(id);
+            if (result == null) return NotFound("Can't get this order detail!");
+            return Ok(result);
+        }
         // CUSTOMER: Get all orders filter by status of currently logined customer
         [HttpGet("Customer")]
         [Authorize(Roles = "CUSTOMER")]
