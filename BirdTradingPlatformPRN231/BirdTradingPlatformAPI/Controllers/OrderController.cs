@@ -38,14 +38,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.CreateNewOrders(newOrders, currentUserId);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = newOrders.Email,
-                Subject = $"Your order has been created successfully.",
-                Body = $"Your order has been created successfully. Here is your invoice."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = newOrders.Email,
+                    Subject = $"Your order has been created successfully.",
+                    Body = $"Your order has been created successfully. Here is your invoice."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -120,14 +124,17 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"You have cancelled your order #{id}.",
-                Body = $"You have cancelled your order #{id}."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"You have cancelled your order #{id}.",
+                    Body = $"You have cancelled your order #{id}."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
 
             return Ok(result);
         }
@@ -159,14 +166,19 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} has been approved.",
-                Body = $"Your order #{id} has been approved. Please wait."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} has been approved.",
+                    Body = $"Your order #{id} has been approved. Please wait."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+
+            }
+
 
             return Ok(result);
         }
@@ -184,14 +196,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} has been cancelled.",
-                Body = $"Your order #{id} has been cancelled. Due to some reasons."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} has been cancelled.",
+                    Body = $"Your order #{id} has been cancelled. Due to some reasons."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -209,14 +225,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for cancel is approved.",
-                Body = $"Your order #{id} request for cancel is approved."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} request for cancel is approved.",
+                    Body = $"Your order #{id} request for cancel is approved."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -234,14 +254,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for cancel is declined.",
-                Body = $"Your order #{id} request for cancel is declined. Due to some reasons."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} request for cancel is declined.",
+                    Body = $"Your order #{id} request for cancel is declined. Due to some reasons."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -259,14 +283,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} is now delivering.",
-                Body = $"Your order #{id} is now delivering. Please wait."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} is now delivering.",
+                    Body = $"Your order #{id} is now delivering. Please wait."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -284,14 +312,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} is successfully delivered.",
-                Body = $"Your order #{id} is successfully delivered. Thank you for your purchase."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} is successfully delivered.",
+                    Body = $"Your order #{id} is successfully delivered. Thank you for your purchase."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -323,14 +355,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for refund is declined.",
-                Body = $"Your order #{id} request for refund is declined. Due to some reasons."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} request for refund is declined.",
+                    Body = $"Your order #{id} request for refund is declined. Due to some reasons."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
@@ -348,14 +384,18 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var order = _orderRepository.GetOrderForEmail(id);
 
-            var mail = new MailRequest()
+            if (result.IsSuccess == true)
             {
-                ToEmail = order.Invoice.Email,
-                Subject = $"Your order #{id} request for refund is approved.",
-                Body = $"Your order #{id} request for refund is approved. Due to some reasons."
-            };
+                var mail = new MailRequest()
+                {
+                    ToEmail = order.Invoice.Email,
+                    Subject = $"Your order #{id} request for refund is approved.",
+                    Body = $"Your order #{id} request for refund is approved. Due to some reasons."
+                };
 
-            _mailRepository.SendEmailAsync(mail);
+                _mailRepository.SendEmailAsync(mail);
+            }
+
 
             return Ok(result);
         }
