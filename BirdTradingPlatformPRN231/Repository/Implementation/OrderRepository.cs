@@ -13,6 +13,17 @@ namespace Repository.Implementation
 {
     public class OrderRepository : IOrderRepository
     {
+        private readonly IMailRepository _mailRepository;
+
+        public OrderRepository(IMailRepository mailRepository)
+        {
+            _mailRepository = mailRepository;
+        }
+
+        public OrderRepository()
+        {
+
+        }
 
         // Function to create new orders
         public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId)
@@ -121,6 +132,15 @@ namespace Repository.Implementation
                     ProductDAO.UpdateProduct(updateStockProduct);
                 }
             }
+
+            var mail = new MailRequest()
+            {
+                ToEmail = newOrders.Email,
+                Subject = $"Your order has been created successfully.",
+                Body = $"Your order has been created successfully. Here is your invoice."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
 
             return new APISuccessResult<string>(newInvoice.InvoiceId.ToString());
         }
@@ -276,9 +296,17 @@ namespace Repository.Implementation
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
 
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"You have cancelled your order #{orderId}.",
+                Body = $"You have cancelled your order #{orderId}."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
+
             return new APISuccessResult<string>(orderId.ToString());
         }
-
 
         // Customer send cancel request of order by orderId and userId
         public APIResult<string> RequestCancelOrderDetailCustomer(long orderId, long currentUserId, string cancelReason)
@@ -301,6 +329,7 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>("Request sent successfully!");
         }
+
         //Store approve order
         public APIResult<string> ApproveOrderStore(long orderId, long currentUserId)
         {
@@ -319,8 +348,18 @@ namespace Repository.Implementation
                 return new APIErrorResult<string>("This order is being processed!");
             }
 
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"Your order #{orderId} has been approved.",
+                Body = $"Your order #{orderId} has been approved. Please wait."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
+
             return new APISuccessResult<string>("Order approved!");
         }
+
         //Store cancel an order by orderId and storeId
         public APIResult<string> CancelOrderDetailStore(long orderId, long currentUserId, string cancelReason)
         {
@@ -349,8 +388,20 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
+            
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"Your order #{orderId} has been cancelled.",
+                Body = $"Your order #{orderId} has been cancelled. Due to some reasons."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
+
+
             return new APISuccessResult<string>("Cancel order successfully!");
         }
+
         //Store approve order cancel request
         public APIResult<string> ApproveOrderCancelRequestStore(long orderId, long currentUserId)
         {
@@ -378,8 +429,19 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
+
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"Your order #{orderId} request for cancel is approved.",
+                Body = $"Your order #{orderId} request for cancel is approved."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
+
             return new APISuccessResult<string>("Request approved!");
         }
+
         //Store decline order cancel request
         public APIResult<string> DeclineOrderCancelRequestStore(long orderId, long currentUserId)
         {
@@ -398,6 +460,15 @@ namespace Repository.Implementation
                 return new APIErrorResult<string>("This order is either being packed or delivered!");
             }
 
+            var mail = new MailRequest()
+            {
+                ToEmail = orderEntity.Invoice.Email,
+                Subject = $"Your order #{orderId} request for cancel is declined.",
+                Body = $"Your order #{orderId} request for cancel is declined. Due to some reasons."
+            };
+
+            _mailRepository.SendEmailAsync(mail);
+
             return new APISuccessResult<string>("Request declined!");
         }
 
@@ -413,6 +484,15 @@ namespace Repository.Implementation
                 orderEntity.Status = 4;
                 orderEntity.UpdatedAt = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
+
+                var mail = new MailRequest()
+                {
+                    ToEmail = orderEntity.Invoice.Email,
+                    Subject = $"Your order #{orderId} is now delivering.",
+                    Body = $"Your order #{orderId} is now delivering. Please wait."
+                };
+
+                _mailRepository.SendEmailAsync(mail);
 
                 return new APISuccessResult<string>("Order is delivering.");
             }
@@ -437,6 +517,15 @@ namespace Repository.Implementation
                 orderEntity.DeliveredAt = DateTime.Now;
                 orderEntity.RefundDuration = DateTime.Now.AddDays(3);
                 OrderDAO.UpdateOrder(orderEntity);
+
+                var mail = new MailRequest()
+                {
+                    ToEmail = orderEntity.Invoice.Email,
+                    Subject = $"Your order #{orderId} is successfully delivered.",
+                    Body = $"Your order #{orderId} is successfully delivered. Thank you for your purchase."
+                };
+
+                _mailRepository.SendEmailAsync(mail);
 
                 return new APISuccessResult<string>("Order is successfully delivered.");
             }
@@ -487,6 +576,15 @@ namespace Repository.Implementation
                 orderEntity.RefundDuration = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
 
+                var mail = new MailRequest()
+                {
+                    ToEmail = orderEntity.Invoice.Email,
+                    Subject = $"Your order #{orderId} request for refund is declined.",
+                    Body = $"Your order #{orderId} request for refund is declined. Due to some reasons."
+                };
+
+                _mailRepository.SendEmailAsync(mail);
+
                 return new APISuccessResult<string>("Refund request is successfully declined.");
             }
             else
@@ -519,11 +617,100 @@ namespace Repository.Implementation
                     ProductDAO.UpdateProduct(updateStockProduct);
                 }
 
+                var mail = new MailRequest()
+                {
+                    ToEmail = orderEntity.Invoice.Email,
+                    Subject = $"Your order #{orderId} request for refund is approved.",
+                    Body = $"Your order #{orderId} request for refund is approved. Due to some reasons."
+                };
+
+                _mailRepository.SendEmailAsync(mail);
+
                 return new APISuccessResult<string>("Refund request is successfully accepted.");
             }
             else
             {
                 return new APIErrorResult<string>("This order's refund is not requested.");
+            }
+        }
+
+        // Customer report to admin to refund by orderId
+        public APIResult<string> Report(long orderId, long currentUserId, string reportReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if(orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 2: Checking
+            if (orderEntity.IsReported == 1 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 2;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.ReportedReason = reportReason;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Reported to admin successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and decline refund report
+        public APIResult<string> ResolveReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Resolve decline successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and accept refund report
+        public APIResult<string> ApproveRefundReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved and Status to 9: Refunded
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.Status = 9;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Resolve accept successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
             }
         }
     }

@@ -151,6 +151,28 @@ namespace DataAccess
             return order;
         }
 
+        // Get Order by orderid and current logined store user
+        public static Order? GetOrderById(long orderId)
+        {
+            Order? order = new Order();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    order = context.Orders
+                        .Include(x => x.Store)
+                        .Include(x => x.Invoice)
+                        .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
+                        .SingleOrDefault(o => o.OrderId == orderId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return order;
+        }
+
         public static void CreateOrder(Order o)
         {
             try

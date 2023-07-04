@@ -1,4 +1,6 @@
 ﻿using BusinessObject.DTOs;
+using BusinessObject.Models;
+using DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Implementation;
@@ -99,6 +101,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.CancelOrderDetailCustomer(id, currentUserId, cancelReason);
             if (result == null) return NotFound("Can't cancel this order!");
+
             return Ok(result);
         }
 
@@ -126,6 +129,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.ApproveOrderStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this order!");
+
             return Ok(result);
         }
 
@@ -139,6 +143,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.CancelOrderDetailStore(id, currentUserId, cancelReason);
             if (result == null) return NotFound("Can't cancel this order!");
+
             return Ok(result);
         }
 
@@ -152,6 +157,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.ApproveOrderCancelRequestStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this request!");
+
             return Ok(result);
         }
 
@@ -165,6 +171,7 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.DeclineOrderCancelRequestStore(id, currentUserId);
             if (result == null) return NotFound("Can't approve this request!");
+
             return Ok(result);
         }
 
@@ -234,6 +241,40 @@ namespace BirdTradingPlatformAPI.Controllers
 
             var result = _orderRepository.RefundAccept(id, currentUserId);
             if (result == null) return NotFound("Can't accept this order's refund request.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("Report/{id}")]
+        [Authorize(Roles = "CUSTOMER")]
+        public IActionResult Report(int id, [FromBody] string reportReason)
+        {
+            var idString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (String.IsNullOrEmpty(idString)) return Unauthorized();
+            long currentUserId = long.Parse(idString);
+
+            var result = _orderRepository.Report(id, currentUserId, reportReason);
+            if (result == null) return NotFound("Can't accept this order's report.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("ResolveReport/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult ResolveReport(int id)
+        {
+            var result = _orderRepository.ResolveReport(id);
+            if (result == null) return NotFound("Can't resolve this order's report.");
+
+            return Ok(result);
+        }
+
+        [HttpPut("ApproveRefundReport/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public IActionResult ApproveRefundReport(int id)
+        {
+            var result = _orderRepository.ApproveRefundReport(id);
+            if (result == null) return NotFound("Can't resolve accept this order's report.");
 
             return Ok(result);
         }
