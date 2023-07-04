@@ -10,12 +10,16 @@ namespace Repository.Interface
 {
     public interface IUserAccountRepository
     {
+        ClientUserViewListDTO GetAllUsers(int page, string? roleSearch);
         APIResult<string> AuthenticateCustomer(LoginDTO request);
         APIResult<string> AuthenticateStore(LoginDTO request);
         APIResult<string> AuthenticateAdmin(LoginDTO request);
         APIResult<bool> RegisterCustomer(RegisterCustomerDTO request);
         APIResult<bool> RegisterStore(RegisterStoreDTO request);
+        APIResult<string> DeactivateAccount(long userId);
+        APIResult<string> ActivateAccount(long userId);
         APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId);
+        APIResult<UserDetailViewDTO> GetUserDetail(long userId);
         APIResult<bool> UpdateProfile(long currentUserId, UserProfileUpdateDTO profile);
         APIResult<bool> ChangePassword(long currentUserId, UserPasswordUpdateDTO password);
     }

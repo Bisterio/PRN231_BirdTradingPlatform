@@ -62,7 +62,30 @@ namespace DataAccess
             }
             return orders;
         }
-
+        // Get orders by id, status and current logined admin
+        public static List<Order?> GetOrdersByAdmin(int page, int size, byte isReported)
+        {
+            List<Order> orders = new List<Order>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    orders = context.Orders
+                        .Where(o => ((o.IsReported == isReported || isReported == 0) && o.IsReported != 1))
+                        .Include(o => o.Store)
+                        .Include(o => o.Invoice).ThenInclude(o => o.User)
+                        .OrderByDescending(o => o.CreatedAt)
+                        .Skip((page - 1) * size)
+                        .Take(size)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return orders;
+        }
         // Function to get count of orders of a logined user by status
         public static int CountOrdersByCurrentUser(byte status, long currentUserId)
         {
@@ -107,7 +130,26 @@ namespace DataAccess
 
             return count;
         }
+        // Function to get count of orders of a logined admin
+        public static int CountOrdersByAdmin(byte isReported)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Orders
+                        .Where(o => (o.IsReported == isReported || isReported == 0) && isReported != 1)
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
+            return count;
+        }
         // Get Order by orderid and current logined user
         public static Order? GetOrderByIdAndUserId(long orderId, long userId)
         {
