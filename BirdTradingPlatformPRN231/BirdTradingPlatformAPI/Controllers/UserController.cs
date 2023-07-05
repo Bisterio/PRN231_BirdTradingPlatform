@@ -101,20 +101,11 @@ namespace BirdTradingPlatformAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("DeactivateAccount/{id}")]
+        [HttpPut("ChangeStatus/{id}")]
         [Authorize(Roles = "ADMIN")]
-        public IActionResult DeactivateAccount( long id)
+        public IActionResult ChangeStatus(long id)
         {
-            var result = _userRepository.DeactivateAccount(id);
-
-            return Ok(result);
-        }
-
-        [HttpPut("ActivateAccount/{id}")]
-        [Authorize(Roles = "ADMIN")]
-        public IActionResult ActivateAccount( long id)
-        {
-            var result = _userRepository.ActivateAccount(id);
+            var result = _userRepository.ChangeStatus(id);
 
             return Ok(result);
         }
