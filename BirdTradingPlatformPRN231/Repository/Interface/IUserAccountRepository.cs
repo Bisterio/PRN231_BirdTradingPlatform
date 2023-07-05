@@ -16,8 +16,7 @@ namespace Repository.Interface
         APIResult<string> AuthenticateAdmin(LoginDTO request);
         APIResult<bool> RegisterCustomer(RegisterCustomerDTO request);
         APIResult<bool> RegisterStore(RegisterStoreDTO request);
-        APIResult<string> DeactivateAccount(long userId);
-        APIResult<string> ActivateAccount(long userId);
+        public APIResult<string> ChangeStatus(long userId);
         APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId);
         APIResult<UserDetailViewDTO> GetUserDetail(long userId);
         APIResult<bool> UpdateProfile(long currentUserId, UserProfileUpdateDTO profile);

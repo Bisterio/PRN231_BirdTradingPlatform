@@ -80,7 +80,7 @@ namespace Repository.Implementation
             // Check for password encrypt match
             if (!BC.Verify(request.Password, user.Password)) return new APIErrorResult<string>("Wrong password.");
 
-            if(user.Store == null) return new APIErrorResult<string>("Invalid store account");
+            if (user.Store == null) return new APIErrorResult<string>("Invalid store account");
 
             // Create user identity with ID, Email, Name, Role
             var claims = new[]
@@ -281,45 +281,26 @@ namespace Repository.Implementation
                 return new APISuccessResult<UserDetailViewDTO>(newUser);
             }
         }
-        //Admin deactivate user account
-        public APIResult<string> DeactivateAccount(long userId)
+        //Admin change status user account
+        public APIResult<string> ChangeStatus(long userId)
         {
             UserAccount? userEntity = UserAccountDAO.FindUserById(userId);
             if (userEntity == null) return new APIErrorResult<string>("Cannot find this user!");
 
-            // Change order status to 5: waiting for cancel approval
             if (userEntity.Status == 1)
             {
                 userEntity.Status = 0;
                 userEntity.UpdatedAt = DateTime.Now;
                 UserAccountDAO.UpdateUser(userEntity);
             }
-            else
-            {
-                return new APIErrorResult<string>("This account is already deactivated!");
-            }
-
-            return new APISuccessResult<string>("Deactivate account successfully!");
-        }
-        //Admin activate user account
-        public APIResult<string> ActivateAccount(long userId)
-        {
-            UserAccount? userEntity = UserAccountDAO.FindUserById(userId);
-            if (userEntity == null) return new APIErrorResult<string>("Cannot find this user!");
-
-            // Change order status to 5: waiting for cancel approval
-            if (userEntity.Status == 0)
+            else if (userEntity.Status == 0)
             {
                 userEntity.Status = 1;
                 userEntity.UpdatedAt = DateTime.Now;
                 UserAccountDAO.UpdateUser(userEntity);
             }
-            else
-            {
-                return new APIErrorResult<string>("This account is already activated!");
-            }
 
-            return new APISuccessResult<string>("Account is now active!");
+            return new APISuccessResult<string>("Status changed!");
         }
         public APIResult<UserProfileViewDTO> GetCurrentCustomer(long currentUserId)
         {
