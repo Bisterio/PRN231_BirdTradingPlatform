@@ -97,7 +97,7 @@ namespace BirdTradingPlatformAdminClient.Controllers
 
             // Approve Order
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
-            HttpResponseMessage response = await client.DeleteAsync(UserApilUrl + $"/{id}");
+            HttpResponseMessage response = await client.PutAsync(UserApilUrl + $"/ChangeStatus/{id}", null);
             if ((int)response.StatusCode != 200)
             {
                 TempData["ErrorMessage"] = "Cannot change status of this User";
@@ -105,7 +105,7 @@ namespace BirdTradingPlatformAdminClient.Controllers
             }
             string strData = await response.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(strData);
-            APIResult<bool> result = data.ToObject<APIResult<bool>>();
+            APIResult<string> result = data.ToObject<APIResult<string>>();
             if (!result.IsSuccess)
             {
                 TempData["ErrorMessage"] = result.Message;

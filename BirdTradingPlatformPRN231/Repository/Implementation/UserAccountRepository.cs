@@ -291,6 +291,7 @@ namespace Repository.Implementation
         {
             UserAccount? userEntity = UserAccountDAO.FindUserById(userId);
             if (userEntity == null) return new APIErrorResult<string>("Cannot find this user!");
+            if (userEntity.Role == "ADMIN") return new APIErrorResult<string>("Cannot change status of Admin user!");
 
             if (userEntity.Status == 1)
             {
