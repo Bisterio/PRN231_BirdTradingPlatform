@@ -237,7 +237,7 @@ namespace Repository.Implementation
                 UsersPaginated = userByAdmin,
                 Page = page,
                 Size = size,
-                Role = roleSearch,
+                RoleSearch = roleSearch,
                 PageNumbers = pageNumbers,
                 TotalCount = userCount,
                 TotalPage = totalPages
@@ -260,6 +260,8 @@ namespace Repository.Implementation
                     Phone = user.Phone,
                     Role = user.Role,
                     Status = user.Status,
+                    CreatedAt = user.CreatedAt,
+                    UpdatedAt = user.UpdatedAt
                 };
                 return new APISuccessResult<UserDetailViewDTO>(newUser);
             }
@@ -273,10 +275,13 @@ namespace Repository.Implementation
                     Phone = user.Phone,
                     Role = user.Role,
                     Status = user.Status,
+                    CreatedAt = user.CreatedAt,
+                    UpdatedAt = user.UpdatedAt,
                     StoreName = user.Store.Name,
                     LogoImage = user.Store.LogoImage,
                     CoverImage = user.Store.CoverImage,
                     Description = user.Store.Description,
+                    StoreAddress = user.Store.Address
                 };
                 return new APISuccessResult<UserDetailViewDTO>(newUser);
             }

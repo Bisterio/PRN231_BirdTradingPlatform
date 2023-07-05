@@ -139,7 +139,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     count = context.Orders
-                        .Where(o => (o.IsReported == isReported || isReported == 0) && isReported != 1)
+                        .Where(o => ((o.IsReported == isReported || isReported == 0) && o.IsReported != 1))
                         .Count();
                 }
             }

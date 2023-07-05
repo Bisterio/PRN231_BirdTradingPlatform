@@ -1,0 +1,192 @@
+﻿@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+    var email = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.Email);
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-scompiler-id="0">
+<!-- Mirrored from stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 03 Jul 2023 13:13:54 GMT -->
+
+<head>
+    <meta charSet="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>@ViewData["Title"] - BTP Bird Trading Platform Admin Page</title><!-- icon -->
+    <link rel="icon" type="image/png" href="~/images/favicon.png" /><!-- fonts -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i" />
+    <!-- css -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.ltr.css" />
+    <link rel="stylesheet" href="~/vendor/highlight.js/styles/github.css" />
+    <link rel="stylesheet" href="~/vendor/simplebar/simplebar.min.css" />
+    <link rel="stylesheet" href="~/vendor/quill/quill.snow.css" />
+    <link rel="stylesheet" href="~/vendor/air-datepicker/css/datepicker.min.css" />
+    <link rel="stylesheet" href="~/vendor/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/vendor/datatables/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/vendor/nouislider/nouislider.min.css" />
+    <link rel="stylesheet" href="~/vendor/fullcalendar/main.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-97489509-8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-97489509-8');
+    </script>
+</head>
+
+<body>
+    <!-- sa-app -->
+    <div class="sa-app sa-app--desktop-sidebar-shown sa-app--mobile-sidebar-hidden sa-app--toolbar-fixed">
+        <!-- sa-app__sidebar -->
+        <div class="sa-app__sidebar">
+            <div class="sa-sidebar">
+                <div class="sa-sidebar__header">
+                    <a class="sa-sidebar__logo" href="index.html">
+                        <!-- logo -->
+                        <div class="sa-sidebar-logo">
+                            LOGO
+                            <div class="sa-sidebar-logo__caption">Admin</div>
+                        </div><!-- logo / end -->
+                    </a>
+                </div>
+                <div class="sa-sidebar__body" data-simplebar="">
+                    <ul class="sa-nav sa-nav--sidebar" data-sa-collapse="">
+                        <li class="sa-nav__section">
+                            <div class="sa-nav__section-title"><span>Application</span></div>
+                            <ul class="sa-nav__menu sa-nav__menu--root">
+                                <li class="sa-nav__menu-item sa-nav__menu-item--has-icon"
+                                    data-sa-collapse-item="sa-nav__menu-item--open">
+                                    <a href="#" class="sa-nav__link"
+                                       data-sa-collapse-trigger="">
+                                        <span class="sa-nav__icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                 viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8,6C4.7,6,2,4.7,2,3s2.7-3,6-3s6,1.3,6,3S11.3,6,8,6z M2,5L2,5L2,5C2,5,2,5,2,5z M8,8c3.3,0,6-1.3,6-3v3c0,1.7-2.7,3-6,3S2,9.7,2,8V5C2,6.7,4.7,8,8,8z M14,5L14,5C14,5,14,5,14,5L14,5z M2,10L2,10L2,10C2,10,2,10,2,10z M8,13c3.3,0,6-1.3,6-3v3c0,1.7-2.7,3-6,3s-6-1.3-6-3v-3C2,11.7,4.7,13,8,13z M14,10L14,10C14,10,14,10,14,10L14,10z">
+                                                </path>
+                                            </svg>
+                                        </span><span class="sa-nav__title">User Management</span><span class="sa-nav__arrow">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="6"
+                                                 height="9" viewBox="0 0 6 9" fill="currentColor">
+                                                <path d="M5.605,0.213 C6.007,0.613 6.107,1.212 5.706,1.612 L2.696,4.511 L5.706,7.409 C6.107,7.809 6.107,8.509 5.605,8.808 C5.204,9.108 4.702,9.108 4.301,8.709 L-0.013,4.511 L4.401,0.313 C4.702,-0.087 5.304,-0.087 5.605,0.213 Z">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    <ul class="sa-nav__menu sa-nav__menu--sub" data-sa-collapse-content="">
+                                        <li class="sa-nav__menu-item">
+                                            <a asp-action="Index" asp-controller="Account"
+                                               class="sa-nav__link">
+                                                <span class="sa-nav__menu-item-padding"></span><span class="sa-nav__title">User List</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sa-nav__menu-item sa-nav__menu-item--has-icon"
+                                    data-sa-collapse-item="sa-nav__menu-item--open">
+                                    <a href="#" class="sa-nav__link"
+                                       data-sa-collapse-trigger="">
+                                        <span class="sa-nav__icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                 viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M14.2,10.3c-0.1,0.4-0.5,0.7-0.9,0.7H4.8c-0.5,0-0.9-0.3-1-0.8L2.2,4C2.1,3.4,1.6,3,1,3H0.4C0.2,3,0,2.8,0,2.6V1.4C0,1.2,0.2,1,0.4,1h1.4c1,0,1.9,0.7,2.1,1.7l1.5,6.1C5.5,8.9,5.7,9,5.8,9h6.5c0.1,0,0.2-0.1,0.3-0.2l1.1-3.4C13.8,5.2,13.7,5,13.5,5H7.4C7.2,5,7,4.8,7,4.6V3.4C7,3.2,7.2,3,7.4,3H15c0.6,0,1,0.4,1,1v1L14.2,10.3z M4.5,13C5.3,13,6,13.7,6,14.5C6,15.3,5.3,16,4.5,16S3,15.3,3,14.5C3,13.7,3.7,13,4.5,13z M11.5,13c0.8,0,1.5,0.7,1.5,1.5c0,0.8-0.7,1.5-1.5,1.5S10,15.3,10,14.5C10,13.7,10.7,13,11.5,13z">
+                                                </path>
+                                            </svg>
+                                        </span><span class="sa-nav__title">Reported Orders</span><span class="sa-nav__arrow">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="6"
+                                                 height="9" viewBox="0 0 6 9" fill="currentColor">
+                                                <path d="M5.605,0.213 C6.007,0.613 6.107,1.212 5.706,1.612 L2.696,4.511 L5.706,7.409 C6.107,7.809 6.107,8.509 5.605,8.808 C5.204,9.108 4.702,9.108 4.301,8.709 L-0.013,4.511 L4.401,0.313 C4.702,-0.087 5.304,-0.087 5.605,0.213 Z">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    <ul class="sa-nav__menu sa-nav__menu--sub" data-sa-collapse-content="">
+                                        <li class="sa-nav__menu-item">
+                                            <a asp-action="Index" asp-controller="Order"
+                                               class="sa-nav__link">
+                                                <span class="sa-nav__menu-item-padding"></span><span class="sa-nav__title">Order List</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sa-app__sidebar-shadow"></div>
+            <div class="sa-app__sidebar-backdrop" data-sa-close-sidebar=""></div>
+        </div><!-- sa-app__sidebar / end --><!-- sa-app__content -->
+        <div class="sa-app__content">
+            <!-- sa-app__toolbar -->
+            <div class="sa-toolbar sa-toolbar--search-hidden sa-app__toolbar">
+                <div class="sa-toolbar__body">
+                    <div class="sa-toolbar__item">
+                        <button class="sa-toolbar__button" type="button" aria-label="Menu"
+                                data-sa-toggle-sidebar="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                 viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M1,11V9h18v2H1z M1,3h18v2H1V3z M15,17H1v-2h14V17z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mx-auto"></div>
+                    <div class="dropdown sa-toolbar__item">
+                        <button class="sa-toolbar-user" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" data-bs-offset="0,1"
+                                aria-expanded="false">
+                            <span class="sa-toolbar-user__avatar sa-symbol sa-symbol--shape--rounded">
+                                <img src="@((User.Identity.IsAuthenticated && User.FindFirst("StoreLogo")!=null) ? User.FindFirst("StoreLogo").Value :
+                                "https://climate.onep.go.th/wp-content/uploads/2020/01/default-image.jpg")" width="64" height="64" alt="" />
+                            </span>
+                            <span class="sa-toolbar-user__info">
+                                <span class="sa-toolbar-user__title">@((User.Identity.IsAuthenticated && User.FindFirst("StoreName") != null) ? User.FindFirst("StoreName").Value : "None")</span>
+                                <span class="sa-toolbar-user__subtitle">@(String.IsNullOrEmpty(email.Value) ? "example@example.com" : email.Value)</span>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Home">Sign Out</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sa-toolbar__shadow"></div>
+            </div><!-- sa-app__toolbar / end --><!-- sa-app__body -->
+            <div id="top" class="sa-app__body px-2 px-lg-4">
+                @RenderBody()
+            </div><!-- sa-app__body / end --><!-- sa-app__footer -->
+            <div class="sa-app__footer d-block d-md-flex">
+                <!-- copyright -->Stroyka Admin — eCommerce Dashboard Template
+                © 2021<div class="m-auto"></div>
+                <div>Powered by HTML — Design by <a href="https://themeforest.net/user/kos9/portfolio">Kos</a></div>
+                <!-- copyright / end -->
+            </div><!-- sa-app__footer / end -->
+        </div><!-- sa-app__content / end --><!-- sa-app__toasts -->
+        <div class="sa-app__toasts toast-container bottom-0 end-0"></div><!-- sa-app__toasts / end -->
+    </div><!-- sa-app / end --><!-- scripts -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/feather-icons/feather.min.js"></script>
+    <script src="~/vendor/simplebar/simplebar.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/highlight.js/highlight.pack.js"></script>
+    <script src="~/vendor/quill/quill.min.js"></script>
+    <script src="~/vendor/air-datepicker/js/datepicker.min.js"></script>
+    <script src="~/vendor/air-datepicker/js/i18n/datepicker.en.js"></script>
+    <script src="~/vendor/select2/js/select2.min.js"></script>
+    <script src="~/vendor/fontawesome/js/all.min.js" data-auto-replace-svg="" async=""></script>
+    <script src="~/vendor/chart.js/chart.min.js"></script>
+    <script src="~/vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/vendor/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/vendor/nouislider/nouislider.min.js"></script>
+    <script src="~/vendor/fullcalendar/main.min.js"></script>
+    <script src="~/js/stroyka.js"></script>
+    <script src="~/js/custom.js"></script>
+    <script src="~/js/calendar.js"></script>
+    <script src="~/js/demo.js"></script>
+    <script src="~/js/demo-chart-js.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+<!-- Mirrored from stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 03 Jul 2023 13:14:30 GMT -->
+
+</html>

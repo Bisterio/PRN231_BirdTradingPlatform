@@ -16,5 +16,6 @@ namespace BusinessObject.DTOs
         public int Status { get; set; }
         public List<int>? PageNumbers { get; set; }
         public string? OrderIdSearch { get; set; }
+        public byte IsReported { get; set; }
     }
 }

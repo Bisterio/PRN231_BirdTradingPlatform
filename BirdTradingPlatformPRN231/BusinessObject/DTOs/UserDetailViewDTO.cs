@@ -16,7 +16,8 @@ namespace BusinessObject.DTOs
         public byte Status { get; set; }
         public string? StoreName { get; set; }
         public string? StoreAddress { get; set; }
-
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string? LogoImage { get; set; }
         public string? CoverImage { get; set; }
         public string? Description { get; set; }

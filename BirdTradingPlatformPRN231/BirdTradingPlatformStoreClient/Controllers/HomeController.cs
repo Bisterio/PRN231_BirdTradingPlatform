@@ -54,18 +54,12 @@ namespace BirdTradingPlatformStoreClient.Controllers
                 return RedirectToAction("Logout", "Home");
             }
 
-            // Check for valid jwt token
-            if (HttpContext.Session.GetString("Token") == null)
-            {
-                return RedirectToAction("Logout", "Home");
-            }
-
             // GET User Detail
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
             HttpResponseMessage response = await client.GetAsync(DashboardApilUrl + "/Store");
             if ((int)response.StatusCode != 200)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Logout");
             }
             string strData = await response.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(strData);

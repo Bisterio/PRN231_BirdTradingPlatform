@@ -1,0 +1,195 @@
+﻿@model BusinessObject.DTOs.UserDetailViewDTO
+@{
+    ViewData["Title"] = "User Detail";
+    string roleName(string role)
+    {
+        string temp = "Undefined";
+        switch (role)
+        {
+            case "CUSTOMER":
+                temp = "Customer";
+                break;
+            case "STORE":
+                temp = "Store";
+                break;
+            case "ADMIN":
+                temp = "Admin";
+                break;
+        }
+        return temp;
+    }
+
+    string roleStyle(string role)
+    {
+        string temp = "badge-sa-danger";
+        switch (role)
+        {
+            case "CUSTOMER":
+                temp = "badge-sa-primary";
+                break;
+            case "STORE":
+                temp = "badge-sa-success";
+                break;
+            case "ADMIN":
+                temp = "badge-sa-warning";
+                break;
+        }
+        return temp;
+    }
+
+    string statusName(int status)
+    {
+        string temp = "Undefined";
+        switch (status)
+        {
+            case 0:
+                temp = "Deactivated";
+                break;
+            case 1:
+                temp = "Activated";
+                break;
+        }
+        return temp;
+    }
+
+    string statusStyle(int status)
+    {
+        string temp = "badge-sa-danger";
+        switch (status)
+        {
+            case 0:
+                temp = "badge-sa-danger";
+                break;
+            case 1:
+                temp = "badge-sa-primary";
+                break;
+        }
+        return temp;
+    }
+}
+
+<div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+    <div class="container container--max--xl">
+        <div class="py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col">
+                    <h1 class="h3 m-0">@Model.Name</h1>
+                </div>
+                <div class="col-auto d-flex">
+                    <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary me-3">@(Model.Status == 0 ? "Activate" : "Deactivate")</button>
+                </div>
+            </div>
+        </div>
+        <div class="sa-entity-layout sa-entity-layout--size--md"
+             data-sa-container-query="{&quot;920&quot;:&quot;sa-entity-layout--size--md&quot;}">
+            <div class="sa-entity-layout__body">
+                <div class="sa-entity-layout__sidebar">
+                    <div class="card">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="pt-3">
+                                <div class="sa-symbol sa-symbol--shape--circle" style="--sa-symbol--size:6rem">
+                                    <img src="@(Model.LogoImage != null ? Model.LogoImage : "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg")" width="96" height="96" alt="">
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <div class="fs-exact-16 fw-medium">@Model.Name</div>
+                                <div class="fs-exact-13 text-muted">
+                                    <div class="mt-1"><a href="#">@Model.Email</a></div>
+                                    <div class="mt-1">@Model.Phone</div>
+                                </div>
+                            </div>
+                            <div class="sa-divider my-5"></div>
+                            <div class="w-100">
+                                <dl class="list-unstyled m-0">
+                                    <dt class="fs-exact-14 fw-medium">Role</dt>
+                                    <dd class="fs-exact-13 text-muted mb-0 mt-1">@roleName(Model.Role)</dd>
+                                </dl>
+                                <dl class="list-unstyled m-0 mt-4">
+                                    <dt class="fs-exact-14 fw-medium">Status</dt>
+                                    <dd class="fs-exact-13 text-muted mb-0 mt-1">@statusName(Model.Status)</dd>
+                                </dl>
+                                <dl class="list-unstyled m-0 mt-4">
+                                    <dt class="fs-exact-14 fw-medium">Registered At</dt>
+                                    @if (Model.CreatedAt != null)
+                                    {
+                                        DateTime createdAtDateTime = Model.CreatedAt ?? DateTime.Now;
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1">@createdAtDateTime.ToString("MMMM dd yyyy")</dd>
+                                    }
+                                    else
+                                    {
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1">N/A</dd>
+                                    }
+                                </dl>
+                                <dl class="list-unstyled m-0 mt-4">
+                                    <dt class="fs-exact-14 fw-medium">Last Profile Updated At</dt>
+                                    @if (Model.UpdatedAt != null)
+                                    {
+                                        DateTime updatedAtDateTime = Model.UpdatedAt ?? DateTime.Now;
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1">@updatedAtDateTime.ToString("MMMM dd yyyy")</dd>
+                                    }
+                                    else
+                                    {
+                                        <dd class="fs-exact-13 text-muted mb-0 mt-1">N/A</dd>
+                                    }
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sa-entity-layout__main">
+                    <div class="card">
+                        <div class="card-body px-5 py-4 d-flex align-items-center justify-content-between">
+                            <h2 class="mb-0 fs-exact-18 me-4">Store</h2>
+                        </div>
+                        <div class="sa-divider"></div>
+                        <div class="px-5 py-3 my-2 d-flex align-items-center justify-content-between">
+                            @if (Model.Role != "STORE")
+                            {
+                                <div class="my-5">
+                                    <h5 class="text-center">No Store to be shown</h5>
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <div>@Model.StoreName</div>
+                                    <div class="text-muted fs-exact-14 mt-1">
+                                        @Model.StoreAddress
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            @if (Model.Status == 0)
+            {
+                <div class="modal-body">
+                    Do you want to activate this account?
+                </div>
+            }
+            else
+            {
+                <div class="modal-body">
+                    Do you want to deactivate this account?
+                </div>
+            }
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a asp-action="ChangeStatus" asp-controller="Account" asp-route-id="@Model.Id" class="btn btn-primary">@(Model.Status==0?"Activate":"Deactivate")</a>
+            </div>
+        </div>
+    </div>
+</div>

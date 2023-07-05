@@ -231,7 +231,7 @@ namespace Repository.Implementation
         public ClientOrderViewListDTO GetCurrentAdminOrders(int page, byte isReported)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             List<OrderViewDTO?> orderByAdmin = OrderDAO
@@ -268,7 +268,8 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = orderCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                IsReported = isReported
             };
         }
         // Get order detail and order items of a logined customer

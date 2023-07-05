@@ -10,7 +10,7 @@ namespace BusinessObject.DTOs
     {
         public List<UserDetailViewDTO?> UsersPaginated { get; set; } = new List<UserDetailViewDTO?>();
         public int Page { get; set; }
-        public string? Role { get; set; }
+        public string? RoleSearch { get; set; }
         public long Pmin { get; set; }
         public long Pmax { get; set; }
         public int Size { get; set; }

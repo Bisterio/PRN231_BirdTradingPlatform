@@ -35,7 +35,7 @@ namespace DataAccess
                 {
                     store = context.Stores
                         .Include(s => s.User)
-                        .SingleOrDefault(s => s.StoreId == storeId && s.Status == 1);
+                        .SingleOrDefault(s => s.StoreId == storeId && s.Status == 1 && s.User.Status == 1);
                 }
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     listStores = context.Stores
-                        .Where(s => s.Status == 1)
+                        .Where(s => s.Status == 1 && s.User.Status == 1)
                         .Include(s => s.User)
                         .ToList();
                 }
