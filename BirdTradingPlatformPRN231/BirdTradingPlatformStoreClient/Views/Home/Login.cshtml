@@ -10,12 +10,12 @@
         <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
             @if (ViewBag.ErrorMessage != null)
             {
-                <div class="alert alert-danger mb-0 alert-dismissible fade show" role="alert">
+                <div class="alert alert-danger mb-5 alert-dismissible fade show" role="alert">
                     @ViewBag.ErrorMessage
                     <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
-            <h1 class="mb-0 fs-3">Sign In</h1>
+            <h1 class="mb-0 fs-3">BTP Store Sign In</h1>
             <div class="fs-exact-14 text-muted mt-2 pt-1 mb-5 pb-2">Log in to your Store account to continue.</div>
             <form asp-action="Login" asp-controller="Home" method="post">
                 <div class="mb-4">
@@ -39,6 +39,13 @@
         <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
             <div class="form-group mb-0 mt-4 pt-2 text-center text-muted">
                 Don&#x27;t have an account? <a asp-action="Register" asp-controller="Home">Sign up</a>
+            </div>
+        </div>
+        <div class="sa-divider sa-divider--has-text">
+        </div>
+        <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
+            <div class="form-group mb-0 mt-4 pt-2 text-center text-muted">
+                Customer Account? <a href="http://localhost:5285/Home/Login">Follow this link</a>
             </div>
         </div>
     </div>

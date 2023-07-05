@@ -10,19 +10,19 @@
         <div class="card-body p-sm-5 m-sm-3 flex-grow-0">
             @if (ViewBag.ErrorMessage != null)
             {
-                    <div class="alert alert-danger mb-0 alert-dismissible fade show" role="alert">
+                <div class="alert alert-danger mb-5 alert-dismissible fade show" role="alert">
                     @ViewBag.ErrorMessage
                         <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
             }
             @if (ViewBag.SuccessMessage != null)
             {
-                <div class="alert alert-success mb-0 alert-dismissible fade show" role="alert">
+                <div class="alert alert-success mb-5 alert-dismissible fade show" role="alert">
                     @ViewBag.SuccessMessage
                     <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
-            <h1 class="mb-0 fs-3">Sign Up</h1>
+            <h1 class="mb-0 fs-3">BTP Store Sign Up</h1>
             <div class="fs-exact-14 text-muted mt-2 pt-1 mb-5 pb-2">Fill out the form to create a new store account.</div>
             <form asp-action="Register" asp-controller="Home" method="post" enctype="multipart/form-data">
                 <div class="mb-4">

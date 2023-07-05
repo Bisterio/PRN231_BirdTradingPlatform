@@ -239,6 +239,78 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row mt25">
+                                @if(Model.Status == 2 && Model.RefundDuration <= DateTime.Now && Model.IsReported == 1)
+                                {
+                                    <div class="col-xl-12">
+                                        <button type="button" class="btn btn-lg btn-white bdr_thm" id="show-report-form">Report Refund Policy Violation</button>
+                                    </div>
+                                }
+                                @if (Model.Status == 2 && Model.IsReported == 2)
+                                {
+                                    <div class="col-xl-12">
+                                        <div class="shop_order_box mt25">
+                                            <div class="order_list_raw text-center">
+                                                <ul>
+                                                    <li class="list-inline-item">
+                                                        <h5>
+                                                            This order has been reported and is being reviewed by the BTP admin team.
+                                                            Admin will contact the store to confirm the return status and will 
+                                                            confirm the status of the order as soon as possible for the customer. 
+                                                            Report reason: @Model.ReportedReason
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Status == 2 && Model.IsReported == 3)
+                                {
+                                    <div class="col-xl-12">
+                                        <div class="shop_order_box mt25">
+                                            <div class="order_list_raw text-center">
+                                                <ul>
+                                                    <li class="list-inline-item">
+                                                        <h5>
+                                                            Your return request has been denied after the admin team reviewed your order and contacted the store.
+                                                            Report reason: @Model.ReportedReason
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Status == 9 && Model.IsReported == 3)
+                                {
+                                    <div class="col-xl-12">
+                                        <div class="shop_order_box mt25">
+                                            <div class="order_list_raw text-center">
+                                                <ul>
+                                                    <li class="list-inline-item">
+                                                        <h5>
+                                                            Your return request has been approved by the admin team after contacting the store. Your order will be refunded as soon as possible according to the rules and policies of the website.
+                                                            Report reason: @Model.ReportedReason
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="row order-detail-form" id="report-form">
+                                    <form asp-action="Report" asp-controller="Order" method="post">
+                                        <div class="mb-2 mr-sm-2">
+                                            <label class="form-label">Report Reason</label>
+                                            <input type="hidden" name="orderId" value="@Model.OrderId">
+                                            <input type="text" class="form-control" name="reportReason" placeholder="Enter your Report reason" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-log btn-thm mt20">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -258,6 +330,9 @@
             });
             $("#show-cancel-request-form").unbind().on('click', function () {
                 $("#cancel-request-form").show();
+            });
+            $("#show-report-form").unbind().on('click', function () {
+                $("#report-form").show();
             });
         });
     </script>

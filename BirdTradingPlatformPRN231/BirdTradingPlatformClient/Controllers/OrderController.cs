@@ -186,5 +186,39 @@ namespace BirdTradingPlatformClient.Controllers
             TempData["SuccessMessage"] = "Issue a cancel request for this order successfully";
             return RedirectToAction("Detail", new { id = orderId });
         }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Report([FromForm] long orderId, [FromForm] string reportReason)
+        {
+            // Check for valid jwt token
+            if (HttpContext.Session.GetString("Token") == null)
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+
+            // Cancel Order
+            string jsonString = JsonConvert.SerializeObject(reportReason);
+            StringContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
+            HttpResponseMessage response = await client.PutAsync(OrderApilUrl + $"/Report/{orderId}", content);
+            if ((int)response.StatusCode != 200)
+            {
+                TempData["ErrorMessage"] = "Cannot report this order";
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            APIResult<string> result = data.ToObject<APIResult<string>>();
+            if (!result.IsSuccess)
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("Detail", new { id = orderId });
+            }
+
+            TempData["SuccessMessage"] = "Issue a refund report for this order successfully";
+            return RedirectToAction("Detail", new { id = orderId });
+        }
     }
 }

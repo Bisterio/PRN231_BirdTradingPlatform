@@ -27,5 +27,14 @@ namespace BirdTradingPlatformAPI.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("Customer")]
+        [AllowAnonymous]
+        public IActionResult GetHomePageProducts()
+        {
+            var result = _dashboardRepository.GetHomePageProducts();
+
+            return Ok(result);
+        }
     }
 }

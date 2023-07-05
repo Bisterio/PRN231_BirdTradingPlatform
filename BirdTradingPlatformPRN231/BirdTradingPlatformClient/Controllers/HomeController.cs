@@ -14,6 +14,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 
 namespace BirdTradingPlatformClient.Controllers
 {
@@ -21,6 +23,7 @@ namespace BirdTradingPlatformClient.Controllers
     {
         private readonly HttpClient client = null;
         private string UserApilUrl = "";
+        private string DashboardApilUrl = "";
         private readonly IConfiguration _configuration;
 
         public HomeController(IConfiguration configuration)
@@ -29,12 +32,18 @@ namespace BirdTradingPlatformClient.Controllers
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             UserApilUrl = "http://localhost:5208/api/User";
+            DashboardApilUrl = "http://localhost:5208/api/Dashboard";
             _configuration = configuration;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // GET Request Product list
+            HttpResponseMessage response = await client.GetAsync(DashboardApilUrl + "/Customer");
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(strData);
+            CustomerDashboardDTO model = data.ToObject<CustomerDashboardDTO>();
+            return View(model);
         }
 
         [HttpGet]

@@ -11,6 +11,22 @@ namespace Repository.Implementation
 {
     public class DashboardRepository : IDashboardRepository
     {
+        public CustomerDashboardDTO GetHomePageProducts()
+        {
+            List<ProductViewDTO?> topProducts = ProductDAO.GetTopProductsPublic(8)
+                .Select(x => Mapper.ToProductViewDTO(x))
+                .ToList();
+            List<ProductViewDTO?> recentProducts = ProductDAO.GetProductsPublic(1, 8, "", 0, 0, 0, 0)
+                .Select(x => Mapper.ToProductViewDTO(x))
+                .ToList();
+
+            return new CustomerDashboardDTO()
+            {
+                RecentProducts = recentProducts,
+                TopSellingProducts = topProducts
+            };
+        }
+
         public StoreDashboardDTO GetStoreDashboard(long currentUser)
         {
             decimal totalSells = OrderDAO.GetTotalSells(currentUser);

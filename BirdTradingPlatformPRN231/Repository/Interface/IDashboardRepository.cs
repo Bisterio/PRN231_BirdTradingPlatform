@@ -10,5 +10,6 @@ namespace Repository.Interface
     public interface IDashboardRepository
     {
         public StoreDashboardDTO GetStoreDashboard(long currentUser);
+        public CustomerDashboardDTO GetHomePageProducts();
     }
 }
