@@ -2,6 +2,7 @@
 using BusinessObject.DTOs;
 using BusinessObject.Models;
 using DataAccess;
+using Microsoft.Extensions.Configuration;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -297,6 +298,7 @@ namespace Repository.Implementation
         {
             CheckoutViewDTO resultDTO = new CheckoutViewDTO();
             List<ShippingCalculatedCartItemDTO> cart = new List<ShippingCalculatedCartItemDTO>();
+            string distanceMatrixKey = GetDistanceMatrixKey();
 
             // Check for valid product (product status == 1, quantity does not exceed stock)
             foreach (OrderItemCartDTO cartItem in request.CartItems)
@@ -329,7 +331,7 @@ namespace Repository.Implementation
                 Store currentStore = StoreDAO.GetStoreById(storeOrder.StoreId);
 
                 // GET distance
-                HttpResponseMessage response = await client.GetAsync(GoogleMapApi + $"?origins={request.ShippingAddress}&destinations={currentStore.Address}&key=AIzaSyDNHSAw4yrVYpCRmZQg43S50ffsoZwqqD8");
+                HttpResponseMessage response = await client.GetAsync(GoogleMapApi + $"?origins={request.ShippingAddress}&destinations={currentStore.Address}&key={distanceMatrixKey}");
                 if (!response.IsSuccessStatusCode) return new APIErrorResult<CheckoutViewDTO>("Cannot get shipping cost from store to user");
 
                 string strData = await response.Content.ReadAsStringAsync();
@@ -364,6 +366,15 @@ namespace Repository.Implementation
             resultDTO.ShippingAddress = request.ShippingAddress;
             resultDTO.CartItems = cart;
             return new APISuccessResult<CheckoutViewDTO>(resultDTO);
+        }
+        private string GetDistanceMatrixKey()
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+            var strConn = config["GoogleMapsAPI:DistanceMatrixKey"];
+            return strConn;
         }
     }
 }
