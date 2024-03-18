@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTOs;
+﻿using BusinessObject.Common;
+using BusinessObject.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Repository.Interface
     {
         public ClientStoreDetailViewDTO GetPublicStoreDetailById(long storeId);
         public List<ClientStoreDetailViewDTO> GetStoresPublic();
+        APIResult<bool> UpdateStore(long currentStoreStaffId, StoreInformationUpdateDTO info);
     }
 }

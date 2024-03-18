@@ -1,5 +1,69 @@
-﻿@{
+﻿@model BusinessObject.DTOs.ClientOrderViewListDTO
+
+@{
+    Layout = "_LayoutCustomer";
     ViewData["Title"] = "My Orders";
+    string statusName(int statusCode)
+    {
+        string temp = "Undefined";
+        switch (statusCode)
+        {
+            case 1:
+                temp = "Awaiting Approval";
+                break;
+            case 2:
+                temp = "Delivered";
+                break;
+            case 3:
+                temp = "Packing";
+                break;
+            case 4:
+                temp = "Delivering";
+                break;
+            case 5:
+                temp = "Awaiting Cancel Approval";
+                break;
+            case 6:
+                temp = "Store Cancelled";
+                break;
+            case 7:
+                temp = "Customer Cancelled";
+                break;
+            case 8:
+                temp = "Awaiting Refund Approval";
+                break;
+            case 9:
+                temp = "Refunded";
+                break;
+        }
+        return temp;
+    }
+
+    string statusStyle(int statusCode)
+    {
+        string temp = "style3";
+        switch (statusCode)
+        {
+            case 3:
+            case 4:
+                temp = "style1";
+                break;
+            case 6:
+            case 7:
+                temp = "style2";
+                break;
+            case 1:
+            case 5:
+            case 8:
+                temp = "style3";
+                break;
+            case 2:
+            case 9:
+                temp = "style4";
+                break;
+        }
+        return temp;
+    }
 }
 
 <!-- Our Dashbord -->
@@ -8,19 +72,12 @@
         <div class="row">
             <div class="col-lg-3 col-xl-2 dn-md">
                 <div class="users_account_details extra-dashboard-menu">
-                    <div class="account_details_user d-flex pb10 bb1 mb10">
-                        <img class="me-3" src="images/team/ad-thumb.png" alt="Generic placeholder image">
-                        <div class="content_details text-start">
-                            <h5 class="title">Ali Tufan</h5>
-                            <a class="stitle" href="mailto:alitfn58@gmail.com">alitfn58@gmail.com</a>
-                        </div>
-                    </div>
                     <div class="ed_menu_list">
                         <ul>
-                            <li><a href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                            <li><a class="active" href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                            <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                            <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                            <li><a asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                            <li><a class="active" asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                            <li><a asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                            <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -32,10 +89,10 @@
                             <div class="dropdown">
                                 <button onclick="myFunction()" class="dropbtn"><i class="fas fa-bars pr10"></i> Dashboard Navigation</button>
                                 <ul id="myDropdown" class="dropdown-content">
-                                    <li><a href="page-account-details.html"><span class="flaticon-growth"></span>Account Details</a></li>
-                                    <li><a class="active" href="page-account-order.html"><span class="flaticon-checked-box"></span>Order</a></li>
-                                    <li><a href="page-account-invoice.html"><span class="flaticon-invoice"></span>Invoices</a></li>
-                                    <li><a href="page-login.html"><span class="flaticon-exit"></span>Logout</a></li>
+                                    <li><a asp-action="Index" asp-controller="Account"><span class="flaticon-growth"></span>Account Details</a></li>
+                                    <li><a class="active" asp-action="Index" asp-controller="Order"><span class="flaticon-checked-box"></span>Orders</a></li>
+                                    <li><a asp-action="Index" asp-controller="Invoice"><span class="flaticon-invoice"></span>Invoices</a></li>
+                                    <li><a asp-action="Logout" asp-controller="Home"><span class="flaticon-exit"></span>Logout</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -44,39 +101,191 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="account_user_deails pl40 pl0-lg">
-                            <h2 class="title mb30">Order</h2>
-                            <div class="order_table table-responsive">
-                                <table class="table">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Date</th>
-                                            <th scope="col">Payment</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Total</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">#1923</th>
-                                            <td>Aug 15, 2020</td>
-                                            <td>Paid</td>
-                                            <td class="status"><span class="style1">Delivered</span></td>
-                                            <td>$56.00</td>
-                                            <td class="action"><span class="details">...</span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">#1923</th>
-                                            <td>Aug 15, 2020</td>
-                                            <td>Paid</td>
-                                            <td class="status"><span class="style2">Cancel</span></td>
-                                            <td>$56.00</td>
-                                            <td class="action"><span class="details">...</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <h2 class="title mb30">My Orders</h2>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    @if (Model.OrdersPaginated.Count != 0)
+                                    {
+                                        int startingNum = (Model.Page - 1) * Model.Size + 1;
+                                        int endingNum = Math.Min(Model.Page * Model.Size, Model.TotalCount);
+                                        <text>
+
+                                            <div class="filter_components">
+                                                <ul class="mb0 align-items-center text-center text-lg-start">
+                                                    <li class="list-inline-item me-2 mb-3">
+                                                        <p class="pagination_page_count">Showing @startingNum – @endingNum of @Model.TotalCount results</p>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                        </text>
+                                    }
+                                </div>
+                                <div class="col-lg-5">
+                                    <form id="form-search-orderby" asp-controller="Order" asp-action="Index" method="GET">
+                                        <div class="filter_components text-center text-lg-end">
+                                            <ul class="mb-2 mb-md-0">
+                                                <li class="list-inline-item d-lg-none me-2 mb-3">
+                                                    <a class="all-filter-btn flter_btn"
+                                                       href="#"><span class="flaticon-sort me-2"></span>All Filter</a>
+                                                </li>
+                                                <li class="list-inline-item me-0">
+                                                    <div class="page_control_shorting mb20 text-center text-md-end">
+                                                        <select class="selectpicker show-tick" asp-for="Status" onchange="selectChangeHandler()">
+                                                            <option value="0">All Status</option>
+                                                            <option value="1">Awaiting Approval</option>
+                                                            <option value="2">Delivered</option>
+                                                            <option value="3">Packing</option>
+                                                            <option value="4">Delivering</option>
+                                                            <option value="5">Awaiting Cancel Approval</option>
+                                                            <option value="6">Store Cancelled</option>
+                                                            <option value="7">Customer Cancelled</option>
+                                                            <option value="8">Awaiting Refund Approval</option>
+                                                            <option value="9">Refunded</option>
+                                                        </select>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
+                            @if (Model.OrdersPaginated.Count != 0)
+                            {
+                                <div class="order_table table-responsive">
+                                    <table class="table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Order Date</th>
+                                                <th scope="col">Deliver Date</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Amount</th>
+                                                <th scope="col">Store</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var order in Model.OrdersPaginated)
+                                            {
+                                                <tr>
+                                                    <th scope="row">#@order.OrderId</th>
+                                                    @if (order.CreatedAt != null)
+                                                    {
+                                                        DateTime createdAtDateTime = order.CreatedAt ?? DateTime.Now;
+                                                        <td>
+                                                            @createdAtDateTime.ToString("MMMM dd yyyy")
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            N/A
+                                                        </td>
+                                                    }
+                                                    @if (order.DeliveredAt != null)
+                                                    {
+                                                        DateTime deliveredAtDateTime = order.DeliveredAt ?? DateTime.Now;
+                                                        <td>
+                                                            @deliveredAtDateTime.ToString("MMMM dd yyyy")
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            N/A
+                                                        </td>
+                                                    }
+                                                    <td class="status"><span class="@statusStyle(order.Status)">@statusName(order.Status)</span></td>
+                                                    <td>@order.TotalAmount.ToString("#,##0").Replace(",",".") VND</td>
+                                                    <td>@order.StoreName</td>
+                                                    <td class="action">
+                                                        <span class="details"><a asp-action="Detail" asp-controller="Order" asp-route-id="@order.OrderId">View</a></span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if (Model.TotalCount > Model.Size)
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mbp_pagination mt30 text-center">
+                                                <ul class="page_navigation">
+                                                    <!-- Previous Page -->
+                                                    @if (Model.Page != 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" tabindex="-1" aria-disabled="true"
+                                                   asp-action="Index" asp-controller="Order"
+                                                   asp-route-status="@Model.Status" asp-route-page="@(@Model.Page - 1)">
+                                                                <span class="fas fa-angle-left"></span>
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- First page -->
+                                                    @if (!Model.PageNumbers.Contains(1))
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Order"
+                                                   asp-route-status="@Model.Status" asp-route-page="1">
+                                                                1
+                                                            </a>
+                                                        </li>
+                                                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                                    }
+
+                                                    <!-- Page items -->
+                                                    @foreach (int pageNo in Model.PageNumbers)
+                                                    {
+                                                        <li class="page-item @(@Model.Page == pageNo ? "active" : "")">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Order"
+                                                   asp-route-status="@Model.Status" asp-route-page="@pageNo">
+                                                                @pageNo
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- Last page -->
+                                                    @if (!Model.PageNumbers.Contains(Model.TotalPage))
+                                                    {
+                                                        <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                   asp-action="Index" asp-controller="Order"
+                                                   asp-route-status="@Model.Status" asp-route-page="@Model.TotalPage">
+                                                                @Model.TotalPage
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                    <!-- Next Page -->
+                                                    @if (Model.Page != Model.TotalPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" tabindex="-1" aria-disabled="true"
+                                                   asp-action="Index" asp-controller="Order"
+                                                   asp-route-status="@Model.Status" asp-route-page="@(@Model.Page + 1)">
+                                                                <span class="fas fa-angle-right"></span>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="my-5">
+                                    <h3 class="text-center">No Orders to be shown</h3>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -84,3 +293,10 @@
         </div>
     </div>
 </section>
+@section Scripts {
+    <script>
+        function selectChangeHandler() {
+            document.getElementById("form-search-orderby").submit();
+        }
+    </script>
+}

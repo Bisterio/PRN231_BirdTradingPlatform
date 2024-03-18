@@ -22,7 +22,9 @@ namespace Repository
                 Address = entity.Address,
                 Description = entity.Description,
                 LogoImage = entity.LogoImage,
-                CoverImage = entity.CoverImage
+                CoverImage = entity.CoverImage,
+                Email = entity.User?.Email,
+                Phone = entity.User?.Phone,
             };
         }
 
@@ -49,6 +51,23 @@ namespace Repository
                 StoreCoverImage = entity.Store?.CoverImage,
                 StoreLogoImage = entity.Store?.LogoImage,
                 StoreId = entity.StoreId
+            };
+        }
+
+        // Map ProductEntity to ProductCreateDTO
+        public static ProductCreateDTO? ToProductCreateDTO(Product? entity)
+        {
+            if (entity == null) return null;
+
+            return new ProductCreateDTO()
+            {
+                Name = entity.Name,
+                CategoryId = entity.CategoryId,
+                Description = entity.Description,
+                Image = entity.Image,
+                ProductId = entity.ProductId,
+                Stock = entity.Stock,
+                UnitPrice = entity.UnitPrice
             };
         }
 
@@ -79,7 +98,8 @@ namespace Repository
                 IsReported = entity.IsReported,
                 RefundDuration = entity.RefundDuration,
                 RefundReason = entity.RefundReason,
-                ReportedReason = entity.ReportedReason
+                ReportedReason = entity.ReportedReason,
+                DeliveredAt = entity.DeliveredAt,
             };
         }
 
@@ -122,6 +142,27 @@ namespace Repository
                 TotalItem = entity.TotalItem,
                 TotalShippingCost = entity.TotalShippingCost,
                 UpdatedAt = entity.UpdatedAt
+            };
+        }
+        public static UserDetailViewDTO? ToUserDetailViewDTO(UserAccount? entity)
+        {
+            if (entity == null) return null;
+
+            return new UserDetailViewDTO()
+            {
+                Id = entity.UserId,
+                Name = entity.Name,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                Role = entity.Role,
+                Status = entity.Status,
+                StoreName = entity.Store?.Name,
+                LogoImage = entity.Store?.LogoImage,
+                CoverImage = entity.Store?.CoverImage,
+                Description = entity.Store?.Description,
+                StoreAddress = entity.Store?.Address,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt,
             };
         }
     }

@@ -21,7 +21,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     var products = context.Products
-                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
+                        .Where(p => p.Status == 1 && p.Stock > 0 && p.Store.User.Status == 1 // Get available product and stock > 0
                         && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
                         && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
                         && p.UnitPrice >= priceMin // Filter by minimum price
@@ -70,7 +70,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     count = context.Products
-                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
+                        .Where(p => p.Status == 1 && p.Stock > 0 && p.Store.User.Status == 1 // Get available product and stock > 0
                         && (string.IsNullOrEmpty(nameSearch) || p.Name.Contains(nameSearch)) // Search by name
                         && (categoryId == 0 || p.CategoryId == categoryId) // Search by categoryId, if categoryId = 0 then show all
                         && p.UnitPrice >= priceMin // Filter by minimum price
@@ -97,7 +97,7 @@ namespace DataAccess
                     product = context.Products
                         .Include(p => p.Store)
                         .Include(p => p.Category)
-                        .SingleOrDefault(p => p.ProductId == productId && p.Status == 1);
+                        .SingleOrDefault(p => p.ProductId == productId && p.Status == 1 && p.Store.User.Status == 1);
                 }
             }
             catch (Exception ex)
@@ -117,7 +117,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     listProducts = context.Products
-                            .Where(p => p.Status == 1 && p.Stock > 0 && p.CategoryId == cateId && p.ProductId != productId)
+                            .Where(p => p.Status == 1 && p.Stock > 0 && p.CategoryId == cateId && p.ProductId != productId && p.Store.User.Status == 1)
                             .OrderBy(p => p.CreatedAt)
                             .Include(p => p.Category)
                             .Include(p => p.Store)
@@ -141,7 +141,7 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     listProducts = context.Products
-                        .Where(p => p.Status == 1 & p.Stock > 0 // Get available product and stock > 0
+                        .Where(p => p.Status == 1 && p.Stock > 0  // Get available product and stock > 0
                         && p.StoreId == storeId // Filter by store id
                         && p.Store.Status == 1) // Store has to be available
                         .Include(c => c.Category)
@@ -274,6 +274,72 @@ namespace DataAccess
                 throw new Exception(ex.Message);
             }
             return product;
+        }
+
+        public static List<Product> GetTopProductsByStore(long currentUserId, int numberOfProducts)
+        {
+
+            List<Product> productList = new List<Product>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    List<long> productIds = context.OrderItems
+                        .Where(oi => oi.Order.Store.UserId == currentUserId && oi.Product.Status == 1)
+                        .GroupBy(x => x.ProductId)
+                        .Select(x => new { ProductId = x.Key, QuantitySum = x.Sum(a => a.Quantity) })
+                        .OrderByDescending(x => x.QuantitySum)
+                        .Select(x => x.ProductId)
+                        .Take(numberOfProducts)
+                        .AsQueryable()
+                        .ToList();
+
+                    productList = context.Products
+                        .Where(p => productIds.Contains(p.ProductId))
+                        .Include(p => p.Store)
+                        .Include(p => p.Category)
+                        .AsQueryable()
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return productList;
+        }
+
+        public static List<Product> GetTopProductsPublic(int numberOfProducts)
+        {
+
+            List<Product> productList = new List<Product>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    List<long> productIds = context.OrderItems
+                        .Where(oi => oi.Product.Status == 1 && oi.Product.Stock > 0 && oi.Product.Store.User.Status == 1)
+                        .GroupBy(x => x.ProductId)
+                        .Select(x => new { ProductId = x.Key, QuantitySum = x.Sum(a => a.Quantity) })
+                        .OrderByDescending(x => x.QuantitySum)
+                        .Select(x => x.ProductId)
+                        .Take(numberOfProducts)
+                        .AsQueryable()
+                        .ToList();
+
+                    productList = context.Products
+                        .Where(p => productIds.Contains(p.ProductId))
+                        .Include(p => p.Store)
+                        .Include(p => p.Category)
+                        .AsQueryable()
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return productList;
         }
 
         public static void SaveProduct(Product Product)

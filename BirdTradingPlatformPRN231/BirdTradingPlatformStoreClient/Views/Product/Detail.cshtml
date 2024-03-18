@@ -1,0 +1,199 @@
+﻿@model ProductCreateFormModel
+@{
+    ViewData["Title"] = "Product Detail";
+}
+
+<div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+    <div class="container">
+        <div class="py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col">
+                    <h1 class="h3 m-0">Product Detail</h1>
+                </div>
+                <div class="col-auto d-flex">
+                    <button class="btn btn-secondary me-3 edit-state" id="cancel-edit-button">Cancel</button>
+                    <button class="btn btn-primary edit-state" id="submit-edit-button">Save</button>
+                    <button class="btn btn-primary" id="edit-button">Edit</button>
+                </div>
+            </div>
+        </div>
+        <div class="sa-entity-layout"
+             data-sa-container-query="{&quot;920&quot;:&quot;sa-entity-layout--size--md&quot;,&quot;1100&quot;:&quot;sa-entity-layout--size--lg&quot;}">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (ViewBag.SuccessMessage != null)
+            {
+                <div class="alert alert-success mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.SuccessMessage
+                    <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form id="update-form" asp-action="Detail" asp-controller="Product" method="post" enctype="multipart/form-data">
+                <div class="sa-entity-layout__body">
+                    <div class="sa-entity-layout__main">
+                        <div class="card">
+                            <div class="card-body p-5">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Basic information</h2>
+                                </div>
+                                <div class="mb-4">
+                                    <input type="hidden" asp-for="ProductId" value="@Model.ProductId">
+                                    <label for="form-product/name" class="form-label">Name</label>
+                                    <input type="text" class="form-control editable-input" id="form-product/name" value="@Model.Name" asp-for="Name" readonly required />
+                                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <label for="form-product/short-description" class="form-label">
+                                        Short description
+                                    </label>
+                                    <textarea id="form-product/short-description" class="form-control editable-input" rows="3" asp-for="Description" readonly required>@Model.Description</textarea>
+                                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Pricing</h2>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col">
+                                        <label for="form-product/price" class="form-label">Price (VND)</label>
+                                        <input type="number" class="form-control editable-input" id="form-product/price" asp-for="UnitPrice" value="@Model.UnitPrice" readonly required />
+                                        <span asp-validation-for="@Model.UnitPrice" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Inventory</h2>
+                                </div>
+                                <div>
+                                    <label for="form-product/quantity" class="form-label">
+                                        Stock quantity
+                                    </label>
+                                    <input type="number" class="form-control editable-input" id="form-product/quantity" asp-for="Stock" value="@Model.Stock" readonly required />
+                                    <span asp-validation-for="@Model.Stock" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-5">
+                            <div class="card-body p-5">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Images</h2>
+                                </div>
+                            </div>
+                            <div class="mt-n5">
+                                <div class="sa-divider mb-3"></div>
+                                <img id="image-show" style="height: 500px" class="rounded mx-auto d-block" src="@(!string.IsNullOrEmpty(Model.Image) ? Model.Image : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                <div class="sa-divider mt-3"></div>
+                                <div class="px-5 py-4 my-2 img-upload">
+                                    <input type="hidden" asp-for="Image" value="@(!string.IsNullOrEmpty(Model.Image) ? Model.Image : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                    <input class="form-control" type="file" asp-for="UploadImage" onchange="chooseFile(this)" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-5">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sa-entity-layout__sidebar">
+                        <div class="card w-100">
+                            <div class="card-body p-5">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Categories</h2>
+                                </div>
+                                <select class="sa-select2 form-select editable-select" asp-for="CategoryId" disabled>
+                                    @foreach (var item in Model.Categories)
+                                    {
+                                        <option value="@item.CategoryId">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete this product? (Product that is still in order will still remain)
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a asp-action="Delete" asp-controller="Product" asp-route-id="@Model.ProductId" class="btn btn-primary">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var isErrorUpdate = '@ViewBag.ErrorMessage'
+
+            $(".edit-state").hide();
+            $(".img-upload").hide();
+
+            if (isErrorUpdate.length !== 0) {
+                $("#edit-button").hide();
+                $(".edit-state").show();
+                $(".img-upload").show();
+                $('.editable-input').attr('readonly', false);
+                $('.editable-select').attr('disabled', false);
+            }
+            $("#edit-button").unbind().on('click', function (e) {
+                $("#edit-button").hide();
+                $(".edit-state").show();
+                $(".img-upload").show();
+                $('.editable-input').attr('readonly', false);
+                $('.editable-select').attr('disabled', false);
+            });
+            $("#cancel-edit-button").unbind().on('click', function (e) {
+                if (isErrorUpdate.length !== 0) {
+                    let currentUrl = window.location.pathname;
+                    window.location.replace(currentUrl);
+                }
+                $("#edit-button").show();
+                $(".edit-state").hide();
+                $(".img-upload").hide();
+                $('.editable-input').attr('readonly', true);
+                $('.editable-select').attr('disabled', true);
+            });
+            $("#submit-edit-button").unbind().on('click', function (e) {
+                $("#update-form").submit();
+            });
+        });
+
+        function chooseFile(fileInput) {
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image-show').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    </script>
+}

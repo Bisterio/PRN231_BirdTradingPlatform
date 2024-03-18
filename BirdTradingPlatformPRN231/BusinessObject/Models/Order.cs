@@ -25,6 +25,7 @@ namespace BusinessObject.Models
         public DateTime? RefundDuration { get; set; }
         public string? RefundReason { get; set; }
         public string? ReportedReason { get; set; }
+        public DateTime? DeliveredAt { get; set; }
 
         public virtual Invoice? Invoice { get; set; }
         public virtual Store? Store { get; set; }

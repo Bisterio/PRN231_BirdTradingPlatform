@@ -38,7 +38,7 @@
                 <div class="row">
                     <div class="col-lg-2 col-xxl-2">
                         <div class="header_top_logo_home1">
-                            <div class="logo">Zeomart<span class="text-thm">.</span></div>
+                            <div class="logo">BTP<span class="text-thm">.</span></div>
                         </div>
                     </div>
                     <div class="col-lg-5 col-xxl-6">
@@ -75,7 +75,7 @@
                                             <div class="d-block d-md-flex">
                                                 <div class="icon"><span class="flaticon-profile"></span></div>
                                                 <div class="details">
-                                                    <p class="subtitle"></p>
+                                                    <p class="subtitle">Check</p>
                                                     <h5 class="title">My Account</h5>
                                                 </div>
                                             </div>
@@ -154,7 +154,7 @@
                     <div class="lc">
                     </div>
                     <a asp-action="Index" asp-controller="Cart" class="cart_btns btn btn-white">View Cart</a>
-                    <a asp-action="Index" asp-controller="Cart" class="checkout_btns btn btn-thm">Checkout</a>
+                    <a asp-action="Checkout" asp-controller="Cart" class="checkout_btns btn btn-thm">Checkout</a>
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                     </div>
                     <div class="col-sm-6 col-md-3 col-lg-2 col-xl-2">
                         <div class="footer_qlink_widget">
-                            <h4>About Zenmart</h4>
+                            <h4>About BTP</h4>
                             <ul class="list-unstyled">
                                 <li><a href="#">Track Your Order</a></li>
                                 <li><a href="#">Product Guides</a></li>
@@ -373,7 +373,6 @@
             </div>
         </section><a class="scrollToHome" href="#"><i class="fas fa-angle-up"></i></a>
     </div>
-    </div>
     <!-- Wrapper End -->
     <script src="~/js/popper.min.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
@@ -422,6 +421,11 @@
                 ulList.append(`<li class="list_content_total_price">
                         <h5>Total:<span class="total_price float-end">` + sumPrice.toLocaleString('vi') + ` VND</span></h5>
                         </li>`);
+            } else {
+                let ulList = $("#cart-list-ul");
+                ulList.html("");
+                $("#cart-product-items").html(0);
+                $("#cart-total").html("0 VND");
             }
         }
 

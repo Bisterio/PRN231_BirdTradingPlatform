@@ -1,4 +1,5 @@
 ﻿using BusinessObject.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,8 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     store = context.Stores
-                        .SingleOrDefault(s => s.StoreId == storeId && s.Status == 1);
+                        .Include(s => s.User)
+                        .SingleOrDefault(s => s.StoreId == storeId && s.Status == 1 && s.User.Status == 1);
                 }
             }
             catch (Exception ex)
@@ -51,7 +53,8 @@ namespace DataAccess
                 using (var context = new BirdTradingPlatformContext())
                 {
                     listStores = context.Stores
-                        .Where(s => s.Status == 1)
+                        .Where(s => s.Status == 1 && s.User.Status == 1)
+                        .Include(s => s.User)
                         .ToList();
                 }
             }

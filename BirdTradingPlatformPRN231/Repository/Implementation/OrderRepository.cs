@@ -13,6 +13,17 @@ namespace Repository.Implementation
 {
     public class OrderRepository : IOrderRepository
     {
+        private readonly IMailRepository _mailRepository;
+
+        public OrderRepository(IMailRepository mailRepository)
+        {
+            _mailRepository = mailRepository;
+        }
+
+        public OrderRepository()
+        {
+
+        }
 
         // Function to create new orders
         public APIResult<string> CreateNewOrders(OrderCreateDTO newOrders, long currentUserId)
@@ -73,10 +84,21 @@ namespace Repository.Implementation
                 decimal totalShippingCost = storeOrder.CartItems.First().ShippingCost;
                 decimal totalAmount = totalAmountPreShipping + totalShippingCost;
 
+                DateTime expectedDeliveryDate = DateTime.Now;
+                if (totalShippingCost <= 28000)
+                {
+                    expectedDeliveryDate = DateTime.Now.AddDays(3);
+                }
+                else
+                {
+                    expectedDeliveryDate = DateTime.Now.AddDays(7);
+                }
+
                 // Create order for each store
                 Order newOrder = new Order()
                 {
                     CreatedAt = DateTime.Now,
+                    DeliveredAt = expectedDeliveryDate,
                     UpdatedAt = DateTime.Now,
                     Status = 1,
                     IsReported = 1,
@@ -118,7 +140,7 @@ namespace Repository.Implementation
         public ClientOrderViewListDTO GetCurrentUserOrders(int page, byte status, long currentUserId)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             List<OrderViewDTO?> orderByUser = OrderDAO
@@ -155,7 +177,8 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = orderCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                Status = status
             };
         }
 
@@ -163,7 +186,7 @@ namespace Repository.Implementation
         public ClientOrderViewListDTO GetCurrentStoreOrders(int page, byte status, long currentUserId, string orderIdSearch)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             List<OrderViewDTO?> orderByStore = OrderDAO
@@ -172,7 +195,7 @@ namespace Repository.Implementation
                 .ToList();
 
             // Get count of orders by search/filter
-            int orderCount = OrderDAO.CountOrdersByCurrentStore(status, currentUserId);
+            int orderCount = OrderDAO.CountOrdersByCurrentStore(status, currentUserId, orderIdSearch);
             int totalPages = (int)Math.Ceiling((double)orderCount / size);
             List<int> pageNumbers = new List<int>();
             if (totalPages > 0)
@@ -200,7 +223,53 @@ namespace Repository.Implementation
                 Size = size,
                 PageNumbers = pageNumbers,
                 TotalCount = orderCount,
-                TotalPage = totalPages
+                TotalPage = totalPages,
+                OrderIdSearch = orderIdSearch
+            };
+        }
+        // Get orders of a logined admin
+        public ClientOrderViewListDTO GetCurrentAdminOrders(int page, byte isReported)
+        {
+            // Handle query data
+            int size = 6;
+            page = page == 0 ? 1 : page;
+
+            List<OrderViewDTO?> orderByAdmin = OrderDAO
+                .GetOrdersByAdmin(page, size, isReported)
+                .Select(x => Mapper.ToOrderViewDTO(x))
+                .ToList();
+
+            // Get count of orders by search/filter
+            int orderCount = OrderDAO.CountOrdersByAdmin(isReported);
+            int totalPages = (int)Math.Ceiling((double)orderCount / size);
+            List<int> pageNumbers = new List<int>();
+            if (totalPages > 0)
+            {
+                int start = Math.Max(1, page - 2);
+                int end = Math.Min(page + 2, totalPages);
+
+                if (totalPages > 5)
+                {
+                    if (end == totalPages) start = end - 4;
+                    else if (start == 1) end = start + 4;
+                }
+                else
+                {
+                    start = 1;
+                    end = totalPages;
+                }
+                pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
+            }
+
+            return new ClientOrderViewListDTO()
+            {
+                OrdersPaginated = orderByAdmin,
+                Page = page,
+                Size = size,
+                PageNumbers = pageNumbers,
+                TotalCount = orderCount,
+                TotalPage = totalPages,
+                IsReported = isReported
             };
         }
         // Get order detail and order items of a logined customer
@@ -219,7 +288,7 @@ namespace Repository.Implementation
             return orderDTO;
         }
 
-        // Get order detail and order items of a logined customer
+        // Get order detail and order items of a logined store
         public OrderViewDTO? GetOrderDetailStore(long orderId, long currentUserId)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentUserId);
@@ -234,7 +303,21 @@ namespace Repository.Implementation
 
             return orderDTO;
         }
+        // Get order detail and order items of a logined admin
+        public OrderViewDTO? GetOrderDetailAdmin(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return null;
 
+            OrderViewDTO? orderDTO = Mapper.ToOrderViewDTO(orderEntity);
+            List<OrderItemViewDTO?> orderItemDTO = orderEntity.OrderItems
+                .Select(x => Mapper.ToOrderItemViewDTO(x))
+                .ToList();
+
+            orderDTO.OrderItems = orderItemDTO;
+
+            return orderDTO;
+        }
         // Customer cancel an order by orderId and userId
         public APIResult<string> CancelOrderDetailCustomer(long orderId, long currentUserId, string cancelReason)
         {
@@ -251,7 +334,7 @@ namespace Repository.Implementation
             }
             else
             {
-                return new APIErrorResult<string>("This order is being processed! You need to request for cancel from the store.");
+                return new APIErrorResult<string>("Cannot cancel this order!");
             }
 
             // Increase stock of product for each order item cancelled
@@ -266,7 +349,6 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>("Cancel order successfully!");
         }
-
 
         // Customer send cancel request of order by orderId and userId
         public APIResult<string> RequestCancelOrderDetailCustomer(long orderId, long currentUserId, string cancelReason)
@@ -289,6 +371,7 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>("Request sent successfully!");
         }
+
         //Store approve order
         public APIResult<string> ApproveOrderStore(long orderId, long currentUserId)
         {
@@ -309,6 +392,7 @@ namespace Repository.Implementation
 
             return new APISuccessResult<string>("Order approved!");
         }
+
         //Store cancel an order by orderId and storeId
         public APIResult<string> CancelOrderDetailStore(long orderId, long currentUserId, string cancelReason)
         {
@@ -337,8 +421,10 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
+
             return new APISuccessResult<string>("Cancel order successfully!");
         }
+
         //Store approve order cancel request
         public APIResult<string> ApproveOrderCancelRequestStore(long orderId, long currentUserId)
         {
@@ -366,8 +452,10 @@ namespace Repository.Implementation
                 updateStockProduct.UpdatedAt = DateTime.Now;
                 ProductDAO.UpdateProduct(updateStockProduct);
             }
+
             return new APISuccessResult<string>("Request approved!");
         }
+
         //Store decline order cancel request
         public APIResult<string> DeclineOrderCancelRequestStore(long orderId, long currentUserId)
         {
@@ -403,7 +491,8 @@ namespace Repository.Implementation
                 OrderDAO.UpdateOrder(orderEntity);
 
                 return new APISuccessResult<string>("Order is delivering.");
-            } else
+            }
+            else
             {
                 return new APIErrorResult<string>("Cannot deliver this order.");
             }
@@ -421,6 +510,7 @@ namespace Repository.Implementation
             {
                 orderEntity.Status = 2;
                 orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.DeliveredAt = DateTime.Now;
                 orderEntity.RefundDuration = DateTime.Now.AddDays(3);
                 OrderDAO.UpdateOrder(orderEntity);
 
@@ -445,7 +535,7 @@ namespace Repository.Implementation
                 {
                     return new APIErrorResult<string>("This order's refund duration is expired.");
                 }
-            
+
                 orderEntity.Status = 8;
                 orderEntity.UpdatedAt = DateTime.Now;
                 orderEntity.RefundReason = refundReason;
@@ -481,7 +571,7 @@ namespace Repository.Implementation
             }
         }
 
-        // Store decline the refund request by orderId
+        // Store accept the refund request by orderId
         public APIResult<string> RefundAccept(long orderId, long currentStoreStaffId)
         {
             Order? orderEntity = OrderDAO.GetOrderByIdAndStoreId(orderId, currentStoreStaffId);
@@ -495,12 +585,108 @@ namespace Repository.Implementation
                 orderEntity.RefundDuration = DateTime.Now;
                 OrderDAO.UpdateOrder(orderEntity);
 
+                // Increase stock of product for each order item refunded
+                foreach (OrderItem od in orderEntity.OrderItems)
+                {
+                    Product? updateStockProduct = ProductDAO.GetProductDetailById(od.ProductId);
+                    if (updateStockProduct == null) return new APIErrorResult<string>("Change units in stock failed!");
+                    updateStockProduct.Stock += od.Quantity;
+                    updateStockProduct.UpdatedAt = DateTime.Now;
+                    ProductDAO.UpdateProduct(updateStockProduct);
+                }
+
                 return new APISuccessResult<string>("Refund request is successfully accepted.");
             }
             else
             {
                 return new APIErrorResult<string>("This order's refund is not requested.");
             }
+        }
+
+        // Customer report to admin to refund by orderId
+        public APIResult<string> Report(long orderId, long currentUserId, string reportReason)
+        {
+            Order? orderEntity = OrderDAO.GetOrderByIdAndUserId(orderId, currentUserId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 2: Checking
+            if (orderEntity.IsReported == 1 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 2;
+                orderEntity.UpdatedAt = DateTime.Now;
+                orderEntity.ReportedReason = reportReason;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Reported to admin successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and decline refund report
+        public APIResult<string> ResolveReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Resolve decline successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        // Admin resolve report and accept refund report
+        public APIResult<string> ApproveRefundReport(long orderId)
+        {
+            Order? orderEntity = OrderDAO.GetOrderById(orderId);
+            if (orderEntity == null) return new APIErrorResult<string>("Cannot get this order detail!");
+
+            if (orderEntity.Status != 2)
+            {
+                return new APIErrorResult<string>("This order is not delivered.");
+            }
+
+            // Change isReported to 3: Resolved and Status to 9: Refunded
+            if (orderEntity.IsReported == 2 && orderEntity.RefundReason != null)
+            {
+                orderEntity.IsReported = 3;
+                orderEntity.Status = 9;
+                orderEntity.UpdatedAt = DateTime.Now;
+                OrderDAO.UpdateOrder(orderEntity);
+
+                return new APISuccessResult<string>("Resolve accept successfully.");
+            }
+            else
+            {
+                return new APIErrorResult<string>("This order hasn't been requested for refund.");
+            }
+        }
+
+        public Order GetOrderForEmail(long id)
+        {
+            var order = OrderDAO.GetOrderById(id);
+            return order;
         }
     }
 }

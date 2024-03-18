@@ -14,7 +14,7 @@
                     <div class="login_form">
                         @if (ViewBag.ErrorMessage != null)
                         {
-                            <div class="ui_kit_message_box">
+                            <div class="ui_kit_message_box mb-3">
                                 <div class="alert alart_style_three alert-dismissible fade show" role="alert">
                                     @ViewBag.ErrorMessage
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span class="flaticon-close"></span></button>
@@ -34,6 +34,11 @@
                             </div>
                             <button type="submit" class="btn btn-log btn-thm mt20">Login</button>
                             <p class="text-center mb25 mt10">Don't have an account? <a asp-action="Register" asp-controller="Home">Create account</a></p>
+                            <div class="hr_content">
+                                <hr>
+                                <span class="hr_top_text">or</span>
+                            </div>
+                            <p class="text-center mb25 mt10">Store login? <a href="http://127.0.0.1:5262/Home/Login">Follow this link</a></p>
                         </form>
                     </div>
                 </div>

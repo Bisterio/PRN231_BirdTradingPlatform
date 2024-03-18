@@ -124,11 +124,10 @@
                     </div>
                 </div>
                 <div class="row">
-
                     @if (Model.ProductsPaginated.Count != 0)
                     {
-                        int startingNum = (Model.Page - 1) * 12 + 1;
-                        int endingNum = Math.Min(Model.Page * 12, Model.TotalCount);
+                        int startingNum = (Model.Page - 1) * Model.Size + 1;
+                        int endingNum = Math.Min(Model.Page * Model.Size, Model.TotalCount);
                         <text>
                             <div class="col-lg-7">
                                 <div class="filter_components">
@@ -168,8 +167,6 @@
                         </text>
                     }
 
-
-
                     @if (Model.ProductsPaginated.Count == 0)
                     {
                         <div class="my-5">
@@ -185,7 +182,7 @@
                                     <div class="shop_item bdr1 m--1">
                                         <div class="thumb pb30">
                                             <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.ProductId">
-                                                <img style="height: 180px" class="img-fluid" src="@item.Image" alt="Shop Item1">
+                                                <img style="height: 180px" class="rounded mx-auto d-block" src="@item.Image" alt="Shop Item1">
                                             </a>
                                             <div class="shop_item_cart_btn d-grid">
                                                 <button data-id="@item.ProductId" class="add-cart-btn btn btn-thm">Add to Cart</button>
@@ -206,7 +203,7 @@
                                 </div>
                             }
                         </div>
-                        @if (Model.TotalCount > 12)
+                        @if (Model.TotalCount > Model.Size)
                         {
                             <div class="row">
                                 <div class="col-lg-12">

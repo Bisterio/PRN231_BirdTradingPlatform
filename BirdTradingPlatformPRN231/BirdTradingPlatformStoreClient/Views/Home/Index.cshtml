@@ -1,0 +1,218 @@
+﻿@model BusinessObject.DTOs.StoreDashboardDTO
+
+@{
+    ViewData["Title"] = "Store Dashboard";
+
+    string statusName(int statusCode)
+    {
+        string temp = "Undefined";
+        switch (statusCode)
+        {
+            case 1:
+                temp = "Awaiting Approval";
+                break;
+            case 2:
+                temp = "Delivered";
+                break;
+            case 3:
+                temp = "Packing";
+                break;
+            case 4:
+                temp = "Delivering";
+                break;
+            case 5:
+                temp = "Awaiting Cancel Approval";
+                break;
+            case 6:
+                temp = "Store Cancelled";
+                break;
+            case 7:
+                temp = "Customer Cancelled";
+                break;
+            case 8:
+                temp = "Awaiting Refund Approval";
+                break;
+            case 9:
+                temp = "Refunded";
+                break;
+        }
+        return temp;
+    }
+
+    string statusStyle(int statusCode)
+    {
+        string temp = "badge-sa-warning";
+        switch (statusCode)
+        {
+            case 3:
+            case 4:
+                temp = "badge-sa-primary";
+                break;
+            case 6:
+            case 7:
+                temp = "badge-sa-danger";
+                break;
+            case 1:
+            case 5:
+            case 8:
+                temp = "badge-sa-warning";
+                break;
+            case 2:
+            case 9:
+                temp = "badge-sa-success";
+                break;
+        }
+        return temp;
+    }
+}
+
+<div class="container pb-6">
+    <div class="py-5">
+        <div class="row g-4 align-items-center">
+            <div class="col">
+                <h1 class="h3 m-0">Dashboard</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 g-xl-5">
+        <div class="col-12 col-md-4 d-flex">
+            <div class="card saw-indicator flex-grow-1"
+                 data-sa-container-query="{&quot;340&quot;:&quot;saw-indicator--size--lg&quot;}">
+                <div class="sa-widget-header saw-indicator__header">
+                    <h2 class="sa-widget-header__title">Total sells</h2>
+                </div>
+                <div class="saw-indicator__body">
+                    <div class="saw-indicator__value">@Model.TotalSells.ToString("#,##0").Replace(",",".") VND</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 d-flex">
+            <div class="card saw-indicator flex-grow-1"
+                 data-sa-container-query="{&quot;340&quot;:&quot;saw-indicator--size--lg&quot;}">
+                <div class="sa-widget-header saw-indicator__header">
+                    <h2 class="sa-widget-header__title"><a asp-action="Index" asp-controller="Order" asp-route-status="2">Completed Orders</a></h2>
+                </div>
+                <div class="saw-indicator__body">
+                    <div class="saw-indicator__value">@Model.CountCompletedOrders</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 d-flex">
+            <div class="card saw-indicator flex-grow-1"
+                 data-sa-container-query="{&quot;340&quot;:&quot;saw-indicator--size--lg&quot;}">
+                <div class="sa-widget-header saw-indicator__header">
+                    <h2 class="sa-widget-header__title"><a asp-action="Index" asp-controller="Order" asp-route-status="1">Pending Orders</a></h2>
+                </div>
+                <div class="saw-indicator__body">
+                    <div class="saw-indicator__value">@Model.CountPendingOrders</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6 d-flex">
+            <div class="card flex-grow-1 saw-table">
+                <div class="sa-widget-header saw-table__header">
+                    <h2 class="sa-widget-header__title">Recent orders</h2>
+                </div>
+                <div class="saw-table__body sa-widget-table text-nowrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Status</th>
+                                <th>Customer</th>
+                                <th>Order Date</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentOrders.Count == 0)
+                            {
+                                <div class="my-5">
+                                    <h5 class="text-center">No orders to be shown</h5>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td><a asp-action="Detail" asp-controller="Order" asp-route-id="@order.OrderId" class="text-reset">#@order.OrderId</a></td>
+                                        <td>
+                                            <div class="d-flex fs-6">
+                                                <div class="badge @statusStyle(order.Status)">@statusName(order.Status)</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div>@order.Name</div>
+                                            </div>
+                                        </td>
+                                        @if (order.CreatedAt != null)
+                                        {
+                                            DateTime createdAtDateTime = order.CreatedAt ?? DateTime.Now;
+                                            <td>
+                                                @createdAtDateTime.ToString("MMMM dd yyyy")
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                N/A
+                                            </td>
+                                        }
+                                        <td>@order.TotalAmountPreShipping.ToString("#,##0").Replace(",",".") VND</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6 d-flex">
+            <div class="card flex-grow-1">
+                <div class="card-body">
+                    <div class="sa-widget-header">
+                        <h2 class="sa-widget-header__title">Top selling Products</h2>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if (Model.TopSellingProducts.Count == 0)
+                    {
+                        <div class="my-5">
+                            <h5 class="text-center">No top selling products to be shown</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var product in Model.TopSellingProducts)
+                        {
+                            <li class="list-group-item py-2">
+                                <div class="d-flex align-items-center py-3">
+                                    <a asp-action="Detail" asp-controller="Product" asp-route-id="@product.ProductId" class="me-4">
+                                        <div class="sa-symbol sa-symbol--shape--rounded sa-symbol--size--lg">
+                                            <img src="@product.Image" width="40"
+                                         height="40" alt="" />
+                                        </div>
+                                    </a>
+                                    <div class="d-flex align-items-center flex-grow-1 flex-wrap">
+                                        <div class="col">
+                                            <a asp-action="Detail" asp-controller="Product" asp-route-id="@product.ProductId"
+                                        class="text-reset fs-exact-14">@product.Name</a>
+                                            <div class="text-muted fs-exact-13">
+                                                Category: @product.CategoryName
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-auto">
+                                            Unit Price: @product.UnitPrice.ToString("#,##0").Replace(",",".") VND
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

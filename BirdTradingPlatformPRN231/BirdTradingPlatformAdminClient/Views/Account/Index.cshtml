@@ -1,0 +1,263 @@
+﻿@model BusinessObject.DTOs.ClientUserViewListDTO
+@{
+    ViewData["Title"] = "User Management";
+
+    string roleName(string role)
+    {
+        string temp = "Undefined";
+        switch (role)
+        {
+            case "CUSTOMER":
+                temp = "Customer";
+                break;
+            case "STORE":
+                temp = "Store";
+                break;
+            case "ADMIN":
+                temp = "Admin";
+                break;
+        }
+        return temp;
+    }
+
+    string roleStyle(string role)
+    {
+        string temp = "badge-sa-danger";
+        switch (role)
+        {
+            case "CUSTOMER":
+                temp = "badge-sa-primary";
+                break;
+            case "STORE":
+                temp = "badge-sa-success";
+                break;
+            case "ADMIN":
+                temp = "badge-sa-warning";
+                break;
+        }
+        return temp;
+    }
+
+    string statusName(int status)
+    {
+        string temp = "Undefined";
+        switch (status)
+        {
+            case 0:
+                temp = "Deactivated";
+                break;
+            case 1:
+                temp = "Activated";
+                break;
+        }
+        return temp;
+    }
+
+    string statusStyle(int status)
+    {
+        string temp = "badge-sa-danger";
+        switch (status)
+        {
+            case 0:
+                temp = "badge-sa-danger";
+                break;
+            case 1:
+                temp = "badge-sa-primary";
+                break;
+        }
+        return temp;
+    }
+}
+
+<div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+    <div class="container">
+        <div class="py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col">
+                    <h1 class="h3 m-0">Customers</h1>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="p-4">
+                <form id="form-search" asp-controller="Account" asp-action="Index" method="GET">
+                    <div class="row g-4">
+                        <div class="col-auto sa-layout__filters-button">
+                            <select class="form-select" asp-for="RoleSearch" onchange="selectChangeHandler()">
+                                <option value="">All</option>
+                                <option value="CUSTOMER">Customer</option>
+                                <option value="STORE">Store</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="sa-divider"></div>
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                <div class="sa-datatables">
+                    @if (Model.UsersPaginated.Count == 0)
+                    {
+                        <div class="my-5">
+                            <h5 class="text-center">No users to be shown</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        int startingNum = (Model.Page - 1) * Model.Size + 1;
+                        int endingNum = Math.Min(Model.Page * Model.Size, Model.TotalCount);
+                        <div class="sa-datatables__table">
+                            <table class="text-nowrap dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                                <thead>
+                                    <tr role="row">
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 105.5px;"
+                                        aria-sort="descending">User ID</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 191.812px;">Email</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 155.975px;">Name</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 155.975px;">Phone</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 94.4375px;">Role</th>
+                                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                        style="width: 94.4375px;">Status</th>
+                                        <th class="w-min sorting_disabled" data-orderable="false" rowspan="1" colspan="1" aria-label=""
+                                        style="width: 24.2px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.UsersPaginated)
+                                    {
+                                        <tr>
+                                            <td><a asp-action="Detail" asp-controller="Account" asp-route-id="@user.Id" class="text-reset">#@user.Id</a></td>
+                                            <td>@user.Email</td>
+                                            <td>@user.Name</td>
+                                            <td>@user.Phone</td>
+                                            <td>
+                                                <div class="d-flex fs-6">
+                                                    <div class="badge @roleStyle(user.Role)">@roleName(user.Role)</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex fs-6">
+                                                    <div class="badge @statusStyle(user.Status)">@statusName(user.Status)</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sa-muted btn-sm" type="button"
+                                                    id="order-context-menu-0" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="3" height="13" fill="currentColor">
+                                                            <path d="M1.5,8C0.7,8,0,7.3,0,6.5S0.7,5,1.5,5S3,5.7,3,6.5S2.3,8,1.5,8z M1.5,3C0.7,3,0,2.3,0,1.5S0.7,0,1.5,0 S3,0.7,3,1.5S2.3,3,1.5,3z M1.5,10C2.3,10,3,10.7,3,11.5S2.3,13,1.5,13S0,12.3,0,11.5S0.7,10,1.5,10z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="order-context-menu-0" style="">
+                                                        <li>
+                                                            <a class="dropdown-item" asp-action="Detail" asp-controller="Account" asp-route-id="@user.Id">View</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="sa-datatables__footer">
+                            <div class="sa-datatables__pagination">
+                                @if (Model.TotalCount > Model.Size)
+                                {
+                                    <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                                        <ul class="pagination pagination-sm">
+                                            <!-- Previous Page -->
+                                            @if (Model.Page != 1)
+                                            {
+                                                <li class="paginate_button page-item previous" id="DataTables_Table_0_previous">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@(@Model.Page - 1)"
+                                           asp-route-roleSearch="@Model.RoleSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">Previous</a>
+                                                </li>
+                                            }
+
+                                            <!-- First page -->
+                                            @if (!Model.PageNumbers.Contains(1))
+                                            {
+                                                <li class="paginate_button page-item">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="1"
+                                           asp-route-roleSearch="@Model.RoleSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">1</a>
+                                                </li>
+
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">...</a>
+                                                </li>
+                                            }
+
+                                            <!-- Page items -->
+                                            @foreach (int pageNo in Model.PageNumbers)
+                                            {
+                                                <li class="paginate_button page-item @(@Model.Page == pageNo ? "active" : "")">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@pageNo"
+                                           asp-route-roleSearch="@Model.RoleSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">@pageNo</a>
+                                                </li>
+                                            }
+
+                                            <!-- Last page -->
+                                            @if (!Model.PageNumbers.Contains(Model.TotalPage))
+                                            {
+                                                <li class="paginate_button page-item">
+                                                    <a href="#" aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">...</a>
+                                                </li>
+
+                                                <li class="paginate_button page-item">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@Model.TotalPage"
+                                           asp-route-roleSearch="@Model.RoleSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">@Model.TotalPage</a>
+                                                </li>
+                                            }
+
+                                            <!-- Next Page -->
+                                            @if (Model.Page != Model.TotalPage)
+                                            {
+                                                <li class="paginate_button page-item next" id="DataTables_Table_0_previous">
+                                                    <a asp-action="Index" asp-controller="Order" asp-route-page="@(@Model.Page + 1)"
+                                           asp-route-roleSearch="@Model.RoleSearch"
+                                           aria-controls="DataTables_Table_0"
+                                           tabindex="0" class="page-link">Next</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                            <div class="sa-datatables__controls">
+                                <div class="sa-datatables__legend">
+                                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                        Showing @startingNum to @endingNum of @Model.TotalCount
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function selectChangeHandler() {
+            document.getElementById("form-search").submit();
+        }
+    </script>
+}

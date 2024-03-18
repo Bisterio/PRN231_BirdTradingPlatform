@@ -62,7 +62,30 @@ namespace DataAccess
             }
             return orders;
         }
-
+        // Get orders by id, status and current logined admin
+        public static List<Order?> GetOrdersByAdmin(int page, int size, byte isReported)
+        {
+            List<Order> orders = new List<Order>();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    orders = context.Orders
+                        .Where(o => ((o.IsReported == isReported || isReported == 0) && o.IsReported != 1))
+                        .Include(o => o.Store)
+                        .Include(o => o.Invoice).ThenInclude(o => o.User)
+                        .OrderByDescending(o => o.CreatedAt)
+                        .Skip((page - 1) * size)
+                        .Take(size)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return orders;
+        }
         // Function to get count of orders of a logined user by status
         public static int CountOrdersByCurrentUser(byte status, long currentUserId)
         {
@@ -86,7 +109,7 @@ namespace DataAccess
         }
 
         // Function to get count of orders of a logined store user by status
-        public static int CountOrdersByCurrentStore(byte status, long currentUserId)
+        public static int CountOrdersByCurrentStore(byte status, long currentUserId, string orderIdSearch)
         {
             int count = 0;
             try
@@ -95,6 +118,7 @@ namespace DataAccess
                 {
                     count = context.Orders
                         .Where(o => o.Store.UserId == currentUserId
+                        && (String.IsNullOrEmpty(orderIdSearch) || o.OrderId.ToString().Equals(orderIdSearch))
                         && (status == 0 || o.Status == status))
                         .Count();
                 }
@@ -106,7 +130,26 @@ namespace DataAccess
 
             return count;
         }
+        // Function to get count of orders of a logined admin
+        public static int CountOrdersByAdmin(byte isReported)
+        {
+            int count = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    count = context.Orders
+                        .Where(o => (o.IsReported == isReported || isReported == 0) && o.IsReported!=1)
+                        .Count();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
+            return count;
+        }
         // Get Order by orderid and current logined user
         public static Order? GetOrderByIdAndUserId(long orderId, long userId)
         {
@@ -149,6 +192,48 @@ namespace DataAccess
                 throw new Exception(ex.Message);
             }
             return order;
+        }
+
+        // Get Order by orderid and current logined store user
+        public static Order? GetOrderById(long orderId)
+        {
+            Order? order = new Order();
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    order = context.Orders
+                        .Include(x => x.Store)
+                        .Include(x => x.Invoice)
+                        .Include(x => x.OrderItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Category)
+                        .SingleOrDefault(o => o.OrderId == orderId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return order;
+        }
+
+        // Get Total sells of order by store user id
+        public static decimal GetTotalSells(long currentUserId)
+        {
+            decimal totalSells = 0;
+            try
+            {
+                using (var context = new BirdTradingPlatformContext())
+                {
+                    totalSells = context.Orders
+                        .Where(o => o.Store.UserId == currentUserId && o.Status == 2)
+                        .Sum(o => o.TotalAmountPreShipping);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return totalSells;
         }
 
         public static void CreateOrder(Order o)

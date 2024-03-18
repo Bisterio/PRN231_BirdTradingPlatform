@@ -1,0 +1,61 @@
+﻿@model List<BusinessObject.DTOs.ClientStoreDetailViewDTO>
+
+@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
+    ViewData["Title"] = "Stores";
+
+}
+
+<!-- Main Blog Post Content -->
+<section class="blog_post_container pt30 pb80">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 m-auto">
+                <div class="main-title text-center">
+                    <h2 class="title">Store List</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row mt50">
+            <div class="col-lg-12 col-xl-12 pl50 pl50">
+                <div class="row">
+                    @if (Model.Count != 0)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <div class="col-md-6 col-xl-3">
+                                <div class="vendor_grid">
+                                    <div class="thumb">
+                                        <img style="height: 240px;" class="rounded mx-auto d-block" src="@item.LogoImage" alt="Vendor 1 Image">
+                                    </div>
+                                    <div class="details">
+                                        <h5 class="title" style="height:3.5em; display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;">@item.Name</h5>
+                                        <div class="vendor_address mb20">
+                                            <ul class="mb0">
+                                                <li style="height:6.8em; display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;overflow: hidden;"><a href="#">@item.Address</a></li>
+                                                <li><a href="#">@item.Email</a></li>
+                                                <li><a href="#">@item.Phone</a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="d-grid">
+                                            <a class="btn btn-white bdr_thm" asp-action="Detail" asp-controller="Store" asp-route-id="@item.StoreId">Visit Store</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="my-5">
+                            <h3 class="text-center">No stores to be shown</h3>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

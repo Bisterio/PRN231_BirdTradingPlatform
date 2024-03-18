@@ -1,0 +1,152 @@
+﻿@model BusinessObject.DTOs.ClientStoreDetailViewDTO
+
+@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "_LayoutCustomer";
+    }
+    ViewData["Title"] = Model.Name;
+}
+
+<!-- Listing Grid View -->
+<section class="our-listing pt10">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="vendor_single_page_banner">
+                    <div class="details">
+                        <div class="vendor_acc_info d-block d-sm-flex justify-content-between align-items-center"
+                             style="background: url('@Model.CoverImage') no-repeat center; background-size: cover;">
+                            <div class="d-flex mb-3 mb-sm-0">
+                                <div class="flex-shrink-0">
+                                    <img style="width:100px;" class="bg-info rounded-circle" src="@Model.LogoImage" alt="Avatar">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="title">@Model.Name</h4>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-lg btn-thm buy_btn">Follow</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt60">
+            <div class="col-lg-12">
+                <div class="ui_kit_tab style2">
+                    <!-- nav tab Nav List Start -->
+                    <ul class="nav nav-tabs mb15" id="myTab" role="tablist">
+                        <li class="nav-item active" role="presentation">
+                            <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false">About</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="policy-tab" data-bs-toggle="tab" data-bs-target="#policy" type="button" role="tab" aria-controls="policy" aria-selected="false">Polices</button>
+                        </li>
+                    </ul>
+                    <!-- nav tab Nav List End -->
+                    <!-- nav tab contents Start -->
+                    <div class="tab-content pt20 row" id="myTabContent">
+                        <div class="tab-pane fade show active col-xl-8" id="about" role="tabpanel" aria-labelledby="about-tab">
+                            <div class="vendor_about">
+                                <h4 class="title">@Model.Name</h4>
+                                <p class="para mb30">@Model.Description</p>
+                                <ul class="order_list list-style-type-bullet mb0">
+                                    <li>Address: @Model.Address</li>
+                                    <li>Email: @Model.Email</li>
+                                    <li>Phone: @Model.Phone</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade col-xl-8" id="policy" role="tabpanel" aria-labelledby="policy-tab">
+                            <div class="vendor_about">
+                                <h4 class="title">What makes a good brand book?</h4>
+                                <p class="para mb30">Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Diam phasellus vestibulum lorem sed risus ultricies. Magna sit amet purus gravida quis blandit. Arcu cursus vitae congue mauris. Nunc mattis enim ut tellus elementum sagittis vitae et leo. Semper risus in hendrerit gravida rutrum quisque non. At urna condimentum mattis pellentesque id nibh tortor. A erat nam at lectus urna duis convallis convallis tellus. Sit amet mauris commodo quis imperdiet massa. Vitae congue eu consequat ac felis.</p>
+                                <ul class="order_list list-style-type-bullet mb0">
+                                    <li><a href="#">Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida.</a></li>
+                                    <li><a href="#">At urna condimentum mattis pellentesque id nibh. Laoreet non curabitur</a></li>
+                                    <li><a href="#">Magna etiam tempor orci eu lobortis elementum.</a></li>
+                                    <li><a href="#">Bibendum est ultricies integer quis. Semper eget duis at tellus.</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- nav tab contents End -->
+                </div>
+            </div>
+        </div>
+        <div class="row mt20">
+            <div class="row">
+                @if (Model.ProductList.Count != 0)
+                {
+                    @foreach (var item in Model.ProductList)
+                    {
+                        <div class="col-6 col-lg-4 col-xl-3 p0 pl15-520">
+                            <div class="shop_item bdr1 m--1">
+                                <div class="thumb pb30">
+                                    <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                        <img style="height: 180px" class="rounded mx-auto d-block" src="@item.Image" alt="Shop Item1">
+                                    </a>
+                                    <div class="shop_item_cart_btn d-grid">
+                                        <button data-id="@item.ProductId" class="add-cart-btn btn btn-thm">Add to Cart</button>
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <div class="sub_title">@item.CategoryName</div>
+                                    <div class="title" style="height:3.5em; display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;overflow: hidden;">
+                                        <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                            @item.Name
+                                        </a>
+                                    </div>
+                                    <div class="si_footer">
+                                        <div class="price">@item.UnitPrice.ToString("#,##0").Replace(",",".") VND</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="my-5">
+                        <h3 class="text-center">No products to be shown</h3>
+                    </div>
+                }
+            </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var currentProductList = @Html.Raw(Json.Serialize(Model.ProductList));
+
+            // Set add to cart button onclick
+            $(".add-cart-btn").unbind().on('click', function () {
+                var clickedItemId = $(this).data("id");
+                var clickedItem = currentProductList.find(obj => {
+                    return obj.productId == clickedItemId;
+                });
+
+                let cart = {};
+                if (localStorage.getItem("cart")) {
+                    cart = JSON.parse(localStorage.getItem("cart"));
+                };
+
+                if (clickedItemId in cart) {
+                    if (cart[clickedItemId].quantity < clickedItem.stock) {
+                        cart[clickedItemId].quantity++;
+                    }
+                } else {
+                    let cartItem = {
+                        product: clickedItem,
+                        storeId: clickedItem.storeId,
+                        quantity: 1
+                    };
+                    cart[clickedItemId] = cartItem
+                }
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+                loadCart();
+            });
+        });
+    </script>
+}

@@ -2,6 +2,7 @@
 using BusinessObject.DTOs;
 using BusinessObject.Models;
 using DataAccess;
+using Microsoft.Extensions.Configuration;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -103,72 +104,69 @@ namespace Repository.Implementation
         public ClientProductViewListDTO GetProductsStore(int page, string? nameSearch, long categoryId, long priceMin, long priceMax, int orderBy, long currentUserId)
         {
             // Handle query data
-            int size = 12;
+            int size = 6;
             page = page == 0 ? 1 : page;
 
             // Get current store
             Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
 
-            if (currentStore != null)
+
+            // Get paginated list
+            List<ProductViewDTO?> paginatedProduct = ProductDAO
+                .GetProductsByCurrentStore(page, size, nameSearch, categoryId, priceMin, priceMax, orderBy, currentUserId)
+                .Select(x => Mapper.ToProductViewDTO(x))
+                .ToList();
+
+            // Get count of products by search/filter
+            int productCount = ProductDAO.CountAllProductCurrentStore(nameSearch, categoryId, priceMin, priceMax, currentUserId);
+            int totalPages = (int)Math.Ceiling((double)productCount / size);
+            List<int> pageNumbers = new List<int>();
+            if (totalPages > 0)
             {
-                // Get paginated list
-                List<ProductViewDTO?> paginatedProduct = ProductDAO
-                    .GetProductsByCurrentStore(page, size, nameSearch, categoryId, priceMin, priceMax, orderBy, currentStore.StoreId)
-                    .Select(x => Mapper.ToProductViewDTO(x))
-                    .ToList();
+                int start = Math.Max(1, page - 2);
+                int end = Math.Min(page + 2, totalPages);
 
-                // Get count of products by search/filter
-                int productCount = ProductDAO.CountAllProductCurrentStore(nameSearch, categoryId, priceMin, priceMax, currentStore.StoreId);
-                int totalPages = (int)Math.Ceiling((double)productCount / size);
-                List<int> pageNumbers = new List<int>();
-                if (totalPages > 0)
+                if (totalPages > 5)
                 {
-                    int start = Math.Max(1, page - 2);
-                    int end = Math.Min(page + 2, totalPages);
-
-                    if (totalPages > 5)
-                    {
-                        if (end == totalPages) start = end - 4;
-                        else if (start == 1) end = start + 4;
-                    }
-                    else
-                    {
-                        start = 1;
-                        end = totalPages;
-                    }
-                    pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
+                    if (end == totalPages) start = end - 4;
+                    else if (start == 1) end = start + 4;
                 }
-
-                return new ClientProductViewListDTO()
+                else
                 {
-                    ProductsPaginated = paginatedProduct,
-                    Page = page,
-                    Size = size,
-                    PageNumbers = pageNumbers,
-                    TotalCount = productCount,
-                    TotalPage = totalPages
-                };
+                    start = 1;
+                    end = totalPages;
+                }
+                pageNumbers = Enumerable.Range(start, end - start + 1).ToList();
             }
 
-            return null;
+            return new ClientProductViewListDTO()
+            {
+                ProductsPaginated = paginatedProduct,
+                Page = page,
+                Size = size,
+                PageNumbers = pageNumbers,
+                TotalCount = productCount,
+                TotalPage = totalPages,
+                Category = categoryId,
+                Name = nameSearch,
+                Order = orderBy,
+                Pmin = priceMin,
+                Pmax = priceMax
+            };
         }
 
         // Get product detail of currently logined store
-        public ProductViewDTO GetProductDetailStore(long productId, long currentUserId)
+        public ProductCreateDTO? GetProductDetailStore(long productId, long currentUserId)
         {
-            // Get current store
-            Store currentStore = StoreDAO.GetStoreByUserId(currentUserId);
+            Product? entity = ProductDAO.GetProductDetailByCurrentStore(productId, currentUserId);
+            if (entity == null) return null;
+            ProductCreateDTO? dto = Mapper.ToProductCreateDTO(entity);
 
-            Product? entity = new Product();
-
-            if (currentStore != null)
-            {
-                entity = ProductDAO.GetProductDetailByCurrentStore(productId, currentStore.StoreId);
-                if (entity != null)
-                    return Mapper.ToProductViewDTO(entity);
-            }
-
-            return null;
+            // Get related products
+            // Get categories list for create
+            List<Category> categories = CategoryDAO.GetCategories().ToList();
+            dto.Categories = categories;
+            return dto;
         }
 
         // Get Product List By Store Id 
@@ -300,6 +298,7 @@ namespace Repository.Implementation
         {
             CheckoutViewDTO resultDTO = new CheckoutViewDTO();
             List<ShippingCalculatedCartItemDTO> cart = new List<ShippingCalculatedCartItemDTO>();
+            string distanceMatrixKey = GetDistanceMatrixKey();
 
             // Check for valid product (product status == 1, quantity does not exceed stock)
             foreach (OrderItemCartDTO cartItem in request.CartItems)
@@ -332,7 +331,7 @@ namespace Repository.Implementation
                 Store currentStore = StoreDAO.GetStoreById(storeOrder.StoreId);
 
                 // GET distance
-                HttpResponseMessage response = await client.GetAsync(GoogleMapApi + $"?origins={request.ShippingAddress}&destinations={currentStore.Address}&key=AIzaSyDNHSAw4yrVYpCRmZQg43S50ffsoZwqqD8");
+                HttpResponseMessage response = await client.GetAsync(GoogleMapApi + $"?origins={request.ShippingAddress}&destinations={currentStore.Address}&key={distanceMatrixKey}");
                 if (!response.IsSuccessStatusCode) return new APIErrorResult<CheckoutViewDTO>("Cannot get shipping cost from store to user");
 
                 string strData = await response.Content.ReadAsStringAsync();
@@ -348,7 +347,7 @@ namespace Repository.Implementation
                 }
                 else
                 {
-                    shippingCost = 10000 + (distance - 2) * 3000;
+                    shippingCost = 10000 + (distance - 2) * 1000;
                 }
 
                 // Add shipping cost
@@ -367,6 +366,15 @@ namespace Repository.Implementation
             resultDTO.ShippingAddress = request.ShippingAddress;
             resultDTO.CartItems = cart;
             return new APISuccessResult<CheckoutViewDTO>(resultDTO);
+        }
+        private string GetDistanceMatrixKey()
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+            var strConn = config["GoogleMapsAPI:DistanceMatrixKey"];
+            return strConn;
         }
     }
 }

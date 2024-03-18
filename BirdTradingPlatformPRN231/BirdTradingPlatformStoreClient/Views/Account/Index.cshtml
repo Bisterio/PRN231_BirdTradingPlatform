@@ -1,0 +1,151 @@
+﻿@model BusinessObject.DTOs.UserDetailViewDTO
+
+@{
+    ViewData["Title"] = "Store Profile";
+}
+
+<div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+    <div class="container">
+        <div class="py-5">
+            <div class="row g-4 align-items-center">
+                <div class="col">
+                    <h1 class="h3 m-0">Create Product</h1>
+                </div>
+                <div class="col-auto d-flex">
+                    <button class="btn btn-primary" id="submit-create-button">Create</button>
+                </div>
+            </div>
+        </div>
+        <div class="sa-entity-layout"
+             data-sa-container-query="{&quot;920&quot;:&quot;sa-entity-layout--size--md&quot;,&quot;1100&quot;:&quot;sa-entity-layout--size--lg&quot;}">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (ViewBag.SuccessMessage != null)
+            {
+                <div class="alert alert-success mb-0 alert-dismissible fade show" role="alert">
+                    @ViewBag.SuccessMessage
+                    <button type="button" class="sa-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="sa-entity-layout__body">
+                <div class="sa-entity-layout__main">
+                    <div class="card">
+                        <div class="card-body p-5">
+                            <form asp-action="UpdateProfile" asp-controller="Account" method="post">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">User Information</h2>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Email</label>
+                                    <input type="text" class="form-control" value="@Model.Email" readonly/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="name" value="@Model.Name" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Phone Number</label>
+                                    <input type="text" class="form-control" name="phone" value="@Model.Phone" required />
+                                </div>
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mt-5">
+                        <div class="card-body p-5">
+                            <form asp-action="UpdateStore" asp-controller="Account" method="post" enctype="multipart/form-data">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Store Information</h2>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Store Name</label>
+                                    <input type="text" class="form-control" value="@Model.StoreName" name="name" required/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Store Address</label>
+                                    <input type="text" class="form-control" value="@Model.StoreAddress" name="address" required/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Store Description</label>
+                                    <input type="text" class="form-control" value="@Model.Description" name="description" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Logo Image</label>
+                                    <input type="hidden" name="logoImage" value="@(!string.IsNullOrEmpty(Model.LogoImage) ? Model.LogoImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                    <input class="form-control" type="file" name="logoImageUpload" onchange="chooseFile1(this)" accept="image/*">
+                                    <img id="image-show-1" style="height: 240px" class="rounded mx-auto d-block mt-3" src="@(!string.IsNullOrEmpty(Model.LogoImage) ? Model.LogoImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Cover Image</label>
+                                    <input type="hidden" name="coverImage" value="@(!string.IsNullOrEmpty(Model.CoverImage) ? Model.CoverImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                    <input class="form-control" type="file" name="coverImageUpload" onchange="chooseFile2(this)" accept="image/*">
+                                    <img id="image-show-2" style="height: 240px" class="rounded mx-auto d-block mt-3" src="@(!string.IsNullOrEmpty(Model.CoverImage) ? Model.CoverImage : "https://firebasestorage.googleapis.com/v0/b/localmartstorage.appspot.com/o/default-thumbnail.jpg?alt=media&token=a737131f-2ea1-472a-9a5d-e7734faeef43")">
+                                </div>
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mt-5">
+                        <div class="card-body p-5">
+                            <form asp-action="ChangePassword" asp-controller="Account" method="post">
+                                <div class="mb-5">
+                                    <h2 class="mb-0 fs-exact-18">Change Password</h2>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Old Password</label>
+                                    <input class="form-control" name="oldPassword" type="password" minlength="8" maxlength="100" required/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">New Password</label>
+                                    <input class="form-control" name="newPassword" type="password" minlength="8" maxlength="100" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="form-product/name" class="form-label">Confirm New Password</label>
+                                    <input class="form-control" name="confirmPassword" type="password" minlength="8" maxlength="100" required />
+                                </div>
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary">Change</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function chooseFile1(fileInput) {
+        if (fileInput.files && fileInput.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#image-show-1').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    }
+
+    function chooseFile2(fileInput) {
+        if (fileInput.files && fileInput.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#image-show-2').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    }
+</script>
